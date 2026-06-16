@@ -1,9 +1,12 @@
 /** @format */
 
+import Hero from '../components/sections/Hero';
+import Projects from '../components/sections/Projects';
+
 export default function Home() {
   return (
-    <main>
-      <h1>Reagan Portfolio</h1>
-    </main>
+    <>
+      <Hero />
+    </>
   );
 }
