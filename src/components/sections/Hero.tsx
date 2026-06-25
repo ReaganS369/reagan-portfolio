@@ -5,11 +5,36 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import VariableProximity from '../effects/VariableProximity';
+import { FileText, Box, Gamepad2, Cpu } from 'lucide-react';
 
 export default function Hero() {
   const [profile, setProfile] = useState<any>(null);
+  const [roleIndex, setRoleIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const roles = [
+    {
+      icon: <Box size={22} />,
+      text: '3D GENERALIST',
+    },
+    {
+      icon: <Cpu size={22} />,
+      text: 'TECHNICAL ARTIST',
+    },
+    {
+      icon: <Gamepad2 size={22} />,
+      text: 'GAME DESIGNER',
+    },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function loadProfile() {
@@ -21,34 +46,35 @@ export default function Hero() {
     loadProfile();
   }, []);
 
-  if (!profile)
+  if (!profile) {
     return (
       <div
         style={{
           height: '100vh',
-          background: 'var(--dark)',
-          color: 'var(--light)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          background: '#050505',
+          color: '#fff',
         }}
       >
         Loading...
       </div>
     );
+  }
 
   return (
     <section
       style={{
         height: '100vh',
-        background: 'var(--dark)',
+        background: '#050505',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
       }}
     >
-      {/* GOLD GLOW */}
+      {/* ORANGE GLOW */}
       <div
         style={{
           position: 'absolute',
@@ -59,25 +85,24 @@ export default function Hero() {
           height: '900px',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(245,138,31,0.22), transparent 70%)',
+            'radial-gradient(circle, rgba(223,138,56,0.22), transparent 70%)',
           filter: 'blur(120px)',
           zIndex: 0,
         }}
       />
-
-      {/* TEXT */}
+      {/* CONTENT */}
       <div
         style={{
-          width: '55%',
-          paddingLeft: '8%',
+          width: '50%',
+          paddingLeft: '7%',
           position: 'relative',
-          zIndex: 2,
+          zIndex: 5,
         }}
       >
         {/* NAME */}
         <div ref={containerRef}>
           <VariableProximity
-            label="REAGAN SAGOLSEM"
+            label={`REAGAN\nSAGOLSEM`}
             className="hero-name"
             fromFontVariationSettings="'wght' 400"
             toFontVariationSettings="'wght' 1000"
@@ -85,11 +110,11 @@ export default function Hero() {
             radius={220}
             falloff="gaussian"
             style={{
-              fontSize: 'clamp(5rem, 9vw, 10rem)',
-              lineHeight: 0.88,
-              letterSpacing: '-2px',
-              display: 'block',
-              maxWidth: '900px',
+              whiteSpace: 'pre-line',
+              fontSize: 'clamp(5rem, 9vw, 9rem)',
+              lineHeight: 0.85,
+              letterSpacing: '-4px',
+              maxWidth: '700px',
             }}
           />
         </div>
@@ -98,51 +123,146 @@ export default function Hero() {
         <div
           style={{
             marginTop: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '.75rem',
+            color: '#DF8A38',
+            minHeight: '40px',
           }}
         >
-          <VariableProximity
-            label={profile.hero_title}
-            className="hero-role"
-            fromFontVariationSettings="'wght' 400"
-            toFontVariationSettings="'wght' 900"
-            containerRef={containerRef}
-            radius={160}
-            falloff="gaussian"
+          {roles[roleIndex].icon}
+
+          <span
             style={{
-              fontSize: '1.35rem',
-              display: 'block',
+              fontSize: '1.15rem',
+              fontWeight: 700,
+              letterSpacing: '2px',
             }}
-          />
+          >
+            {roles[roleIndex].text}
+          </span>
         </div>
 
-        {/* VALUE PROPOSITION */}
+        {/* CATEGORIES */}
         <div
           style={{
-            marginTop: '1.25rem',
-            maxWidth: '620px',
+            marginTop: '1rem',
+            display: 'flex',
+            gap: '1rem',
+            color: '#8f8f8f',
+            textTransform: 'uppercase',
+            fontSize: '.9rem',
           }}
         >
-          <VariableProximity
-            label={
-              profile.hero_subtitle ||
-              'Designing and building interactive worlds through art and technology.'
-            }
-            className="hero-body"
-            fromFontVariationSettings="'wght' 400"
-            toFontVariationSettings="'wght' 700"
-            containerRef={containerRef}
-            radius={120}
-            falloff="gaussian"
+          <span>Games</span>
+          <span>•</span>
+          <span>XR</span>
+          <span>•</span>
+          <span>Animation</span>
+        </div>
+
+        {/* DESCRIPTION */}
+        <p
+          style={{
+            marginTop: '1.5rem',
+            maxWidth: '620px',
+            color: '#c5c5c5',
+            lineHeight: 1.8,
+            fontSize: '1.05rem',
+          }}
+        >
+          Creating immersive experiences through game design, technical art and
+          3D production — bridging creativity and technology.
+        </p>
+
+        {/* BUTTONS */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            marginTop: '2rem',
+          }}
+        >
+          <button
             style={{
-              fontSize: '1.05rem',
-              lineHeight: 1.8,
-              display: 'block',
+              background: '#DF8A38',
+              color: '#000',
+              border: 'none',
+              padding: '16px 32px',
+              borderRadius: '999px',
+              fontWeight: 700,
+              cursor: 'pointer',
             }}
-          />
+          >
+            EXPLORE PROJECTS
+          </button>
+
+          <button
+            style={{
+              background: 'transparent',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,.15)',
+              padding: '16px 32px',
+              borderRadius: '999px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            CHARACTER SHEET
+          </button>
+        </div>
+
+        {/* SOCIALS */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '1.5rem',
+            marginTop: '2rem',
+          }}
+        >
+          <a href="https://github.com/ReaganS369">GitHub</a>
+
+          <a href="#">LinkedIn</a>
+
+          <a href="/resume.pdf">
+            <FileText size={20} />
+          </a>
+
+          <a href="/resume.pdf" target="_blank">
+            <FileText size={20} />
+          </a>
+        </div>
+
+        {/* SOFTWARE */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '2rem',
+            marginTop: '3rem',
+            alignItems: 'center',
+          }}
+        >
+          <img src="/icons/unity.svg" alt="Unity" height={24} />
+          <img src="/icons/unreal.svg" alt="Unreal" height={24} />
+          <img src="/icons/blender.svg" alt="Blender" height={24} />
+          <img src="/icons/photoshop.svg" alt="Photoshop" height={24} />
+          <img src="/icons/illustrator.svg" alt="Illustrator" height={24} />
+        </div>
+
+        {/* SCROLL */}
+        <div
+          style={{
+            marginTop: '2rem',
+            color: '#666',
+            fontSize: '.75rem',
+            letterSpacing: '4px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Scroll To Discover ↓
         </div>
       </div>
-
-      {/* CHARACTER */}
+      {/* CHARACTER */}{' '}
       <div
         style={{
           position: 'absolute',
@@ -155,7 +275,8 @@ export default function Hero() {
           pointerEvents: 'none',
         }}
       >
-        {/* CASUAL */}
+        {' '}
+        {/* CASUAL */}{' '}
         <img
           src={profile.casual_avatar}
           alt="Casual"
@@ -169,9 +290,8 @@ export default function Hero() {
             objectPosition: 'bottom center',
             clipPath: 'inset(0 50% 0 0)',
           }}
-        />
-
-        {/* FORMAL */}
+        />{' '}
+        {/* FORMAL */}{' '}
         <img
           src={profile.formal_avatar}
           alt="Formal"
@@ -185,7 +305,7 @@ export default function Hero() {
             objectPosition: 'bottom center',
             clipPath: 'inset(0 0 0 50%)',
           }}
-        />
+        />{' '}
       </div>
     </section>
   );

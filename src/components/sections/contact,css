@@ -1,0 +1,156 @@
+/** @format */
+
+.contact-section {
+  padding: 140px 7%;
+  background: #050505;
+  color: white;
+}
+
+.contact-container {
+  max-width: 1500px;
+  margin: auto;
+}
+
+.contact-top {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 90px;
+  margin-bottom: 80px;
+}
+
+.section-label {
+  color: #df8a38;
+  letter-spacing: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.contact-left h2 {
+  margin: 18px 0;
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -3px;
+}
+
+.contact-left p {
+  margin-top: 28px;
+  color: #9d9d9d;
+  max-width: 520px;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+.contact-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: 40px;
+}
+
+.contact-card h4 {
+  letter-spacing: 4px;
+  color: #df8a38;
+  margin-bottom: 40px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.info > div {
+  display: flex;
+  gap: 18px;
+}
+
+.info span {
+  font-size: 0.75rem;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.info p {
+  margin-top: 4px;
+  font-size: 1rem;
+}
+
+.socials {
+  display: flex;
+  gap: 14px;
+  margin: 40px 0;
+}
+
+.socials a {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 14px;
+  background: #111;
+  color: white;
+  transition: 0.3s;
+}
+
+.socials a:hover {
+  background: #df8a38;
+  color: black;
+}
+
+.contact-card button {
+  width: 100%;
+  padding: 18px;
+  background: #df8a38;
+  color: black;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.contact-form {
+  display: grid;
+  gap: 22px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 22px;
+  color: white;
+  font-size: 1rem;
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 220px;
+}
+
+.contact-form button {
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 36px;
+  border: none;
+  border-radius: 999px;
+  background: #df8a38;
+  color: black;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .contact-top {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-left h2 {
+    font-size: 3.5rem;
+  }
+}

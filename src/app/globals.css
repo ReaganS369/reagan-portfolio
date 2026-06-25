@@ -5,17 +5,37 @@
   src: url('/fonts/Posterama 2001 W04 Bold.woff') format('woff');
   font-display: swap;
 }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #1d1010;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: inherit;
+}
 :root {
   /* Colors */
 
   --primary: #f58a1f;
+  --primarydark: #d46b08;
   --secondary: #df138a;
 
   --light: #f2efe7;
   --dark: #1d1010;
 
-  --card: #241616;
+  --card: #3f3f3f;
   --border: #352020;
 
   --text: #f2efe7;
