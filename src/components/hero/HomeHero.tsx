@@ -1,14 +1,20 @@
 /** @format */
 
 'use client';
-
+import { getStorageUrl } from '../../lib/storage';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import VariableProximity from '../effects/VariableProximity';
-
-import { Box, Cpu, Gamepad2 } from 'lucide-react';
+import { getHeroRoles } from '../../lib/api/heroRoles';
 
 import './HomeHero.css';
+interface HeroRole {
+  id: string;
+  title: string;
+  icon_url: string;
+  display_order: number;
+  is_active: boolean;
+}
 
 export default function HomeHero() {
   const [profile, setProfile] = useState<any>(null);
@@ -16,30 +22,27 @@ export default function HomeHero() {
   const [roleIndex, setRoleIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const roles = [
-    {
-      icon: <Box size={24} />,
-      text: '3D GENERALIST',
-    },
-    {
-      icon: <Cpu size={24} />,
-      text: 'TECHNICAL ARTIST',
-    },
-    {
-      icon: <Gamepad2 size={24} />,
-      text: 'GAME DESIGNER',
-    },
-  ];
-
+  const [roles, setRoles] = useState<HeroRole[]>([]);
   useEffect(() => {
+    if (roles.length === 0) return;
+
     const interval = setInterval(() => {
       setRoleIndex((prev) => (prev + 1) % roles.length);
     }, 3000);
 
     return () => clearInterval(interval);
+  }, [roles]);
+  useEffect(() => {
+    loadRoles();
   }, []);
-
+  async function loadRoles() {
+    try {
+      const data = await getHeroRoles();
+      setRoles(data ?? []);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
     async function loadProfile() {
       const { data } = await supabase.from('profiles').select('*').single();
@@ -49,8 +52,7 @@ export default function HomeHero() {
 
     loadProfile();
   }, []);
-
-  if (!profile) {
+  if (!profile || roles.length === 0) {
     return <div className="home-hero-loading">Loading...</div>;
   }
 
@@ -98,11 +100,14 @@ export default function HomeHero() {
               }}
             />
           </div>
-
           <div className="hero-role">
-            {roles[roleIndex].icon}
+            <img
+              src={getStorageUrl(roles[roleIndex].icon_url)}
+              alt={roles[roleIndex].title}
+              className="hero-role-icon"
+            />
 
-            <span>{roles[roleIndex].text}</span>
+            <span>{roles[roleIndex].title}</span>
           </div>
 
           <p className="hero-description">

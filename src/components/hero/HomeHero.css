@@ -120,6 +120,7 @@
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 5px;
+  white-space: nowrap;
   padding-left: 1000px;
   transform: rotate(-7 deg); /* keep text level */
 }
@@ -188,6 +189,19 @@
   line-height: 1.9;
 
   font-size: 1.05rem;
+}
+
+.hero-role-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.hero-role {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* ===================================================
