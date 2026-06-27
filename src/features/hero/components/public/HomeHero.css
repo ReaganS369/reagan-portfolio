@@ -6,7 +6,7 @@
 
 .home-hero {
   position: relative;
-  min-height: 100vh;
+  min-height: calc(100vh + 90px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -81,6 +81,58 @@
 
 .story-track {
   gap: 100px;
+}
+
+.story-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.15em;
+}
+
+.story-item__long,
+.story-item__short {
+  display: inline-block;
+  width: 100%;
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
+}
+
+.story-item__short {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.story-item__long {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .story-item:hover .story-item__long {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .story-item:hover .story-item__short {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .story-item__long {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .story-item__short {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cv-ribbon__track {

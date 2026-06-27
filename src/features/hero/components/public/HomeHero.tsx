@@ -13,20 +13,31 @@ import {
 
 import './HomeHero.css';
 
+type MarqueeMessage = string | { label: string; shortLabel: string };
+
 function MarqueeTrack({
   messages,
   className,
 }: {
-  messages: string[];
+  messages: MarqueeMessage[];
   className: string;
 }) {
   const repeatedMessages = [...messages, ...messages];
 
   return (
     <div className={className}>
-      {repeatedMessages.map((message, index) => (
-        <span key={`${className}-${index}`}>{message}</span>
-      ))}
+      {repeatedMessages.map((message, index) => {
+        if (typeof message === 'string') {
+          return <span key={`${className}-${index}`}>{message}</span>;
+        }
+
+        return (
+          <span key={`${className}-${index}`} className="story-item">
+            <span className="story-item__long">{message.label}</span>
+            <span className="story-item__short">{message.shortLabel}</span>
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -49,11 +60,11 @@ export default function HomeHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [roles, setRoles] = useState<HeroRole[]>([]);
 
-  const storyMessages = [
-    'What I Build',
-    'Where It All Began',
-    "What I'm Made Of",
-    'Where Connections Begin',
+  const storyMessages: MarqueeMessage[] = [
+    { label: 'What I Build', shortLabel: 'BUILDS' },
+    { label: 'Where It All Began', shortLabel: 'ORIGIN' },
+    { label: "What I'm Made Of", shortLabel: 'STATS' },
+    { label: 'Where Connections Begin', shortLabel: 'COMMS' },
   ];
 
   const cvRibbonMessage =
