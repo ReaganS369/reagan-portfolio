@@ -12,6 +12,25 @@ import {
 } from '@/src/features/social-links/api/social-links';
 
 import './HomeHero.css';
+
+function MarqueeTrack({
+  messages,
+  className,
+}: {
+  messages: string[];
+  className: string;
+}) {
+  const repeatedMessages = [...messages, ...messages];
+
+  return (
+    <div className={className}>
+      {repeatedMessages.map((message, index) => (
+        <span key={`${className}-${index}`}>{message}</span>
+      ))}
+    </div>
+  );
+}
+
 interface HeroRole {
   id: string;
   title: string;
@@ -29,6 +48,18 @@ export default function HomeHero() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [roles, setRoles] = useState<HeroRole[]>([]);
+
+  const storyMessages = [
+    'What I Build',
+    'Where It All Began',
+    "What I'm Made Of",
+    'Where Connections Begin',
+  ];
+
+  const cvRibbonMessage =
+    'View Curriculum Vitae: Experience Beyond the Portfolio';
+  const cvRibbonMessages = Array.from({ length: 8 }, () => cvRibbonMessage);
+
   useEffect(() => {
     if (roles.length === 0) return;
 
@@ -80,18 +111,19 @@ export default function HomeHero() {
 
       {/* Top Story Ribbon */}
       <div className="story-ribbon">
-        <div className="story-track">
-          <span>What I Build</span>
-          <span>Where It All Began</span>
-          <span>What I'm Made Of</span>
-          <span>Where Connections Begin</span>
-        </div>
+        <MarqueeTrack
+          messages={storyMessages}
+          className="story-track marquee-track"
+        />
       </div>
 
       {/* CV Ribbon */}
 
       <div className="cv-ribbon">
-        <span>View Curriculum Vitae: Experience Beyond the Portfolio</span>
+        <MarqueeTrack
+          messages={cvRibbonMessages}
+          className="cv-ribbon__track marquee-track"
+        />
       </div>
 
       {/* Main Hero */}

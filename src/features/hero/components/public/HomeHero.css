@@ -67,26 +67,41 @@
   transform-origin: center;
 
   z-index: 20;
+  overflow: hidden;
 }
-.story-track {
+.story-track,
+.cv-ribbon__track {
   display: flex;
   align-items: center;
-
-  gap: 180px;
-
+  width: max-content;
   white-space: nowrap;
-
-  padding-left: 100px;
+  animation: cv-ribbon-marquee 90s linear infinite;
+  will-change: transform;
 }
 
-.story-track span {
+.story-track {
+  gap: 100px;
+}
+
+.cv-ribbon__track {
+  gap: 30px;
+}
+
+.story-ribbon:hover .story-track,
+.cv-ribbon:hover .cv-ribbon__track {
+  animation-play-state: paused;
+}
+
+.story-track span,
+.cv-ribbon__track span {
   color: var(--text-muted);
-
   font-family: var(--font-body);
-
   font-size: 18px;
-
   letter-spacing: 5px;
+}
+
+.cv-ribbon__track span {
+  font-weight: 800;
 }
 
 /* ===================================================
@@ -113,16 +128,29 @@
   transform-origin: center;
 
   z-index: 19;
+  overflow: hidden;
 }
 
-.cv-ribbon span {
+.cv-ribbon:hover .cv-ribbon__track {
+  animation-play-state: paused;
+}
+
+.cv-ribbon__track span {
+  flex: none;
   font-family: var(--font-body);
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 5px;
   white-space: nowrap;
-  padding-left: 1000px;
-  transform: rotate(-7 deg); /* keep text level */
+}
+
+@keyframes cv-ribbon-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ===================================================
@@ -216,52 +244,45 @@
   margin-top: 42px;
 }
 
-.primary-btn {
-  height: 58px;
-
-  padding: 0 34px;
-
-  border: none;
-
-  border-radius: 999px;
-
-  background: var(--primary);
-
-  color: white;
-
+.primary-btn,
+.secondary-btn {
+  height: 54px;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 18px;
   font-weight: 700;
-
+  box-sizing: border-box;
   cursor: pointer;
+  transition:
+    background 220ms ease,
+    border 220ms ease,
+    color 220ms ease,
+    transform 220ms ease;
+}
 
-  transition: 0.3s;
+.primary-btn {
+  border: none;
+  background: var(--primarydark);
+  color: var(--text);
 }
 
 .primary-btn:hover {
-  background: var(--primarydark);
-
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--text);
   transform: translateY(-3px);
 }
 
 .secondary-btn {
-  height: 58px;
-
-  padding: 0 10px;
-
-  border: none;
-
   background: transparent;
-
-  color: var(--light);
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: 0.3s;
+  color: var(--primary);
+  border: 1px solid var(--primary);
 }
 
 .secondary-btn:hover {
-  color: var(--primary);
+  background: transparent;
+  border-color: var(--secondary);
+  color: var(--secondary);
 }
 
 /* ===================================================
