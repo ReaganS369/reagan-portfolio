@@ -1,6 +1,5 @@
 /** @format */
 
-import AdminLayoutClient from '@/src/features/admin/layout/AdminLayoutClient';
 import '@/src/features/admin/styles/admin.css';
 
 export default function AdminLayout({
@@ -8,5 +7,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminLayoutClient>{children}</AdminLayoutClient>;
+  return children;
 }

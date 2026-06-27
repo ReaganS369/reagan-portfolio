@@ -3,6 +3,7 @@
 /** @format */
 
 import { Menu, X } from 'lucide-react';
+import { logoutAdmin } from '@/src/features/admin/actions/auth';
 
 type HeaderProps = {
   onMenuToggle: () => void;
@@ -30,6 +31,15 @@ export default function Header({ onMenuToggle, isSidebarOpen }: HeaderProps) {
       </div>
 
       <div className="admin-header__end">
+        <form action={logoutAdmin}>
+          <button
+            type="submit"
+            className="admin-btn admin-btn--secondary admin-btn--sm admin-header__logout"
+          >
+            Logout
+          </button>
+        </form>
+
         <div className="admin-header__user">
           <span className="admin-header__avatar" aria-hidden="true">
             RS

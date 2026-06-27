@@ -1,5 +1,35 @@
 /** @format */
+:root {
+  --admin-bg: #090909;
+  --admin-bg-elevated: #111111;
+  --admin-bg-surface: #181818;
 
+  --admin-border: rgba(255, 255, 255, 0.05);
+
+  --admin-text: #fafafa;
+  --admin-text-secondary: #a1a1aa;
+  --admin-text-muted: #71717a;
+
+  --admin-accent: #f58a1f;
+  --admin-accent-soft: rgba(245, 138, 31, 0.12);
+  --admin-accent-hover: #ff9c3d;
+
+  --admin-radius-sm: 8px;
+  --admin-radius-md: 12px;
+  --admin-radius-lg: 16px;
+
+  --admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --admin-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.32);
+
+  --admin-space-1: 4px;
+  --admin-space-2: 8px;
+  --admin-space-3: 12px;
+  --admin-space-4: 16px;
+  --admin-space-5: 20px;
+  --admin-space-6: 24px;
+  --admin-space-8: 32px;
+  --admin-space-10: 40px;
+}
 /* ===================================================
    Admin design tokens
 =================================================== */
@@ -8,19 +38,6 @@
   --admin-sidebar-width: 264px;
   --admin-header-height: 60px;
   --admin-content-max: 1200px;
-
-  --admin-bg: #090909;
-  --admin-bg-elevated: #111111;
-  --admin-bg-surface: #181818;
-  --admin-bg-hover: rgba(255, 255, 255, 0.04);
-  --admin-bg-active: rgba(255, 255, 255, 0.08);
-
-  --admin-border: rgba(255, 255, 255, 0.05);
-  --admin-border-strong: rgba(255, 255, 255, 0.08);
-
-  --admin-text: #fafafa;
-  --admin-text-secondary: #a1a1aa;
-  --admin-text-muted: #71717a;
 
   --admin-accent: #f58a1f;
   --admin-accent-soft: rgba(245, 138, 31, 0.12);
@@ -715,4 +732,106 @@ body.admin-nav-open {
   .admin-header__user-meta {
     display: none;
   }
+}
+
+/* ===================================================
+   Admin login
+=================================================== */
+
+.admin-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin-space-6);
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+.admin-login__card {
+  width: min(100%, 400px);
+  padding: var(--admin-space-8);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  background: var(--admin-bg-elevated);
+  box-shadow: var(--admin-shadow-md);
+}
+
+.admin-login__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-4);
+  margin-bottom: var(--admin-space-6);
+}
+
+.admin-login__logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--admin-radius-sm);
+  background: linear-gradient(135deg, var(--admin-accent), #8b5cf6);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.admin-login__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin-login__subtitle {
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-space-4);
+}
+
+.admin-login-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-space-2);
+}
+
+.admin-login-form__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--admin-text-secondary);
+}
+
+.admin-login-form__input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-bg-surface);
+  color: var(--admin-text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.admin-login-form__input:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.admin-login-form__error {
+  font-size: 0.8125rem;
+  color: #fca5a5;
+}
+
+.admin-login-form__submit {
+  width: 100%;
+}
+
+.admin-header__logout {
+  flex-shrink: 0;
 }
