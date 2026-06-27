@@ -1,21 +1,15 @@
 /** @format */
 
-import { EmptyState, PageHeader, Section } from '@/src/components/admin';
+import AdminPlaceholderPage from '@/src/features/admin/components/AdminPlaceholderPage';
 
 export default function SettingsAdminPage() {
   return (
-    <>
-      <PageHeader
-        title="Settings"
-        description="Configure site-wide preferences, metadata, and CMS options."
-      />
-
-      <Section title="General">
-        <EmptyState
-          title="Settings panel coming soon"
-          description="Site configuration controls will live here — profile details, SEO defaults, and integrations."
-        />
-      </Section>
-    </>
+    <AdminPlaceholderPage
+      title="Settings"
+      description="Configure site-wide preferences, metadata, and CMS options."
+      sectionTitle="General"
+      emptyTitle="Settings panel coming soon"
+      emptyDescription="Site configuration controls will live here — profile details, SEO defaults, and integrations."
+    />
   );
 }

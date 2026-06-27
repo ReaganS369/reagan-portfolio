@@ -1,21 +1,15 @@
 /** @format */
 
-import { EmptyState, PageHeader, Section } from '@/src/components/admin';
+import AdminPlaceholderPage from '@/src/features/admin/components/AdminPlaceholderPage';
 
 export default function MediaAdminPage() {
   return (
-    <>
-      <PageHeader
-        title="Media Library"
-        description="Upload, browse, and reuse images and files across your portfolio."
-      />
-
-      <Section title="Assets">
-        <EmptyState
-          title="Media library is empty"
-          description="Uploaded assets will be stored in Supabase and surfaced here for reuse."
-        />
-      </Section>
-    </>
+    <AdminPlaceholderPage
+      title="Media Library"
+      description="Upload, browse, and reuse images and files across your portfolio."
+      sectionTitle="Assets"
+      emptyTitle="Media library is empty"
+      emptyDescription="Uploaded assets will be stored in Supabase and surfaced here for reuse."
+    />
   );
 }

@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
-} from '@/src/components/admin';
+} from '@/src/components/ui';
 
 const stats = [
   { label: 'Projects', value: '—', hint: 'Published portfolio work' },

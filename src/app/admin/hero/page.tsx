@@ -1,7 +1,7 @@
 /** @format */
 
-import { PageHeader, Section } from '@/src/components/admin';
-import HeroRolesManager from '@/src/components/admin/hero/HeroRolesManager';
+import { PageHeader, Section } from '@/src/components/ui';
+import HeroRolesManager from '@/src/features/hero/components/admin/HeroRolesManager';
 
 export default function HeroAdminPage() {
   return (

@@ -1,21 +1,15 @@
 /** @format */
 
-import { EmptyState, PageHeader, Section } from '@/src/components/admin';
+import AdminPlaceholderPage from '@/src/features/admin/components/AdminPlaceholderPage';
 
 export default function GalleryAdminPage() {
   return (
-    <>
-      <PageHeader
-        title="Gallery"
-        description="Manage visual gallery items displayed across your portfolio."
-      />
-
-      <Section title="Gallery items">
-        <EmptyState
-          title="Gallery is empty"
-          description="Images and gallery entries will be organized here once media integration is added."
-        />
-      </Section>
-    </>
+    <AdminPlaceholderPage
+      title="Gallery"
+      description="Manage visual gallery items displayed across your portfolio."
+      sectionTitle="Gallery items"
+      emptyTitle="Gallery is empty"
+      emptyDescription="Images and gallery entries will be organized here once media integration is added."
+    />
   );
 }

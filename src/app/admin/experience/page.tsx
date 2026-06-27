@@ -1,6 +1,7 @@
 /** @format */
 
-import { EmptyState, PageHeader, Section } from '@/src/components/admin';
+import { PageHeader, Section } from '@/src/components/ui';
+import ExperienceManager from '@/src/features/experience/components/admin/ExperienceManager';
 
 export default function ExperienceAdminPage() {
   return (
@@ -11,10 +12,7 @@ export default function ExperienceAdminPage() {
       />
 
       <Section title="Work experience">
-        <EmptyState
-          title="No experience entries yet"
-          description="Experience items will appear here when the content module is wired up."
-        />
+        <ExperienceManager />
       </Section>
     </>
   );

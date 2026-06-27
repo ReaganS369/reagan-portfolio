@@ -1,21 +1,15 @@
 /** @format */
 
-import { EmptyState, PageHeader, Section } from '@/src/components/admin';
+import AdminPlaceholderPage from '@/src/features/admin/components/AdminPlaceholderPage';
 
 export default function SkillsAdminPage() {
   return (
-    <>
-      <PageHeader
-        title="Skills"
-        description="Curate tools, technologies, and capability groups for your portfolio."
-      />
-
-      <Section title="Skill groups">
-        <EmptyState
-          title="No skills configured yet"
-          description="Skills and categories will be managed here in a future update."
-        />
-      </Section>
-    </>
+    <AdminPlaceholderPage
+      title="Skills"
+      description="Curate tools, technologies, and capability groups for your portfolio."
+      sectionTitle="Skill groups"
+      emptyTitle="No skills configured yet"
+      emptyDescription="Skills and categories will be managed here in a future update."
+    />
   );
 }

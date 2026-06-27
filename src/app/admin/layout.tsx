@@ -1,7 +1,7 @@
 /** @format */
 
-import AdminLayoutClient from '@/src/components/admin/AdminLayoutClient';
-import './admin.css';
+import AdminLayoutClient from '@/src/features/admin/layout/AdminLayoutClient';
+import '@/src/features/admin/styles/admin.css';
 
 export default function AdminLayout({
   children,

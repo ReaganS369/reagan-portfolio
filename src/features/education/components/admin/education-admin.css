@@ -1,0 +1,85 @@
+/** @format */
+
+.education-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-4);
+  margin-bottom: var(--admin-space-4);
+}
+
+.education-toolbar__meta {
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted);
+}
+
+.education-institution-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.education-institution-cell__title {
+  font-weight: 500;
+  color: var(--admin-text);
+}
+
+.education-institution-cell__detail {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.education-years {
+  color: var(--admin-text-secondary);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+}
+
+.education-order {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--admin-space-2);
+}
+
+.education-order__value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-text-secondary);
+}
+
+.education-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--admin-space-2);
+  flex-wrap: wrap;
+}
+
+.education-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--admin-space-2);
+}
+
+.education-delete-confirm__label {
+  font-size: 0.75rem;
+  color: #fca5a5;
+}
+
+.education-alert {
+  margin-bottom: var(--admin-space-4);
+  padding: 12px 14px;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  background: rgba(239, 68, 68, 0.08);
+  color: #fecaca;
+  font-size: 0.8125rem;
+}
+
+.education-loading {
+  padding: var(--admin-space-8);
+  text-align: center;
+  color: var(--admin-text-muted);
+  font-size: 0.875rem;
+}
