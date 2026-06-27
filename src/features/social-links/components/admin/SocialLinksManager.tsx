@@ -16,9 +16,7 @@ import {
   getStoragePathFromUrl,
   uploadSocialLinkIcon,
 } from '@/src/lib/storage';
-import SocialLinkModal, {
-  type SocialLinkFormValues,
-} from './SocialLinkModal';
+import SocialLinkModal, { type SocialLinkFormValues } from './SocialLinkModal';
 import SocialLinkTable from './SocialLinkTable';
 import './social-links.css';
 
@@ -124,9 +122,7 @@ export default function SocialLinksManager() {
 
         setLinks((current) =>
           sortLinks(
-            current.map((link) =>
-              link.id === tempId ? created : link,
-            ),
+            current.map((link) => (link.id === tempId ? created : link)),
           ),
         );
       } else if (editingLink) {
@@ -162,9 +158,7 @@ export default function SocialLinksManager() {
 
         setLinks((current) =>
           sortLinks(
-            current.map((link) =>
-              link.id === updated.id ? updated : link,
-            ),
+            current.map((link) => (link.id === updated.id ? updated : link)),
           ),
         );
       }
@@ -222,7 +216,11 @@ export default function SocialLinksManager() {
       />
 
       <SocialLinkModal
-        key={modalOpen ? `${modalMode}-${editingLink?.id ?? 'new'}-${defaultDisplayOrder}` : 'closed'}
+        key={
+          modalOpen
+            ? `${modalMode}-${editingLink?.id ?? 'new'}-${defaultDisplayOrder}`
+            : 'closed'
+        }
         open={modalOpen}
         mode={modalMode}
         link={editingLink}

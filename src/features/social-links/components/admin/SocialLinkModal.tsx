@@ -162,11 +162,15 @@ export default function SocialLinkModal({
       >
         <div className="social-link-modal__header">
           <div>
-            <h2 id="social-link-modal-title" className="social-link-modal__title">
+            <h2
+              id="social-link-modal-title"
+              className="social-link-modal__title"
+            >
               {mode === 'create' ? 'Add social link' : 'Edit social link'}
             </h2>
             <p className="social-link-modal__description">
-              Social links appear in the public homepage. Upload a 64×64 SVG icon.
+              Social links appear in the public homepage. Upload a 64×64 SVG
+              icon.
             </p>
           </div>
           <button
@@ -183,7 +187,10 @@ export default function SocialLinkModal({
         <form onSubmit={handleSubmit}>
           <div className="social-link-modal__body">
             <div className="social-link-field">
-              <label className="social-link-field__label" htmlFor="social-link-platform">
+              <label
+                className="social-link-field__label"
+                htmlFor="social-link-platform"
+              >
                 Platform
               </label>
               <input
@@ -203,7 +210,10 @@ export default function SocialLinkModal({
             </div>
 
             <div className="social-link-field">
-              <label className="social-link-field__label" htmlFor="social-link-url">
+              <label
+                className="social-link-field__label"
+                htmlFor="social-link-url"
+              >
                 URL
               </label>
               <input
@@ -222,7 +232,10 @@ export default function SocialLinkModal({
             </div>
 
             <div className="social-link-field">
-              <label className="social-link-field__label" htmlFor="social-link-icon">
+              <label
+                className="social-link-field__label"
+                htmlFor="social-link-icon"
+              >
                 Icon SVG
               </label>
               <input
@@ -251,7 +264,9 @@ export default function SocialLinkModal({
                   <img src={resolvedPreview} alt="Icon preview" />
                 </div>
                 <div className="social-link-icon-preview__meta">
-                  <p className="social-link-icon-preview__label">Icon preview</p>
+                  <p className="social-link-icon-preview__label">
+                    Icon preview
+                  </p>
                   <p className="social-link-icon-preview__filename">
                     {form.iconFile?.name ?? form.icon}
                   </p>
@@ -260,7 +275,10 @@ export default function SocialLinkModal({
             )}
 
             <div className="social-link-field">
-              <label className="social-link-field__label" htmlFor="social-link-order">
+              <label
+                className="social-link-field__label"
+                htmlFor="social-link-order"
+              >
                 Display order
               </label>
               <input
@@ -283,7 +301,12 @@ export default function SocialLinkModal({
           </div>
 
           <div className="social-link-modal__footer">
-            <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="primary" disabled={isSubmitting}>
