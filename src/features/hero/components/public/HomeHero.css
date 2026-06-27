@@ -271,21 +271,39 @@
 .hero-socials {
   display: flex;
 
-  gap: 28px;
+  gap: 48px;
 
   margin-top: 42px;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.hero-socials a {
-  color: var(--text-muted);
-
+.hero-social-link {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   text-decoration: none;
-
-  transition: 0.25s;
 }
 
-.hero-socials a:hover {
-  color: var(--light);
+.hero-social-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-social-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-socials a:hover .hero-social-icon {
+  opacity: 0.85;
 }
 /* ===================================================
    RIGHT

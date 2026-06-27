@@ -6,6 +6,10 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import VariableProximity from '@/src/components/effects/VariableProximity';
 import { getHeroRoles } from '@/src/features/hero/api/heroRoles';
+import {
+  getSocialLinks,
+  type SocialLink,
+} from '@/src/features/social-links/api/social-links';
 
 import './HomeHero.css';
 interface HeroRole {
@@ -20,6 +24,8 @@ export default function HomeHero() {
   const [profile, setProfile] = useState<any>(null);
 
   const [roleIndex, setRoleIndex] = useState(0);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [brokenIcons, setBrokenIcons] = useState<string[]>([]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [roles, setRoles] = useState<HeroRole[]>([]);
@@ -34,6 +40,7 @@ export default function HomeHero() {
   }, [roles]);
   useEffect(() => {
     loadRoles();
+    loadSocialLinks();
   }, []);
   async function loadRoles() {
     try {
@@ -43,6 +50,16 @@ export default function HomeHero() {
       console.error(error);
     }
   }
+
+  async function loadSocialLinks() {
+    try {
+      const data = await getSocialLinks();
+      setSocialLinks(data ?? []);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     async function loadProfile() {
       const { data } = await supabase.from('profiles').select('*').single();
@@ -122,13 +139,36 @@ export default function HomeHero() {
           </div>
 
           <div className="hero-socials">
-            <a href="#">GitHub</a>
+            {socialLinks.map((link) => {
+              const isBroken = brokenIcons.includes(link.id);
 
-            <a href="#">LinkedIn</a>
-
-            <a href="#">ArtStation</a>
-
-            <a href="#">CV</a>
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hero-social-link"
+                >
+                  {isBroken ? (
+                    <div className="hero-social-placeholder" />
+                  ) : (
+                    <img
+                      className="hero-social-icon"
+                      src={link.icon}
+                      alt={link.platform}
+                      width={64}
+                      height={64}
+                      onError={() =>
+                        setBrokenIcons((prev) =>
+                          prev.includes(link.id) ? prev : [...prev, link.id],
+                        )
+                      }
+                    />
+                  )}
+                </a>
+              );
+            })}
           </div>
         </div>
 
