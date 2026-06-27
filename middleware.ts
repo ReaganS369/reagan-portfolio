@@ -10,23 +10,29 @@ import {
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') ?? '';
 
+  // Support admin.nngtw.com
   if (host.startsWith('admin.nngtw.com')) {
     return NextResponse.rewrite(new URL('/admin', request.url));
   }
 
   const { pathname } = request.nextUrl;
-  const adminPassword = process.env.ADMIN_PASSWORD;
 
+  // Only protect admin routes
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next();
   }
 
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
   const sessionToken = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+
   const isAuthenticated =
-    adminPassword &&
+    !!adminPassword &&
     (await verifyAdminSessionToken(adminPassword, sessionToken));
 
+  // Login page
   if (pathname === '/admin/login') {
+    // Already logged in → go to dashboard
     if (isAuthenticated) {
       return NextResponse.redirect(new URL('/admin', request.url));
     }
@@ -34,10 +40,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Any other admin page requires authentication
   if (!isAuthenticated) {
-    const loginUrl = new URL('/admin/login', request.url);
-    loginUrl.searchParams.set('from', pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
   return NextResponse.next();
