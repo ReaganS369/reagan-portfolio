@@ -3,6 +3,14 @@
 @font-face {
   font-family: 'Posterama2001';
   src: url('/fonts/Posterama 2001 W04 Bold.woff') format('woff');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PosteramaText';
+  src: url('/fonts/Posterama Text W07 Bold.woff') format('woff');
+  font-weight: 700;
   font-display: swap;
 }
 * {
@@ -47,9 +55,11 @@ body {
 
   /* Fonts */
 
-  --font-heading: 'Posterama2001';
+  --font-heading: 'Posterama2001', sans-serif;
+  --font-ui: 'PosteramaText', sans-serif;
   --font-subtitle: 'Chillax', sans-serif;
   --font-body: 'Clash Display', sans-serif;
+  --font-description: 'Cabinet Grotesk', sans-serif;
 }
 
 /* ===================================

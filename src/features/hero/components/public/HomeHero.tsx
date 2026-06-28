@@ -5,6 +5,7 @@ import { getStorageUrl } from '@/src/lib/storage';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import VariableProximity from '@/src/components/effects/VariableProximity';
+import Magnet from '@/src/components/effects/Magnet';
 import { getHeroRoles } from '@/src/features/hero/api/heroRoles';
 import {
   getSocialLinks,
@@ -14,6 +15,37 @@ import {
 import './HomeHero.css';
 
 type MarqueeMessage = string | { label: string; shortLabel: string };
+
+function StoryItem({
+  label,
+  shortLabel,
+}: {
+  label: string;
+  shortLabel: string;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <span
+      className="story-item"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <span className="story-item__long">{label}</span>
+      <span className="story-item__short">
+        <Magnet
+          disabled={!isHovered}
+          padding={2000}
+          magnetStrength={6}
+          activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
+          inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
+        >
+          <span>{shortLabel}</span>
+        </Magnet>
+      </span>
+    </span>
+  );
+}
 
 function MarqueeTrack({
   messages,
@@ -32,10 +64,11 @@ function MarqueeTrack({
         }
 
         return (
-          <span key={`${className}-${index}`} className="story-item">
-            <span className="story-item__long">{message.label}</span>
-            <span className="story-item__short">{message.shortLabel}</span>
-          </span>
+          <StoryItem
+            key={`${className}-${index}`}
+            label={message.label}
+            shortLabel={message.shortLabel}
+          />
         );
       })}
     </div>
@@ -50,8 +83,13 @@ interface HeroRole {
   is_active: boolean;
 }
 
+interface UserProfile {
+  casual_avatar: string;
+  formal_avatar: string;
+}
+
 export default function HomeHero() {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const [roleIndex, setRoleIndex] = useState(0);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -70,6 +108,9 @@ export default function HomeHero() {
   const cvRibbonMessage =
     'View Curriculum Vitae: Experience Beyond the Portfolio';
   const cvRibbonMessages = Array.from({ length: 8 }, () => cvRibbonMessage);
+
+  const ribbonRef = useRef<HTMLDivElement>(null);
+  const [isRibbonHovered, setIsRibbonHovered] = useState(false);
 
   useEffect(() => {
     if (roles.length === 0) return;
@@ -111,6 +152,7 @@ export default function HomeHero() {
 
     loadProfile();
   }, []);
+
   if (!profile || roles.length === 0) {
     return <div className="home-hero-loading">Loading...</div>;
   }
@@ -130,11 +172,32 @@ export default function HomeHero() {
 
       {/* CV Ribbon */}
 
-      <div className="cv-ribbon">
+      <div
+        className="cv-ribbon"
+        ref={ribbonRef}
+        onMouseEnter={() => setIsRibbonHovered(true)}
+        onMouseLeave={() => setIsRibbonHovered(false)}
+      >
         <MarqueeTrack
           messages={cvRibbonMessages}
           className="cv-ribbon__track marquee-track"
         />
+        <div className="cv-ribbon__label" aria-hidden="true">
+          <Magnet
+            disabled={!isRibbonHovered}
+            padding={2000}
+            magnetStrength={6}
+            activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
+            inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
+          >
+            <span
+              className={`cv-ribbon__label--desktop${isRibbonHovered ? ' is-visible' : ''}`}
+            >
+              CV
+            </span>
+          </Magnet>
+          <span className="cv-ribbon__label--mobile">CV</span>
+        </div>
       </div>
 
       {/* Main Hero */}
@@ -154,8 +217,7 @@ export default function HomeHero() {
               falloff="gaussian"
               style={{
                 whiteSpace: 'pre-line',
-                fontSize: 'clamp(6rem,9vw,10rem)',
-                lineHeight: 0.84,
+                lineHeight: 0.92,
                 letterSpacing: '-6px',
               }}
             />
