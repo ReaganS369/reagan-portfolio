@@ -1,0 +1,122 @@
+/** @format */
+
+/* ===================================================
+   Hero — Base Layout
+=================================================== */
+
+.home-hero {
+  position: relative;
+  min-height: calc(100vh + 90px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--dark);
+  color: var(--light);
+}
+
+.hero-background {
+  position: absolute;
+  top: 45%;
+  right: -260px;
+  transform: translateY(-50%);
+  width: 1400px;
+  height: 1400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 138, 31, 0.22) 0%,
+    rgba(245, 138, 31, 0.1) 36%,
+    transparent 72%
+  );
+  filter: blur(170px);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: relative;
+  flex: 1;
+  width: min(1600px, 92%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 58% 42%;
+  align-items: end;
+}
+
+.hero-left {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 90px;
+}
+
+.hero-right {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  overflow: visible;
+}
+
+/* ===================================================
+   Hero — Content Typography
+=================================================== */
+
+.hero-name {
+  font-size: clamp(3rem, 8.9vw, 8rem);
+}
+
+.hero-role {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  font-size: clamp(1.125rem, 1.5vw + 0.5rem, 2rem);
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hero-role-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.hero-description {
+  width: 620px;
+  max-width: 100%;
+  margin-top: 28px;
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-weight: 500;
+  font-size: clamp(1rem, 1.2vw + 0.5rem, 1.5rem);
+  line-height: 1.9;
+}
+
+/* ===================================================
+   Shared — Marquee Track Layout + Keyframes
+=================================================== */
+
+.story-track,
+.cv-ribbon__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.story-track span,
+.cv-ribbon__track span {
+  color: var(--text-muted);
+  font-size: 18px;
+  letter-spacing: 5px;
+}
+
+@keyframes cv-ribbon-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}

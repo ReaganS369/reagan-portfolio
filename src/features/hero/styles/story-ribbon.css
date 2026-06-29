@@ -1,0 +1,93 @@
+/** @format */
+
+/* ===================================================
+   Story Ribbon + Navigation Items
+=================================================== */
+
+.story-ribbon {
+  position: absolute;
+  top: 5px;
+  width: 110%;
+  height: 67px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  transform: rotate(-1deg);
+  transform-origin: center;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.story-track {
+  gap: 100px;
+  animation: cv-ribbon-marquee 60s linear infinite;
+}
+
+.story-ribbon:hover .story-track {
+  animation-play-state: paused;
+}
+
+/* ===================================================
+   Story Navigation Items
+=================================================== */
+
+.story-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.15em;
+}
+
+.story-item__long,
+.story-item__short {
+  display: inline-block;
+  width: 100%;
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
+}
+
+.story-item__long {
+  opacity: 1;
+  transform: translateY(0);
+  font-family: var(--font-body);
+}
+
+.story-item__short {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(8px);
+  font-family: var(--font-ui);
+  font-weight: 700;
+}
+
+/* Desktop: long fades up, short fades in on item hover */
+@media (hover: hover) and (pointer: fine) {
+  .story-item:hover .story-item__long {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .story-item:hover .story-item__short {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile: always show short label */
+@media (max-width: 767px) {
+  .story-item__long {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .story-item__short {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

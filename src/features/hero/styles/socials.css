@@ -1,0 +1,41 @@
+/** @format */
+
+/* ===================================================
+   Hero — Social Links
+=================================================== */
+
+.hero-socials {
+  display: flex;
+  gap: 48px;
+  margin-top: 42px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.hero-social-link {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.hero-social-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-social-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-socials a:hover .hero-social-icon {
+  opacity: 0.85;
+}

@@ -1,157 +1,17 @@
 /** @format */
 
 'use client';
-import { getStorageUrl } from '@/src/lib/storage';
-import { useEffect, useRef, useState } from 'react';
-import { supabase } from '@/src/lib/supabase/client';
-import VariableProximity from '@/src/components/effects/VariableProximity';
-import Magnet from '@/src/components/effects/Magnet';
-import { getHeroRoles } from '@/src/features/hero/api/heroRoles';
-import {
-  getSocialLinks,
-  type SocialLink,
-} from '@/src/features/social-links/api/social-links';
 
-import './HomeHero.css';
-
-type MarqueeMessage = string | { label: string; shortLabel: string };
-
-function StoryItem({
-  label,
-  shortLabel,
-}: {
-  label: string;
-  shortLabel: string;
-}) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <span
-      className="story-item"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <span className="story-item__long">{label}</span>
-      <span className="story-item__short">
-        <Magnet
-          disabled={!isHovered}
-          padding={2000}
-          magnetStrength={6}
-          activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
-          inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
-        >
-          <span>{shortLabel}</span>
-        </Magnet>
-      </span>
-    </span>
-  );
-}
-
-function MarqueeTrack({
-  messages,
-  className,
-}: {
-  messages: MarqueeMessage[];
-  className: string;
-}) {
-  const repeatedMessages = [...messages, ...messages];
-
-  return (
-    <div className={className}>
-      {repeatedMessages.map((message, index) => {
-        if (typeof message === 'string') {
-          return <span key={`${className}-${index}`}>{message}</span>;
-        }
-
-        return (
-          <StoryItem
-            key={`${className}-${index}`}
-            label={message.label}
-            shortLabel={message.shortLabel}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-interface HeroRole {
-  id: string;
-  title: string;
-  icon_url: string;
-  display_order: number;
-  is_active: boolean;
-}
-
-interface UserProfile {
-  casual_avatar: string;
-  formal_avatar: string;
-}
+import { useHeroData } from '../../hooks/useHeroData';
+import { HeroNavigationRibbon } from './HeroNavigationRibbon';
+import { HeroCVRibbon } from './HeroCVRibbon';
+import { HeroContent } from './HeroContent';
+import { HeroAvatar } from './HeroAvatar';
+import { HeroFooter } from './HeroFooter';
+import '../../styles/base.css';
 
 export default function HomeHero() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
-  const [brokenIcons, setBrokenIcons] = useState<string[]>([]);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [roles, setRoles] = useState<HeroRole[]>([]);
-
-  const storyMessages: MarqueeMessage[] = [
-    { label: 'What I Build', shortLabel: 'BUILDS' },
-    { label: 'Where It All Began', shortLabel: 'ORIGIN' },
-    { label: "What I'm Made Of", shortLabel: 'STATS' },
-    { label: 'Where Connections Begin', shortLabel: 'COMMS' },
-  ];
-
-  const cvRibbonMessage =
-    'View Curriculum Vitae: Experience Beyond the Portfolio';
-  const cvRibbonMessages = Array.from({ length: 8 }, () => cvRibbonMessage);
-
-  const ribbonRef = useRef<HTMLDivElement>(null);
-  const [isRibbonHovered, setIsRibbonHovered] = useState(false);
-
-  useEffect(() => {
-    if (roles.length === 0) return;
-
-    const interval = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [roles]);
-  useEffect(() => {
-    loadRoles();
-    loadSocialLinks();
-  }, []);
-  async function loadRoles() {
-    try {
-      const data = await getHeroRoles();
-      setRoles(data ?? []);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function loadSocialLinks() {
-    try {
-      const data = await getSocialLinks();
-      setSocialLinks(data ?? []);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  useEffect(() => {
-    async function loadProfile() {
-      const { data } = await supabase.from('profiles').select('*').single();
-
-      setProfile(data);
-    }
-
-    loadProfile();
-  }, []);
+  const { profile, roles, roleIndex, socialLinks } = useHeroData();
 
   if (!profile || roles.length === 0) {
     return <div className="home-hero-loading">Loading...</div>;
@@ -159,165 +19,21 @@ export default function HomeHero() {
 
   return (
     <section className="home-hero">
-      {/* Background */}
       <div className="hero-background" />
 
-      {/* Top Story Ribbon */}
-      <div className="story-ribbon">
-        <MarqueeTrack
-          messages={storyMessages}
-          className="story-track marquee-track"
-        />
-      </div>
-
-      {/* CV Ribbon */}
-
-      <div
-        className="cv-ribbon"
-        ref={ribbonRef}
-        onMouseEnter={() => setIsRibbonHovered(true)}
-        onMouseLeave={() => setIsRibbonHovered(false)}
-      >
-        <MarqueeTrack
-          messages={cvRibbonMessages}
-          className="cv-ribbon__track marquee-track"
-        />
-        <div className="cv-ribbon__label" aria-hidden="true">
-          <Magnet
-            disabled={!isRibbonHovered}
-            padding={2000}
-            magnetStrength={6}
-            activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
-            inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
-          >
-            <span
-              className={`cv-ribbon__label--desktop${isRibbonHovered ? ' is-visible' : ''}`}
-            >
-              CV
-            </span>
-          </Magnet>
-          <span className="cv-ribbon__label--mobile">CV</span>
-        </div>
-      </div>
-
-      {/* Main Hero */}
+      <HeroNavigationRibbon />
+      <HeroCVRibbon />
 
       <div className="hero-grid">
-        {/* LEFT */}
-
-        <div className="hero-left">
-          <div ref={containerRef}>
-            <VariableProximity
-              label={`REAGAN \nSAGOLSEM`}
-              className="hero-name"
-              fromFontVariationSettings="'wght' 400"
-              toFontVariationSettings="'wght' 700"
-              containerRef={containerRef}
-              radius={120}
-              falloff="gaussian"
-              style={{
-                whiteSpace: 'pre-line',
-                lineHeight: 0.92,
-                letterSpacing: '-6px',
-              }}
-            />
-          </div>
-          <div className="hero-role">
-            <img
-              src={getStorageUrl(roles[roleIndex].icon_url)}
-              alt={roles[roleIndex].title}
-              className="hero-role-icon"
-            />
-
-            <span>{roles[roleIndex].title}</span>
-          </div>
-
-          <p className="hero-description">
-            Designing and building immersive worlds through games, XR and
-            animation.
-          </p>
-
-          <div className="hero-buttons">
-            <button className="primary-btn">Explore Projects</button>
-
-            <button className="secondary-btn">View Stats</button>
-          </div>
-
-          <div className="hero-socials">
-            {socialLinks.map((link) => {
-              const isBroken = brokenIcons.includes(link.id);
-
-              return (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hero-social-link"
-                >
-                  {isBroken ? (
-                    <div className="hero-social-placeholder" />
-                  ) : (
-                    <img
-                      className="hero-social-icon"
-                      src={link.icon}
-                      alt={link.platform}
-                      width={64}
-                      height={64}
-                      onError={() =>
-                        setBrokenIcons((prev) =>
-                          prev.includes(link.id) ? prev : [...prev, link.id],
-                        )
-                      }
-                    />
-                  )}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* RIGHT */}
-
-        <div className="hero-right">
-          <div className="character-wrapper">
-            <img
-              src={profile.casual_avatar}
-              className="character casual"
-              alt=""
-            />
-
-            <img
-              src={profile.formal_avatar}
-              className="character formal"
-              alt=""
-            />
-          </div>
-        </div>
+        <HeroContent
+          roles={roles}
+          roleIndex={roleIndex}
+          socialLinks={socialLinks}
+        />
+        <HeroAvatar profile={profile} />
       </div>
-      <div className="hero-footer">
-        <div className="hero-footer-content">
-          <div className="footer-item">
-            <span className="footer-label">STATUS</span>
-            <span className="footer-value">Available for Work</span>
-          </div>
 
-          <div className="footer-item">
-            <span className="footer-label">LOCATION</span>
-            <span className="footer-value">Manipur, India</span>
-          </div>
-
-          <div className="footer-item">
-            <span className="footer-label">SPECIALITY</span>
-            <span className="footer-value">Games · XR · Animation</span>
-          </div>
-
-          <div className="footer-item">
-            <span className="footer-label">SCROLL</span>
-            <span className="footer-value">↓ Discover More</span>
-          </div>
-        </div>
-      </div>
+      <HeroFooter />
     </section>
   );
 }
