@@ -1,0 +1,279 @@
+/** @format */
+
+/* ===================================================
+   About Journey — Editorial Year Timeline
+=================================================== */
+
+.about-section {
+  position: relative;
+  background: var(--dark);
+  padding: 120px 0 140px;
+  overflow: hidden;
+}
+
+.about-container {
+  width: min(1600px, 92%);
+  margin: 0 auto;
+  /* Content lives in left ~58% to stay clear of the scroll avatar */
+  max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+/* ===================================================
+   Year List
+=================================================== */
+
+.about-years {
+  display: flex;
+  flex-direction: column;
+}
+
+.year-row {
+  position: relative;
+  border-bottom: 1px solid rgba(53, 32, 32, 0.6);
+}
+
+.year-row:first-of-type {
+  border-top: 1px solid rgba(53, 32, 32, 0.6);
+}
+
+/* ===================================================
+   Year Item — the clickable row
+=================================================== */
+
+.year-item {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 24px 0;
+  cursor: pointer;
+  transition: padding-left 300ms ease;
+  user-select: none;
+}
+
+.year-item:hover,
+.year-item--expanded {
+  padding-left: 12px;
+}
+
+.year-item:hover .year-num,
+.year-item--expanded .year-num {
+  color: var(--primary);
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 40px rgba(245, 138, 31, 0.5);
+}
+
+.year-item:hover .year-title,
+.year-item--expanded .year-title {
+  color: var(--text);
+}
+
+/* Big editorial year number */
+.year-num {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 8vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(242, 239, 231, 0.2);
+  letter-spacing: -4px;
+  transition:
+    color 300ms ease,
+    text-shadow 300ms ease,
+    -webkit-text-stroke 300ms ease;
+  min-width: clamp(140px, 18vw, 320px);
+  flex-shrink: 0;
+}
+
+.year-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.year-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: -0.5px;
+  transition: color 250ms ease;
+}
+
+.year-count {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--primary);
+  opacity: 0.6;
+}
+
+.year-toggle {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: opacity 200ms ease, color 200ms ease;
+  margin-left: auto;
+  padding-right: 4px;
+}
+
+.year-item:hover .year-toggle,
+.year-item--expanded .year-toggle {
+  opacity: 1;
+  color: var(--primary);
+}
+
+/* ===================================================
+   Expand Panel
+=================================================== */
+
+.year-expand {
+  overflow: hidden;
+}
+
+.year-expand__inner {
+  padding: 0 0 28px calc(clamp(140px, 18vw, 320px) + 32px);
+}
+
+.year-expand__detail {
+  font-family: var(--font-description);
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 55ch;
+  margin-bottom: 20px;
+}
+
+.year-expand__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ===================================================
+   Tech Tags
+=================================================== */
+
+.year-tech-tag {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--primary);
+  background: rgba(245, 138, 31, 0.08);
+  border: 1px solid rgba(245, 138, 31, 0.2);
+  border-radius: 4px;
+  padding: 5px 12px;
+}
+
+.year-tech-tag--small {
+  font-size: 10px;
+  padding: 4px 10px;
+}
+
+/* ===================================================
+   Hover Float Card
+=================================================== */
+
+.year-float-card {
+  position: absolute;
+  left: calc(clamp(140px, 18vw, 320px) + 32px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  background: #2a1a1a;
+  border: 1px solid rgba(245, 138, 31, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(245, 138, 31, 0.05);
+}
+
+.year-float__summary {
+  font-family: var(--font-description);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.year-float__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.year-float__stat {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+/* ===================================================
+   Responsive
+=================================================== */
+
+@media (max-width: 900px) {
+  .about-container {
+    max-width: 100%;
+  }
+
+  .year-float-card {
+    display: none;
+  }
+
+  .year-expand__inner {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-section {
+    padding: 80px 0 100px;
+  }
+
+  .year-num {
+    letter-spacing: -2px;
+  }
+
+  .year-item {
+    gap: 16px;
+  }
+}
+
+/* Mobile large (≤480px) */
+@media (max-width: 480px) {
+  .about-section {
+    padding: 60px 0 80px;
+  }
+
+  .year-num {
+    font-size: clamp(2.25rem, 12vw, 5rem);
+    min-width: clamp(90px, 28vw, 140px);
+    letter-spacing: -1px;
+  }
+
+  .year-item {
+    gap: 12px;
+    padding: 16px 0;
+  }
+
+  .year-title {
+    font-size: clamp(0.9rem, 3.5vw, 1.5rem);
+  }
+
+  .year-toggle {
+    font-size: 20px;
+  }
+}

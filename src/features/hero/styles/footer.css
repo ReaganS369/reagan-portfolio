@@ -40,3 +40,54 @@
   font-size: 0.95rem;
   font-weight: 600;
 }
+
+/* ===================================================
+   Hero Footer Bar — Responsive
+=================================================== */
+
+/* Laptop (≤1280px) */
+@media (max-width: 1280px) {
+  .hero-footer-content {
+    gap: 40px;
+  }
+}
+
+/* Tablet (≤1024px): 2-col layout */
+@media (max-width: 1024px) {
+  .hero-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+}
+
+/* Tablet portrait (≤768px): compact */
+@media (max-width: 768px) {
+  .hero-footer {
+    height: auto;
+    padding: 20px 0;
+  }
+
+  .hero-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .hero-footer {
+    padding: 16px 0;
+  }
+
+  .hero-footer-content {
+    gap: 12px;
+  }
+
+  .footer-label {
+    font-size: 0.65rem;
+  }
+
+  .footer-value {
+    font-size: 0.85rem;
+  }
+}

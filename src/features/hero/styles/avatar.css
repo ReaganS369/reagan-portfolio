@@ -25,10 +25,35 @@
   pointer-events: none;
 }
 
-.casual {
-  clip-path: inset(0 50% 0 0);
+/* ===================================================
+   Avatar — Mobile (single-col hero, avatar on top)
+=================================================== */
+
+/* At ≤768px the hero-right becomes a fixed-height overflow:hidden panel.
+   Character repositions from its desktop overflow layout to a contained
+   crop that shows head / upper body from the right side. */
+@media (max-width: 768px) {
+  .character-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 60%;
+    max-width: 260px;
+    height: 100%;
+    /* explicit height via top/bottom overrides desktop aspect-ratio */
+  }
+
+  .character {
+    object-fit: cover;
+    object-position: top center;
+  }
 }
 
-.formal {
-  clip-path: inset(0 0 0 50%);
+@media (max-width: 480px) {
+  .character-wrapper {
+    width: 55%;
+    max-width: 220px;
+  }
 }
+

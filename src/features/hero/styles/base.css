@@ -129,3 +129,54 @@
     transform: translateX(-50%);
   }
 }
+
+/* ===================================================
+   Hero — Responsive
+=================================================== */
+
+/* Tablet (≤1024px): tighten grid proportions */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 52% 48%;
+  }
+}
+
+/* Tablet portrait (≤768px): single-col stack, avatar on top */
+@media (max-width: 768px) {
+  .home-hero {
+    min-height: 100svh;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  /* Avatar panel sits above content */
+  .hero-right {
+    order: -1;
+    height: clamp(280px, 45svh, 420px);
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding-bottom: clamp(32px, 5vw, 60px);
+    padding-top: 24px;
+  }
+
+  .hero-description {
+    width: 100%;
+  }
+}
+
+/* Mobile large (≤480px) */
+@media (max-width: 480px) {
+  .hero-right {
+    height: clamp(220px, 40svh, 320px);
+  }
+
+  .hero-left {
+    padding-bottom: 24px;
+    padding-top: 16px;
+  }
+}

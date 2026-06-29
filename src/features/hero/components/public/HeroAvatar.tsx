@@ -13,12 +13,7 @@ export function HeroAvatar({ profile }: HeroAvatarProps) {
       <div className="character-wrapper">
         <img
           src={profile.casual_avatar}
-          className="character casual"
-          alt=""
-        />
-        <img
-          src={profile.formal_avatar}
-          className="character formal"
+          className="character"
           alt=""
         />
       </div>

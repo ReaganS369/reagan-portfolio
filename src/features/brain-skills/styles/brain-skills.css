@@ -1,0 +1,326 @@
+/** @format */
+
+/* ===================================================
+   Brain Skills — Interactive Hemisphere Visualization
+=================================================== */
+
+.brain-section {
+  position: relative;
+  background: var(--dark);
+  padding: 120px 0 140px;
+  overflow: hidden;
+}
+
+.brain-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 900px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 138, 31, 0.04) 0%,
+    rgba(223, 19, 138, 0.03) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.brain-container {
+  width: min(1600px, 92%);
+  margin: 0 auto;
+  /* Content left-biased to stay clear of scroll avatar */
+  max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+.brain-hint {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-bottom: 60px;
+}
+
+/* ===================================================
+   Brain Stage — the interactive area
+=================================================== */
+
+.brain-stage {
+  position: relative;
+  width: 100%;
+  /* Height enough to contain brain + orbit nodes */
+  height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* ===================================================
+   Brain SVG
+=================================================== */
+
+.brain-svg {
+  width: 320px;
+  height: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 30px rgba(245, 138, 31, 0.08));
+  z-index: 1;
+  position: relative;
+}
+
+.brain-path--active-design {
+  fill: rgba(245, 138, 31, 0.12) !important;
+  stroke: rgba(245, 138, 31, 0.6) !important;
+  transition: fill 400ms ease, stroke 400ms ease;
+}
+
+.brain-path--active-dev {
+  fill: rgba(223, 19, 138, 0.12) !important;
+  stroke: rgba(223, 19, 138, 0.6) !important;
+  transition: fill 400ms ease, stroke 400ms ease;
+}
+
+/* ===================================================
+   Brain Clickable Buttons
+=================================================== */
+
+.brain-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 300ms ease;
+}
+
+.brain-btn--design {
+  left: 20px;
+}
+
+.brain-btn--dev {
+  left: 155px;
+}
+
+.brain-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.brain-btn--design.brain-btn--active {
+  background: rgba(245, 138, 31, 0.06);
+}
+
+.brain-btn--dev.brain-btn--active {
+  background: rgba(223, 19, 138, 0.06);
+}
+
+.brain-btn__label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: transparent;
+  transition: color 250ms ease;
+}
+
+.brain-btn--design .brain-btn__label {
+  color: rgba(245, 138, 31, 0.4);
+}
+
+.brain-btn--dev .brain-btn__label {
+  color: rgba(223, 19, 138, 0.4);
+}
+
+.brain-btn--design:hover .brain-btn__label,
+.brain-btn--design.brain-btn--active .brain-btn__label {
+  color: var(--primary);
+}
+
+.brain-btn--dev:hover .brain-btn__label,
+.brain-btn--dev.brain-btn--active .brain-btn__label {
+  color: var(--secondary);
+}
+
+/* ===================================================
+   Skill Orbit — nodes around the brain
+=================================================== */
+
+.brain-orbit {
+  position: absolute;
+  /* Centered on the brain's center point */
+  left: 160px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+}
+
+.skill-node {
+  position: absolute;
+  transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+  padding: 7px 16px;
+  border-radius: 50px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.skill-node--design {
+  background: rgba(245, 138, 31, 0.1);
+  border: 1px solid rgba(245, 138, 31, 0.3);
+  color: var(--primary);
+  text-shadow: 0 0 20px rgba(245, 138, 31, 0.4);
+}
+
+.skill-node--dev {
+  background: rgba(223, 19, 138, 0.1);
+  border: 1px solid rgba(223, 19, 138, 0.3);
+  color: var(--secondary);
+  text-shadow: 0 0 20px rgba(223, 19, 138, 0.4);
+}
+
+/* ===================================================
+   Legend
+=================================================== */
+
+.brain-legend {
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.brain-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.brain-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.brain-legend__dot--design {
+  background: var(--primary);
+  box-shadow: 0 0 8px rgba(245, 138, 31, 0.6);
+}
+
+.brain-legend__dot--dev {
+  background: var(--secondary);
+  box-shadow: 0 0 8px rgba(223, 19, 138, 0.6);
+}
+
+/* ===================================================
+   Responsive
+=================================================== */
+
+@media (max-width: 900px) {
+  .brain-container {
+    max-width: 100%;
+  }
+
+  .brain-stage {
+    height: 600px;
+    justify-content: center;
+  }
+
+  /* Brain is now centered in the stage — fix absolute-positioned
+     buttons and orbit to follow the centered 320px brain */
+  .brain-btn--design { left: calc(50% - 140px); }
+  .brain-btn--dev    { left: calc(50% - 5px); }
+
+  .brain-orbit {
+    /* brain-orbit has width:0 so translate(-50%) = 0; left: 50% centers it */
+    left: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .brain-section {
+    padding: 80px 0 100px;
+  }
+
+  .brain-stage {
+    height: 500px;
+  }
+
+  .brain-svg {
+    width: 240px;
+  }
+
+  .brain-btn {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Recalculate for 240px brain centered in stage:
+     design is at +10px, dev at +120px from brain left edge */
+  .brain-btn--design { left: calc(50% - 110px); }
+  .brain-btn--dev    { left: 50%; }
+
+  /* Scale down skill orbit so nodes fit within viewport */
+  .brain-orbit {
+    left: 50%;
+    transform: translateY(-50%) scale(0.68);
+  }
+}
+
+/* Mobile large (≤480px) */
+@media (max-width: 480px) {
+  .brain-section {
+    padding: 60px 0 80px;
+  }
+
+  .brain-stage {
+    height: 420px;
+  }
+
+  .brain-svg {
+    width: 200px;
+  }
+
+  .brain-btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Recalculate for 200px brain: design +10px, dev +100px from brain left */
+  .brain-btn--design { left: calc(50% - 90px); }
+  .brain-btn--dev    { left: 50%; }
+
+  .brain-orbit {
+    transform: translateY(-50%) scale(0.55);
+  }
+}
+
+/* Mobile small (≤375px) */
+@media (max-width: 375px) {
+  .brain-orbit {
+    transform: translateY(-50%) scale(0.48);
+  }
+
+  .brain-hint {
+    margin-bottom: 40px;
+  }
+}

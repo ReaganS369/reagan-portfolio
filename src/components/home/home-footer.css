@@ -1,0 +1,148 @@
+/** @format */
+
+/* ===================================================
+   Home Footer — Editorial Style
+=================================================== */
+
+.home-footer {
+  position: relative;
+  background: #160e0e; /* slightly darker than --dark for separation */
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  padding: 80px 0 0;
+}
+
+/* ===================================================
+   Large Editorial Name
+=================================================== */
+
+.footer-hero-text {
+  width: min(1600px, 92%);
+  margin: 0 auto;
+  /* Stay left to give avatar room */
+  max-width: calc(min(1600px, 92%) * 0.66);
+}
+
+.footer-name-line {
+  font-family: var(--font-heading);
+  font-size: clamp(5rem, 14vw, 18rem);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -8px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.footer-name-line--outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242, 239, 231, 0.2);
+}
+
+/* ===================================================
+   Footer Bottom Bar
+=================================================== */
+
+.footer-bottom {
+  margin-top: 64px;
+  border-top: 1px solid var(--border);
+  padding: 28px 0;
+  width: min(1600px, 92%);
+  /* Full width relative to container */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.footer-nav__link {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  text-decoration: none;
+  transition: opacity 200ms ease, color 200ms ease;
+}
+
+.footer-nav__link:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+
+.footer-credits {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.4;
+  white-space: nowrap;
+}
+
+.footer-sep {
+  opacity: 0.4;
+}
+
+/* ===================================================
+   Responsive
+=================================================== */
+
+@media (max-width: 900px) {
+  .footer-hero-text {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-credits {
+    flex-wrap: wrap;
+  }
+
+  .footer-name-line {
+    letter-spacing: -4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-footer {
+    padding: 60px 0 0;
+  }
+
+  .footer-nav {
+    gap: 20px;
+  }
+
+  /* Prevent "SAGOLSEM" from overflowing at small viewport widths */
+  .footer-name-line {
+    font-size: clamp(3.5rem, 14vw, 18rem);
+    letter-spacing: -5px;
+  }
+}
+
+/* Mobile small (≤375px) */
+@media (max-width: 375px) {
+  .home-footer {
+    padding: 48px 0 0;
+  }
+
+  .footer-name-line {
+    font-size: clamp(3rem, 14vw, 18rem);
+    letter-spacing: -4px;
+  }
+}

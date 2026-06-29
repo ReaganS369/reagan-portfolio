@@ -1,0 +1,44 @@
+/** @format */
+
+.section-eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.section-eyebrow__num {
+  font-family: var(--font-ui);
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+.section-eyebrow__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+/* ===================================================
+   Section Eyebrow — Responsive
+=================================================== */
+
+@media (max-width: 640px) {
+  .section-eyebrow {
+    margin-bottom: 40px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-eyebrow {
+    margin-bottom: 32px;
+    gap: 10px;
+  }
+}

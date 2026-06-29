@@ -51,3 +51,29 @@
   border-color: var(--secondary);
   color: var(--secondary);
 }
+
+/* ===================================================
+   Buttons — Responsive
+=================================================== */
+
+@media (max-width: 768px) {
+  .hero-buttons {
+    gap: 12px;
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-buttons {
+    gap: 10px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    height: 48px;
+    padding: 12px 22px;
+    font-size: clamp(14px, 4vw, 18px);
+  }
+}

@@ -1,0 +1,180 @@
+/** @format */
+
+/* ===================================================
+   Contact CTA — Large Editorial Section
+=================================================== */
+
+.contact-cta-section {
+  position: relative;
+  background: var(--dark);
+  padding: 120px 0 160px;
+  overflow: hidden;
+}
+
+.contact-cta-container {
+  position: relative;
+  z-index: 1;
+  width: min(1600px, 92%);
+  margin: 0 auto;
+  /* Stay in left ~60% to give avatar room */
+  max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+/* ===================================================
+   Editorial Typography
+=================================================== */
+
+.contact-cta-type {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 64px;
+}
+
+.contact-cta-line {
+  font-family: var(--font-heading);
+  font-size: clamp(3.5rem, 9vw, 9.5rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 0.95;
+  letter-spacing: -4px;
+}
+
+.contact-cta-line:first-child {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(242, 239, 231, 0.5);
+}
+
+.contact-cta-line:last-child {
+  color: var(--primary);
+}
+
+/* ===================================================
+   Action Buttons
+=================================================== */
+
+.contact-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.cta-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 28px;
+  border-radius: 8px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  transition:
+    background 240ms ease,
+    border-color 240ms ease,
+    color 240ms ease,
+    transform 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.cta-action--primary {
+  background: var(--primarydark);
+  color: var(--text);
+  border: 1px solid var(--primarydark);
+}
+
+.cta-action--primary:hover {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(223, 19, 138, 0.25);
+}
+
+.cta-action--outline {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(242, 239, 231, 0.15);
+}
+
+.cta-action--outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-3px);
+}
+
+/* ===================================================
+   Background Glow
+=================================================== */
+
+.contact-cta-glow {
+  position: absolute;
+  bottom: -100px;
+  right: 10%;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 138, 31, 0.08) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+/* ===================================================
+   Responsive
+=================================================== */
+
+@media (max-width: 900px) {
+  .contact-cta-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-cta-section {
+    padding: 80px 0 100px;
+  }
+
+  .contact-cta-line {
+    letter-spacing: -2px;
+  }
+
+  .contact-cta-actions {
+    gap: 10px;
+  }
+
+  .cta-action {
+    height: 48px;
+    padding: 0 20px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile large (≤480px) */
+@media (max-width: 480px) {
+  .contact-cta-section {
+    padding: 60px 0 80px;
+  }
+
+  .contact-cta-type {
+    margin-bottom: 44px;
+  }
+
+  .contact-cta-line {
+    font-size: clamp(2.75rem, 11vw, 6rem);
+    letter-spacing: -1px;
+  }
+
+  .contact-cta-actions {
+    gap: 8px;
+  }
+
+  .cta-action {
+    height: 46px;
+    padding: 0 18px;
+    font-size: 12px;
+  }
+}

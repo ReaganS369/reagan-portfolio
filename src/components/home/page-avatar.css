@@ -1,0 +1,49 @@
+/** @format */
+
+/* ===================================================
+   Page Avatar — Single fixed avatar for post-hero sections
+   Fades in as hero exits, reveals full body, casual→formal
+   Image natural size: 855 × 2890
+=================================================== */
+
+.page-avatar-root {
+  position: fixed;
+  top: 0;
+  /* Horizontally align with hero character-wrapper:
+     right = hero-grid margin - (4% of hero-right width)
+     = (100vw - min(1600px,92vw))/2 - min(1600px,92vw)*0.42*0.04 */
+  right: calc((100vw - min(1600px, 92vw)) / 2 - min(1600px, 92vw) * 0.0168);
+  width: clamp(320px, 45vw, 855px);
+  height: 100dvh;
+  overflow: hidden;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.page-avatar-inner {
+  position: absolute;
+  top: 5vh;
+  left: 0;
+  width: 100%;
+  /* Natural image aspect scaled to width */
+  height: calc(clamp(320px, 45vw, 855px) * 2890 / 855);
+  transform-origin: top center;
+}
+
+.page-avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Hidden on small screens where sections use inline layout */
+@media (max-width: 900px) {
+  .page-avatar-root {
+    display: none;
+  }
+}

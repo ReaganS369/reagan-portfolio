@@ -31,11 +31,7 @@ export function HeroContent({ roles, socialLinks }: HeroContentProps) {
         <VariableProximity
           label={`REAGAN \nSAGOLSEM`}
           className="hero-name"
-          fromFontVariationSettings="'wght' 400"
-          toFontVariationSettings="'wght' 700"
           containerRef={containerRef}
-          radius={120}
-          falloff="gaussian"
           style={{
             whiteSpace: 'pre-line',
             lineHeight: 0.92,

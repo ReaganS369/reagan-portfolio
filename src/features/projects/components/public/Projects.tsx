@@ -179,11 +179,7 @@ export default function Projects() {
           <VariableProximity
             label={'REAGAN SAGOLSEM'}
             className={'variable-proximity-demo'}
-            fromFontVariationSettings="'wght' 500, 'opsz' 9"
-            toFontVariationSettings="'wght' 1000, 'opsz' 40"
             containerRef={containerRef}
-            radius={180}
-            falloff="linear"
             style={{
               fontFamily: fontPresets[fontIndex].font,
               fontSize: 'clamp(5rem, 9vw, 10rem)',
