@@ -1,18 +1,6 @@
 /** @format */
 
-@font-face {
-  font-family: 'Posterama2001';
-  src: url('/fonts/Posterama 2001 W04 Bold.woff') format('woff');
-  font-weight: 700;
-  font-display: swap;
-}
 
-@font-face {
-  font-family: 'PosteramaText';
-  src: url('/fonts/Posterama Text W07 Bold.woff') format('woff');
-  font-weight: 700;
-  font-display: swap;
-}
 * {
   margin: 0;
   padding: 0;
@@ -46,20 +34,13 @@ body {
   --card: #3f3f3f;
   --border: #352020;
 
-  --text: #f2efe7;
-  --text-muted: rgba(242, 239, 231, 0.8);
+  --text: rgb(243, 240, 232);
+  --text-muted: rgba(243, 240, 232, 0.8);
 
   /* Glows */
   --glow-primary: #ffd700;
   --glow-secondary: #ff69b4;
 
-  /* Fonts */
-
-  --font-heading: 'Posterama2001', sans-serif;
-  --font-ui: 'PosteramaText', sans-serif;
-  --font-subtitle: 'Chillax', sans-serif;
-  --font-body: 'Clash Display', sans-serif;
-  --font-description: 'Cabinet Grotesk', sans-serif;
 }
 
 /* ===================================
@@ -78,8 +59,6 @@ body {
 .hero-role {
   font-family: var(--font-subtitle);
   color: var(--primary);
-
-  text-shadow: 0 0 20px var(--glow-primary);
 }
 
 .hero-body {

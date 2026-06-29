@@ -41,8 +41,8 @@
 }
 
 .cv-ribbon__track span {
-  font-family: var(--font-body);
-  font-weight: 800;
+  font-family: var(--font-ui);
+  font-weight: 700;
   flex: none;
   white-space: nowrap;
 }
@@ -69,22 +69,43 @@
   font-weight: 700;
   letter-spacing: 5px;
   line-height: 1;
+  transition: color 200ms ease;
+}
+
+.cv-ribbon:hover .cv-ribbon__label--desktop {
+  color: var(--text);
 }
 
 .cv-ribbon__label--desktop {
+  display: inline-flex;
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity;
 }
 
 .cv-ribbon__label--mobile {
   opacity: 0;
 }
 
+.cv-ribbon__char {
+  display: inline-block;
+  opacity: 0;
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
+}
+
+.cv-ribbon__char:nth-child(odd) {
+  transform: translateY(-15px);
+}
+
+.cv-ribbon__char:nth-child(even) {
+  transform: translateY(15px);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .cv-ribbon__label--desktop.is-visible {
+  .cv-ribbon__char.is-visible {
     opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--char-index) * 30ms + 220ms);
   }
 }
 

@@ -28,6 +28,11 @@
   animation-play-state: paused;
 }
 
+.story-ribbon:hover .story-track span {
+  color: var(--text);
+  transition: color 200ms ease;
+}
+
 /* ===================================================
    Story Navigation Items
 =================================================== */
@@ -36,22 +41,19 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 1.15em;
-}
-
-.story-item__long,
-.story-item__short {
-  display: inline-block;
-  width: 100%;
-  transition:
-    opacity 200ms ease-in-out,
-    transform 200ms ease-in-out;
+  height: 67px;
+  padding-inline: 50px;
+  margin-inline: -50px;
 }
 
 .story-item__long {
+  display: inline-block;
+  font-family: var(--font-body);
   opacity: 1;
   transform: translateY(0);
-  font-family: var(--font-body);
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
 }
 
 .story-item__short {
@@ -60,22 +62,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transform: translateY(8px);
   font-family: var(--font-ui);
   font-weight: 700;
 }
 
-/* Desktop: long fades up, short fades in on item hover */
+.story-item__chars {
+  display: inline-flex;
+}
+
+.story-item__char {
+  display: inline-block;
+  opacity: 0;
+  transition:
+    opacity 200ms ease-in-out,
+    transform 200ms ease-in-out;
+}
+
+.story-item__char:nth-child(odd) {
+  transform: translateY(-15px);
+}
+
+.story-item__char:nth-child(even) {
+  transform: translateY(15px);
+}
+
+/* Desktop: long slides down, chars build in from alternating positions */
 @media (hover: hover) and (pointer: fine) {
   .story-item:hover .story-item__long {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(100%);
   }
 
-  .story-item:hover .story-item__short {
+  .story-item:hover .story-item__char {
     opacity: 1;
     transform: translateY(0);
+    transition-delay: calc(var(--char-index) * 30ms + 200ms);
   }
 }
 
@@ -83,11 +104,11 @@
 @media (max-width: 767px) {
   .story-item__long {
     opacity: 0;
-    transform: translateY(-8px);
   }
 
-  .story-item__short {
+  .story-item__char {
     opacity: 1;
     transform: translateY(0);
+    transition: none;
   }
 }

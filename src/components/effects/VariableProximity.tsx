@@ -10,6 +10,12 @@ import React, {
 import { motion } from 'motion/react';
 import './VariableProximity.css';
 
+export interface EntranceAnimation {
+  letterDuration?: number; // seconds each letter takes
+  staggerDelay?: number;   // seconds between each letter
+  wordGap?: number;        // extra pause after first word completes before second begins
+}
+
 interface VariableProximityProps {
   label: string;
   fromFontVariationSettings: string;
@@ -20,6 +26,7 @@ interface VariableProximityProps {
   className?: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
   style?: CSSProperties;
+  entrance?: EntranceAnimation | null;
 }
 
 function useAnimationFrame(callback: () => void) {
@@ -92,6 +99,7 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>(
       className = '',
       onClick,
       style,
+      entrance,
       ...restProps
     } = props;
 
@@ -181,6 +189,60 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>(
       });
     });
 
+    // Pre-compute per-letter entrance delays, accounting for word gaps
+    const entranceDelays = useMemo<number[]>(() => {
+      if (!entrance) return [];
+
+      const dur = entrance.letterDuration ?? 0.5;
+      const stag = entrance.staggerDelay ?? 0.08;
+      const gap = entrance.wordGap ?? 0.2;
+
+      const wordList = label.split(' ');
+      const delays: number[] = [];
+      let wordStartDelay = 0;
+
+      wordList.forEach((word, wordIndex) => {
+        const chars = word.split('');
+        let visibleCount = 0;
+
+        chars.forEach((char) => {
+          // Newlines are invisible — give them the same delay as the next visible letter
+          delays.push(wordStartDelay + visibleCount * stag);
+          if (char !== '\n' && char !== '\r') {
+            visibleCount++;
+          }
+        });
+
+        // Advance start delay past this word's completion before next word begins
+        if (wordIndex < wordList.length - 1) {
+          const wordFinish =
+            wordStartDelay + Math.max(0, visibleCount - 1) * stag + dur;
+          wordStartDelay = wordFinish + gap;
+        }
+      });
+
+      return delays;
+    }, [label, entrance]);
+
+    // Stable motion props — only computed once (entrance config is constant)
+    const entranceInitial = useMemo(
+      () =>
+        entrance
+          ? { rotateX: 90, y: 20, opacity: 0, filter: 'blur(8px)' }
+          : undefined,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [],
+    );
+
+    const entranceAnimate = useMemo(
+      () =>
+        entrance
+          ? { rotateX: 0, y: 0, opacity: 1, filter: 'blur(0px)' }
+          : undefined,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [],
+    );
+
     const words = label.split(' ');
 
     let letterIndex = 0;
@@ -203,6 +265,7 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>(
           >
             {word.split('').map((letter) => {
               const currentLetterIndex = letterIndex++;
+              const delay = entranceDelays[currentLetterIndex] ?? 0;
 
               return (
                 <motion.span
@@ -216,15 +279,33 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>(
                       interpolatedSettingsRef.current[currentLetterIndex],
                   }}
                   aria-hidden="true"
+                  initial={entranceInitial}
+                  animate={entranceAnimate}
+                  transition={
+                    entrance
+                      ? {
+                          duration: entrance.letterDuration ?? 0.5,
+                          delay,
+                          ease: [0.2, 0.65, 0.3, 0.9] as [
+                            number,
+                            number,
+                            number,
+                            number,
+                          ],
+                        }
+                      : undefined
+                  }
+                  transformTemplate={
+                    entrance
+                      ? (_, t) => `perspective(600px) ${t}`
+                      : undefined
+                  }
                 >
                   {letter}
                 </motion.span>
               );
             })}
 
-            {wordIndex < words.length - 1 && (
-              <span style={{ display: 'inline-block' }}>&nbsp;</span>
-            )}
           </span>
         ))}
 

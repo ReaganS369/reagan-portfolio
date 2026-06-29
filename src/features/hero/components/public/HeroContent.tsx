@@ -3,12 +3,18 @@
 'use client';
 
 import { useRef } from 'react';
-import { getStorageUrl } from '@/src/lib/storage';
 import VariableProximity from '@/src/components/effects/VariableProximity';
 import type { HeroRole } from '../../types';
 import type { SocialLink } from '@/src/features/social-links/api/social-links';
 import { HeroButtons } from './HeroButtons';
 import { HeroSocials } from './HeroSocials';
+import { HeroMorphRoles } from './HeroMorphRoles';
+
+const HERO_TITLE_ENTRANCE = {
+  letterDuration: 0.5,
+  staggerDelay: 0.08,
+  wordGap: 0.2,
+} as const;
 
 interface HeroContentProps {
   roles: HeroRole[];
@@ -16,7 +22,7 @@ interface HeroContentProps {
   socialLinks: SocialLink[];
 }
 
-export function HeroContent({ roles, roleIndex, socialLinks }: HeroContentProps) {
+export function HeroContent({ roles, socialLinks }: HeroContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -35,17 +41,11 @@ export function HeroContent({ roles, roleIndex, socialLinks }: HeroContentProps)
             lineHeight: 0.92,
             letterSpacing: '-6px',
           }}
+          entrance={HERO_TITLE_ENTRANCE}
         />
       </div>
 
-      <div className="hero-role">
-        <img
-          src={getStorageUrl(roles[roleIndex].icon_url)}
-          alt={roles[roleIndex].title}
-          className="hero-role-icon"
-        />
-        <span>{roles[roleIndex].title}</span>
-      </div>
+      <HeroMorphRoles roles={roles} />
 
       <p className="hero-description">
         Designing and building immersive worlds through games, XR and animation.
