@@ -24,6 +24,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Reagan Sagolsem',
   description: 'Portfolio of Reagan Sagolsem',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

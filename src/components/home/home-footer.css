@@ -6,6 +6,7 @@
 
 .home-footer {
   position: relative;
+  z-index: 6;
   background: #160e0e; /* slightly darker than --dark for separation */
   border-top: 1px solid var(--border);
   overflow: hidden;

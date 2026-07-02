@@ -1,36 +1,35 @@
 /** @format */
 
 /* ===================================================
-   Page Avatar — Single fixed avatar for post-hero sections
-   Fades in as hero exits, reveals full body, casual→formal
-   Image natural size: 855 × 2890
+   Scroll Avatar — Unified fixed avatar
+   Spans full page: starts 50/50 split in hero,
+   transitions to formal-only in all other sections.
+   Natural image size: 855 × 2890
 =================================================== */
 
-.page-avatar-root {
+.scroll-avatar-root {
   position: fixed;
   top: 0;
-  /* Horizontally align with hero character-wrapper:
-     right = hero-grid margin - (4% of hero-right width)
-     = (100vw - min(1600px,92vw))/2 - min(1600px,92vw)*0.42*0.04 */
+  /* Align right edge with hero character-wrapper */
   right: calc((100vw - min(1600px, 92vw)) / 2 - min(1600px, 92vw) * 0.0168);
   width: clamp(320px, 45vw, 855px);
   height: 100dvh;
-  overflow: hidden;
-  z-index: 10;
+  z-index: 5;
   pointer-events: none;
+  overflow: visible;
 }
 
-.page-avatar-inner {
+.scroll-avatar-inner {
   position: absolute;
-  top: 5vh;
+  top: 0;
   left: 0;
   width: 100%;
-  /* Natural image aspect scaled to width */
+  /* Full natural height of image scaled to current width */
   height: calc(clamp(320px, 45vw, 855px) * 2890 / 855);
   transform-origin: top center;
 }
 
-.page-avatar-img {
+.scroll-avatar-img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -41,9 +40,9 @@
   pointer-events: none;
 }
 
-/* Hidden on small screens where sections use inline layout */
+/* Hidden on tablet/mobile — sections are single-column there */
 @media (max-width: 900px) {
-  .page-avatar-root {
+  .scroll-avatar-root {
     display: none;
   }
 }

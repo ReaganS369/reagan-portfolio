@@ -1,17 +1,19 @@
 /** @format */
 
 /* ===================================================
-   Hero — Avatar / Character
-   Original image size: 855 × 2890
+   Hero — Mobile Avatar
+   Shows within the hero-right grid column on ≤900px.
+   The desktop fixed overlay is handled by ScrollAvatar.
 =================================================== */
 
 .character-wrapper {
   position: absolute;
-  right: -4%;
-  bottom: -1850px;
-  width: clamp(320px, 45vw, 855px);
-  aspect-ratio: 855 / 2890;
-  z-index: 3;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+  max-width: 260px;
+  height: 100%;
 }
 
 .character {
@@ -19,34 +21,16 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: bottom right;
+  object-fit: cover;
+  object-position: top center;
   user-select: none;
   pointer-events: none;
 }
 
-/* ===================================================
-   Avatar — Mobile (single-col hero, avatar on top)
-=================================================== */
-
-/* At ≤768px the hero-right becomes a fixed-height overflow:hidden panel.
-   Character repositions from its desktop overflow layout to a contained
-   crop that shows head / upper body from the right side. */
-@media (max-width: 768px) {
+/* Desktop: hide the mobile wrapper (fixed overlay takes over) */
+@media (min-width: 901px) {
   .character-wrapper {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 60%;
-    max-width: 260px;
-    height: 100%;
-    /* explicit height via top/bottom overrides desktop aspect-ratio */
-  }
-
-  .character {
-    object-fit: cover;
-    object-position: top center;
+    display: none;
   }
 }
 
@@ -56,4 +40,3 @@
     max-width: 220px;
   }
 }
-

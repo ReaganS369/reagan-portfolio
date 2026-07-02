@@ -1,6 +1,7 @@
 /** @format */
 
-.variable-proximity {
+/* Zero-specificity so any caller-supplied class (e.g. .hero-name) always wins */
+:where(.variable-proximity) {
   font-family: inherit;
 }
 

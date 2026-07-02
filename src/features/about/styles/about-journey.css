@@ -6,6 +6,7 @@
 
 .about-section {
   position: relative;
+  z-index: 6;
   background: var(--dark);
   padding: 120px 0 140px;
   overflow: hidden;

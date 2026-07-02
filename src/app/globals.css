@@ -11,15 +11,14 @@ html,
 body,
 #root {
   width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
   background: #1d1010;
-  overflow-x: hidden;
 }
 
 body {
   font-family: inherit;
+  overflow-x: hidden;
 }
 :root {
   /* Colors */
@@ -49,11 +48,9 @@ body {
 
 .hero-name {
   font-family: var(--font-heading);
+  font-weight: 700;
   color: var(--light);
-
-  text-shadow:
-    0 0 20px var(--glow-light),
-    0 0 40px rgba(242, 239, 231, 0.04);
+  text-shadow: 0 0 16px rgba(255, 105, 180, 0.5);
 }
 
 .hero-role {

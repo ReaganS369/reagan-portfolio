@@ -6,7 +6,7 @@
 
 .home-hero {
   position: relative;
-  min-height: calc(100vh + 90px);
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -91,14 +91,15 @@
 
 
 .hero-description {
-  width: 620px;
+  width: max-content;
   max-width: 100%;
   margin-top: 28px;
   color: var(--text-muted);
   font-family: var(--font-description);
   font-weight: 500;
-  font-size: clamp(1rem, 1.2vw + 0.5rem, 1.5rem);
-  line-height: 1.9;
+  font-size: clamp(1rem, 1vw + 0.5rem, 1.25rem);
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 /* ===================================================
@@ -143,10 +144,6 @@
 
 /* Tablet portrait (≤768px): single-col stack, avatar on top */
 @media (max-width: 768px) {
-  .home-hero {
-    min-height: 100svh;
-  }
-
   .hero-grid {
     grid-template-columns: 1fr;
     align-items: start;
@@ -166,6 +163,7 @@
 
   .hero-description {
     width: 100%;
+    white-space: normal;
   }
 }
 
