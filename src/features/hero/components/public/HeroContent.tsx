@@ -18,7 +18,6 @@ const HERO_TITLE_ENTRANCE = {
 
 interface HeroContentProps {
   roles: HeroRole[];
-  roleIndex: number;
   socialLinks: SocialLink[];
 }
 

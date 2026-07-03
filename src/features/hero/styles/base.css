@@ -71,15 +71,15 @@
   position: relative;
   margin-top: 30px;
   height: 40px;
-}
-
-.hero-role {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  font-family: var(--font-subtitle);
   font-size: clamp(1.125rem, 1.5vw + 0.5rem, 2rem);
   font-weight: 500;
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+}
+
+.hero-role-layer {
+  will-change: filter, opacity;
 }
 
 .hero-role-icon {
@@ -115,8 +115,12 @@
   will-change: transform;
 }
 
-.story-track span,
-.cv-ribbon__track span {
+/* Direct children only — story-item/cv-ribbon internals define their own
+   typography and would otherwise be clobbered by this rule's higher
+   specificity (class + type selector beats a lone class selector). */
+.story-track > span,
+.story-track > .story-item,
+.cv-ribbon__track > span {
   color: var(--text-muted);
   font-size: 18px;
   letter-spacing: 5px;

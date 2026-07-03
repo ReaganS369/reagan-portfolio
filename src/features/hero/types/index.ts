@@ -1,6 +1,8 @@
 /** @format */
 
-export type MarqueeMessage = string | { label: string; shortLabel: string };
+export type MarqueeMessage =
+  | string
+  | { label: string; shortLabel: string; href: string };
 
 export interface HeroRole {
   id: string;

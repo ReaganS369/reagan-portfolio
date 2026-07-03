@@ -36,3 +36,17 @@ export const posteramaTextRegular = localFont({
   weight: '400',
   display: 'swap',
 });
+
+export const posterama2001Regular = localFont({
+  src: '../public/fonts/Posterama2001W04/Posterama2001W04-Regular.woff2',
+  variable: '--font-heading-regular',
+  weight: '400',
+  display: 'swap',
+});
+
+export const posterama2001UltraBlack = localFont({
+  src: '../public/fonts/Posterama2001W04/Posterama2001W04-UltraBlack.woff2',
+  variable: '--font-heading-ultra',
+  weight: '900',
+  display: 'swap',
+});

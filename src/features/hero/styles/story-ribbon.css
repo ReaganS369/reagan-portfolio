@@ -28,7 +28,8 @@
   animation-play-state: paused;
 }
 
-.story-ribbon:hover .story-track span {
+.story-ribbon:hover .story-track > span,
+.story-ribbon:hover .story-track > .story-item {
   color: var(--text);
   transition: color 200ms ease;
 }
@@ -44,11 +45,17 @@
   height: 67px;
   padding-inline: 50px;
   margin-inline: -50px;
+  letter-spacing: 5px;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .story-item__long {
   display: inline-block;
   font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px;
   opacity: 1;
   transform: translateY(0);
   transition:
@@ -62,12 +69,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-ui);
-  font-weight: 700;
+  font-family: var(--font-heading-regular);
+  font-weight: 400;
+  font-size: 20px;
 }
 
 .story-item__chars {
   display: inline-flex;
+  position: relative;
+  z-index: 1;
 }
 
 .story-item__char {
@@ -86,6 +96,76 @@
   transform: translateY(15px);
 }
 
+/* Shimmer glow — scoped to just the short-label text area, not the ribbon */
+.story-item__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  transition-delay: 0s;
+  mask: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 6px,
+    black 7px,
+    black 8px
+  );
+  -webkit-mask: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 6px,
+    black 7px,
+    black 8px
+  );
+}
+
+.story-item__glow-blob {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 50% 50%, #fde047 0%, transparent 50%),
+    radial-gradient(circle at 45% 45%, #facc15 0%, transparent 45%),
+    radial-gradient(circle at 55% 55%, #fef08a 0%, transparent 45%),
+    radial-gradient(circle at 45% 55%, #fbbf24 0%, transparent 45%),
+    radial-gradient(circle at 55% 45%, #eab308 0%, transparent 45%);
+  mask: radial-gradient(circle at 50% 50%, transparent 0%, transparent 10%, black 25%);
+  -webkit-mask: radial-gradient(
+    circle at 50% 50%,
+    transparent 0%,
+    transparent 10%,
+    black 25%
+  );
+  animation:
+    story-glow-move 2s infinite alternate,
+    story-glow-opacity 4s infinite;
+  animation-timing-function: cubic-bezier(0.6, 0.8, 0.5, 1);
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.6));
+}
+
+@keyframes story-glow-move {
+  0% {
+    transform: translate(-55%);
+  }
+  100% {
+    transform: translate(55%);
+  }
+}
+
+@keyframes story-glow-opacity {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0;
+  }
+}
+
 /* Desktop: long slides down, chars build in from alternating positions */
 @media (hover: hover) and (pointer: fine) {
   .story-item:hover .story-item__long {
@@ -97,6 +177,13 @@
     opacity: 1;
     transform: translateY(0);
     transition-delay: calc(var(--char-index) * 30ms + 200ms);
+  }
+
+  /* Loop shimmer only kicks in once the char build-in transition has
+     finished — --glow-delay is computed per-item (label length) in JS. */
+  .story-item:hover .story-item__glow {
+    opacity: 1;
+    transition-delay: var(--glow-delay, 600ms);
   }
 }
 

@@ -1,0 +1,138 @@
+/** @format */
+
+.origin-container {
+  width: min(1000px, 92%);
+  margin: 0 auto;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+.origin-block__title {
+  margin-bottom: 24px;
+  color: var(--primary);
+  font-family: var(--font-subtitle);
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.origin-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.origin-entry {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 24px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border);
+}
+
+.origin-entry__year {
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+}
+
+.origin-entry__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.origin-entry__title {
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+}
+
+.origin-entry__count {
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.origin-entry__summary {
+  margin-top: 8px;
+  color: var(--text);
+  font-family: var(--font-description);
+  font-size: 1.05rem;
+}
+
+.origin-entry__detail {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.origin-entry__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.origin-tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.origin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.origin-list__item {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.origin-list__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.origin-list__heading h3 {
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+}
+
+.origin-list__dates {
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.origin-list__sub {
+  margin-top: 4px;
+  color: var(--primary);
+  font-family: var(--font-subtitle);
+  font-size: 0.95rem;
+}
+
+.origin-list__desc {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}

@@ -14,14 +14,12 @@ import type { HeroRole, UserProfile } from '../types';
 interface HeroData {
   profile: UserProfile | null;
   roles: HeroRole[];
-  roleIndex: number;
   socialLinks: SocialLink[];
 }
 
 export function useHeroData(): HeroData {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [roles, setRoles] = useState<HeroRole[]>([]);
-  const [roleIndex, setRoleIndex] = useState(0);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
@@ -53,13 +51,5 @@ export function useHeroData(): HeroData {
     loadSocialLinks();
   }, []);
 
-  useEffect(() => {
-    if (roles.length === 0) return;
-    const interval = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [roles]);
-
-  return { profile, roles, roleIndex, socialLinks };
+  return { profile, roles, socialLinks };
 }

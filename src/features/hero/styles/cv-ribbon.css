@@ -43,6 +43,7 @@
 .cv-ribbon__track span {
   font-family: var(--font-ui);
   font-weight: 700;
+  font-size: 18px;
   flex: none;
   white-space: nowrap;
 }
@@ -64,9 +65,9 @@
 .cv-ribbon__label--desktop,
 .cv-ribbon__label--mobile {
   color: var(--text-muted);
-  font-family: var(--font-ui);
-  font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-heading-ultra);
+  font-size: 20px;
+  font-weight: 900;
   letter-spacing: 5px;
   line-height: 1;
   transition: color 200ms ease;

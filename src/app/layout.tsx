@@ -8,6 +8,8 @@ import {
   cabinetGrotesk,
   posteramaTextBold,
   posteramaTextRegular,
+  posterama2001Regular,
+  posterama2001UltraBlack,
 } from '@/src/fonts';
 import './globals.css';
 
@@ -45,6 +47,8 @@ export default function RootLayout({
         cabinetGrotesk.variable,
         posteramaTextBold.variable,
         posteramaTextRegular.variable,
+        posterama2001Regular.variable,
+        posterama2001UltraBlack.variable,
         'h-full antialiased',
       ].join(' ')}
     >

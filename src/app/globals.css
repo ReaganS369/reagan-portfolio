@@ -53,11 +53,6 @@ body {
   text-shadow: 0 0 16px rgba(255, 105, 180, 0.5);
 }
 
-.hero-role {
-  font-family: var(--font-subtitle);
-  color: var(--primary);
-}
-
 .hero-body {
   font-family: var(--font-body);
   color: var(--text-muted);

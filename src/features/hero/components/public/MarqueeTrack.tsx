@@ -23,6 +23,7 @@ export function MarqueeTrack({ messages, className }: MarqueeTrackProps) {
             key={`${className}-${index}`}
             label={message.label}
             shortLabel={message.shortLabel}
+            href={message.href}
           />
         );
       })}

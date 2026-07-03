@@ -15,7 +15,7 @@ interface HomeHeroProps {
 }
 
 export default function HomeHero({ sectionRef }: HomeHeroProps) {
-  const { profile, roles, roleIndex, socialLinks } = useHeroData();
+  const { profile, roles, socialLinks } = useHeroData();
 
   if (!profile || roles.length === 0) {
     return <div className="home-hero-loading">Loading...</div>;
@@ -29,11 +29,7 @@ export default function HomeHero({ sectionRef }: HomeHeroProps) {
       <HeroCVRibbon />
 
       <div className="hero-grid">
-        <HeroContent
-          roles={roles}
-          roleIndex={roleIndex}
-          socialLinks={socialLinks}
-        />
+        <HeroContent roles={roles} socialLinks={socialLinks} />
         {/* Right grid column: empty on desktop (ScrollAvatar fixed overlay handles it),
             shows cropped casual head/shoulders on mobile (≤900px) */}
         <div className="hero-right">

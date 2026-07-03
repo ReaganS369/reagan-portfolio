@@ -11,6 +11,22 @@
   margin: auto;
 }
 
+.contact-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+  color: #9d9d9d;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.contact-back:hover {
+  color: #df8a38;
+}
+
 .contact-top {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
@@ -143,6 +159,23 @@
   color: black;
   font-weight: 700;
   cursor: pointer;
+}
+
+.contact-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contact-form__status {
+  font-size: 0.9rem;
+}
+
+.contact-form__status--success {
+  color: #4ade80;
+}
+
+.contact-form__status--error {
+  color: #f87171;
 }
 
 @media (max-width: 1000px) {

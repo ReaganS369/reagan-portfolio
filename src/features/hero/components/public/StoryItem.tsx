@@ -3,14 +3,16 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import Magnet from '@/src/components/effects/Magnet';
 
 interface StoryItemProps {
   label: string;
   shortLabel: string;
+  href: string;
 }
 
-export function StoryItem({ label, shortLabel }: StoryItemProps) {
+export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMagnetActive, setIsMagnetActive] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -31,13 +33,18 @@ export function StoryItem({ label, shortLabel }: StoryItemProps) {
   }
 
   return (
-    <span
+    <Link
+      href={href}
       className="story-item"
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
+      style={{ '--glow-delay': `${magnetDelay}ms` } as React.CSSProperties}
     >
       <span className="story-item__long">{label}</span>
       <span className="story-item__short">
+        <span className="story-item__glow" aria-hidden="true">
+          <span className="story-item__glow-blob" />
+        </span>
         <Magnet
           disabled={!isMagnetActive}
           padding={2000}
@@ -58,6 +65,6 @@ export function StoryItem({ label, shortLabel }: StoryItemProps) {
           </span>
         </Magnet>
       </span>
-    </span>
+    </Link>
   );
 }
