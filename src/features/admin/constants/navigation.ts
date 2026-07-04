@@ -34,7 +34,7 @@ export const adminNavigation: AdminNavGroup[] = [
       { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
       { label: 'Experience', href: '/admin/experience', icon: Briefcase },
       { label: 'Education', href: '/admin/education', icon: GraduationCap },
-      { label: 'Skills', href: '/admin/skills', icon: Wrench },
+      { label: 'Skills Explorer', href: '/admin/skills', icon: Wrench },
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
       { label: 'Social Links', href: '/admin/social-links', icon: Link2 },
     ],

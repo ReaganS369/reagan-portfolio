@@ -1,41 +1,124 @@
 /** @format */
 
+/* =========================================================
+   Origin — the journey timeline
+========================================================= */
+
 .origin-container {
   width: min(1000px, 92%);
   margin: 0 auto;
-  padding-bottom: 120px;
+  padding-bottom: 140px;
   display: flex;
   flex-direction: column;
-  gap: 72px;
+  gap: 88px;
 }
 
 .origin-block__title {
-  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
   color: var(--primary);
   font-family: var(--font-subtitle);
-  font-size: 1.25rem;
-  letter-spacing: 2px;
+  font-size: 1.15rem;
+  letter-spacing: 3px;
   text-transform: uppercase;
 }
 
+/* trailing hairline gives every section header the same editorial anchor */
+.origin-block__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(245, 138, 31, 0.35), rgba(245, 138, 31, 0));
+}
+
+/* ------------------------ timeline ----------------------- */
+
 .origin-timeline {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 20px;
+  padding-left: 8px;
+}
+
+/* scroll-progress spine */
+.origin-spine {
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: rgba(242, 239, 231, 0.09);
+}
+
+.origin-spine__fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  box-shadow: 0 0 12px rgba(245, 138, 31, 0.5);
+  transform-origin: top center;
 }
 
 .origin-entry {
+  position: relative;
   display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 24px;
-  padding-bottom: 36px;
-  border-bottom: 1px solid var(--border);
+  grid-template-columns: 132px 1fr;
+  gap: 28px;
+  padding: 28px 24px 32px 30px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  transition: border-color 350ms ease, background 350ms ease;
+}
+
+.origin-entry:hover {
+  border-color: rgba(245, 138, 31, 0.22);
+  background: rgba(245, 138, 31, 0.03);
+}
+
+.origin-entry__yearcol {
+  position: relative;
+}
+
+.origin-entry__dot {
+  position: absolute;
+  left: -26px;
+  top: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dark);
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 10px rgba(245, 138, 31, 0.55);
 }
 
 .origin-entry__year {
-  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+  color: var(--text);
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+}
+
+/* oversized ghost year adds depth without noise */
+.origin-entry__year-ghost {
+  position: absolute;
+  left: -12px;
+  top: -26px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 5rem;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(242, 239, 231, 0.05);
+  pointer-events: none;
+  user-select: none;
+  transition: -webkit-text-stroke-color 350ms ease;
+}
+
+.origin-entry:hover .origin-entry__year-ghost {
+  -webkit-text-stroke-color: rgba(245, 138, 31, 0.18);
 }
 
 .origin-entry__heading {
@@ -52,14 +135,19 @@
 }
 
 .origin-entry__count {
-  color: var(--text-muted);
+  color: var(--primary);
   font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 1px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 138, 31, 0.3);
+  background: rgba(245, 138, 31, 0.06);
 }
 
 .origin-entry__summary {
-  margin-top: 8px;
+  margin-top: 10px;
   color: var(--text);
   font-family: var(--font-description);
   font-size: 1.05rem;
@@ -70,14 +158,15 @@
   color: var(--text-muted);
   font-family: var(--font-description);
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  max-width: 64ch;
 }
 
 .origin-entry__tech {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .origin-tag {
@@ -88,17 +177,35 @@
   font-family: var(--font-ui);
   font-size: 12px;
   letter-spacing: 0.5px;
+  transition: border-color 250ms ease, color 250ms ease, background 250ms ease;
 }
 
+.origin-tag:hover {
+  border-color: rgba(245, 138, 31, 0.5);
+  color: var(--primary);
+  background: rgba(245, 138, 31, 0.06);
+}
+
+/* --------------------- experience / education --------------------- */
+
 .origin-list {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
 }
 
 .origin-list__item {
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--border);
+  padding: 26px 28px 30px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, rgba(245, 138, 31, 0.035), rgba(29, 16, 16, 0) 45%);
+  transition: border-color 350ms ease, transform 350ms ease, box-shadow 350ms ease;
+}
+
+.origin-list__item:hover {
+  border-color: rgba(245, 138, 31, 0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
 }
 
 .origin-list__heading {
@@ -118,21 +225,47 @@
 .origin-list__dates {
   color: var(--text-muted);
   font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .origin-list__sub {
-  margin-top: 4px;
+  margin-top: 6px;
   color: var(--primary);
   font-family: var(--font-subtitle);
   font-size: 0.95rem;
 }
 
 .origin-list__desc {
-  margin-top: 8px;
+  margin-top: 10px;
   color: var(--text-muted);
   font-family: var(--font-description);
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+/* ---------------------- responsive ---------------------- */
+
+@media (max-width: 700px) {
+  .origin-entry {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-left: 26px;
+  }
+
+  .origin-entry__year-ghost {
+    display: none;
+  }
+
+  .origin-entry__dot {
+    left: -22px;
+  }
+
+  .origin-list {
+    grid-template-columns: 1fr;
+  }
 }

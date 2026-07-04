@@ -4,12 +4,21 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Mail, MapPin, Clock3, Send, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Mail, MapPin, Clock3, Send, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import Magnet from '@/src/components/effects/Magnet';
 import { getSocialLinks, type SocialLink } from '@/src/features/social-links/api/social-links';
 import { createContactSubmission } from '../../api/contactSubmissions';
 import './contact.css';
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 const EMPTY_FORM = { name: '', email: '', project: '', message: '' };
+
+const rise = {
+  initial: { opacity: 0, y: 32, filter: 'blur(8px)' },
+  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+};
 
 export function ContactPage() {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -41,31 +50,43 @@ export function ContactPage() {
   return (
     <section className="contact-section">
       <div className="contact-container">
-        <Link href="/" className="contact-back">
-          <ArrowLeft size={16} />
-          <span>Back home</span>
-        </Link>
+        <motion.div {...rise} transition={{ duration: 0.7, ease: EASE }}>
+          <Link href="/" className="contact-back">
+            <ArrowLeft size={16} />
+            <span>Back home</span>
+          </Link>
+        </motion.div>
 
         <div className="contact-top">
           <div className="contact-left">
-            <span className="section-label">WHERE CONNECTIONS BEGIN</span>
+            <motion.span
+              className="section-label"
+              {...rise}
+              transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+            >
+              WHERE CONNECTIONS BEGIN
+            </motion.span>
 
-            <h2>
+            <motion.h2 {...rise} transition={{ duration: 0.9, delay: 0.2, ease: EASE }}>
               Let&apos;s build
               <br />
               something
               <br />
-              worth remembering.
-            </h2>
+              <em className="contact-accent">worth remembering.</em>
+            </motion.h2>
 
-            <p>
+            <motion.p {...rise} transition={{ duration: 0.9, delay: 0.35, ease: EASE }}>
               Whether you&apos;re looking for a Game Designer, Technical Artist, 3D
               Generalist, or simply want to collaborate, I&apos;d love to hear about
               your next project.
-            </p>
+            </motion.p>
           </div>
 
-          <div className="contact-card">
+          <motion.div
+            className="contact-card"
+            {...rise}
+            transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
+          >
             <h4>CONTACT CARD</h4>
 
             <div className="info">
@@ -81,7 +102,10 @@ export function ContactPage() {
                 <Clock3 size={18} />
                 <div>
                   <span>Status</span>
-                  <p>Available for Work</p>
+                  <p>
+                    <span className="contact-pulse" aria-hidden />
+                    Available for Work
+                  </p>
                 </div>
               </div>
 
@@ -103,25 +127,32 @@ export function ContactPage() {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
 
-        <form className="contact-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Your Name"
-            required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+        <motion.form
+          className="contact-form"
+          onSubmit={handleSubmit}
+          {...rise}
+          transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
+        >
+          <div className="contact-form__row">
+            <input
+              type="text"
+              placeholder="Your Name"
+              required
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
 
-          <input
-            type="email"
-            placeholder="Email Address"
-            required
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
+            <input
+              type="email"
+              placeholder="Email Address"
+              required
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </div>
 
           <input
             type="text"
@@ -138,22 +169,40 @@ export function ContactPage() {
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
 
-          <button type="submit" className="send-btn" disabled={status === 'pending'}>
-            <Send size={18} />
-            <span>{status === 'pending' ? 'Sending…' : 'Send Message'}</span>
-          </button>
+          <Magnet padding={60} magnetStrength={5}>
+            <button type="submit" className="send-btn" disabled={status === 'pending'}>
+              <Send size={18} />
+              <span>{status === 'pending' ? 'Sending…' : 'Send Message'}</span>
+            </button>
+          </Magnet>
 
-          {status === 'success' && (
-            <p className="contact-form__status contact-form__status--success">
-              Thanks — I&apos;ll get back to you soon.
-            </p>
-          )}
-          {status === 'error' && (
-            <p className="contact-form__status contact-form__status--error">
-              Something went wrong — please try again.
-            </p>
-          )}
-        </form>
+          <AnimatePresence>
+            {status === 'success' && (
+              <motion.p
+                className="contact-form__status contact-form__status--success"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                <CheckCircle2 size={16} />
+                Thanks — I&apos;ll get back to you soon.
+              </motion.p>
+            )}
+            {status === 'error' && (
+              <motion.p
+                className="contact-form__status contact-form__status--error"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                <AlertCircle size={16} />
+                Something went wrong — please try again.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.form>
       </div>
     </section>
   );

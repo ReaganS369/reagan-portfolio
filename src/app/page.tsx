@@ -36,7 +36,7 @@ export default function Home() {
       <ScrollAvatar heroRef={heroRef} profile={avatarProfile} />
 
       <HomeHero sectionRef={heroRef} />
-      <FeaturedWork avatarUrl={avatarProfile?.formal_avatar} />
+      <FeaturedWork />
       <AboutJourney />
       <BrainSkills />
       <Testimonials />

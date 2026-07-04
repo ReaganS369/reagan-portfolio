@@ -58,11 +58,7 @@ const cardAnim = {
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
 };
 
-interface FeaturedWorkProps {
-  avatarUrl?: string;
-}
-
-export function FeaturedWork({ avatarUrl }: FeaturedWorkProps) {
+export function FeaturedWork() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
@@ -103,12 +99,11 @@ export function FeaturedWork({ avatarUrl }: FeaturedWorkProps) {
             </div>
           </motion.div>
 
-          {/* 3D Modeling — tall right card, avatar space */}
+          {/* 3D Modeling — tall right card; the fixed scroll avatar docks
+              into this visual space as the user scrolls, so the card itself
+              renders no character (no duplicates) */}
           <motion.div className={CARDS[1].className} variants={cardAnim}>
             <div className="bento-visual bento-visual--3d">
-              {avatarUrl && (
-                <img src={avatarUrl} className="bento-3d-avatar" alt="" draggable={false} />
-              )}
               <div className="bento-3d-glow" />
               <div className="bento-noise" />
             </div>
