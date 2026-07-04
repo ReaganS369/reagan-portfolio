@@ -26,15 +26,28 @@ export function HeroContent({ roles, socialLinks }: HeroContentProps) {
 
   return (
     <div className="hero-left">
-      <div ref={containerRef}>
+      <div ref={containerRef} className="hero-name">
         <VariableProximity
-          label={`REAGAN \nSAGOLSEM`}
-          className="hero-name"
+          label="REAGAN"
+          className="hero-first-name"
           containerRef={containerRef}
           style={{
-            whiteSpace: 'pre-line',
-            lineHeight: 0.92,
-            letterSpacing: '-6px',
+            display: 'block',
+            lineHeight: 0.9375,
+            letterSpacing: 0,
+          }}
+          entrance={HERO_TITLE_ENTRANCE}
+        />
+
+        <VariableProximity
+          label="SAGOLSEM"
+          className="hero-last-name"
+          containerRef={containerRef}
+          style={{
+            display: 'block',
+            lineHeight: 0.9375,
+            letterSpacing: 0,
+            marginTop: 0,
           }}
           entrance={HERO_TITLE_ENTRANCE}
         />

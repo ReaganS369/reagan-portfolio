@@ -4,9 +4,10 @@
    Testimonials — Rating Cards
 =================================================== */
 
+/* No z-index: the background paints BELOW the fixed scroll-avatar (z 5) so
+   the character stays visible while traveling through; content lifts above. */
 .testimonials-section {
   position: relative;
-  z-index: 6;
   background: var(--dark);
   padding: 120px 0 140px;
   overflow: hidden;
@@ -29,9 +30,22 @@
 }
 
 .testimonials-container {
+  position: relative;
+  z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
   max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+.testimonials-section .section-heading-wrapper {
+  position: relative;
+  z-index: 7;
+}
+
+/* Heading alignment wrapper to match featured-section */
+.section-heading-wrapper .heading-container {
+  width: min(1600px, 92%);
+  margin: 0 auto 0;
 }
 
 /* ===================================================
@@ -279,5 +293,152 @@
 
   .testimonials-grid {
     gap: 10px;
+  }
+}
+
+/* ===================================================
+   Review CTA and Placeholder
+=================================================== */
+
+.review-cta-card,
+.review-placeholder,
+.review-preview-card {
+  background: #1c1111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-cta-card {
+  grid-column: 1 / 3;
+  justify-content: center;
+}
+
+.review-cta-card__title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.05;
+}
+
+.review-cta-card__text {
+  font-family: var(--font-description);
+  font-size: clamp(0.95rem, 1vw, 1rem);
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 56ch;
+}
+
+.review-cta-button {
+  align-self: flex-start;
+  border: none;
+  background: var(--primary);
+  color: #111;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+.review-cta-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.review-placeholder {
+  min-height: 240px;
+  justify-content: center;
+}
+
+.review-placeholder__label {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.review-placeholder__text {
+  font-family: var(--font-description);
+  font-size: clamp(0.95rem, 1vw, 1rem);
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.review-preview-card {
+  min-height: 240px;
+}
+
+.review-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.review-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.review-avatar::before {
+  font-size: 1.75rem;
+}
+
+.review-avatar--short-hair::before {
+  content: '👨';
+}
+.review-avatar--beard::before {
+  content: '🧔';
+}
+.review-avatar--glasses::before {
+  content: '🤓';
+}
+.review-avatar--short-hair-female::before {
+  content: '👱‍♀️';
+}
+.review-avatar--long-hair::before {
+  content: '👩';
+}
+.review-avatar--curly-hair::before {
+  content: '👨‍🦱';
+}
+.review-avatar--neutral-1::before {
+  content: '🙂';
+}
+.review-avatar--neutral-2::before {
+  content: '😌';
+}
+
+.review-private-note {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .review-cta-card,
+  .review-placeholder,
+  .review-preview-card {
+    padding: 24px;
+  }
+
+  .review-cta-card {
+    grid-column: 1 / 2;
   }
 }

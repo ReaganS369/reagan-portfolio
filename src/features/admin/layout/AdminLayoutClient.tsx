@@ -3,6 +3,7 @@
 /** @format */
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { ReviewsProvider } from '@/src/features/testimonials/context/ReviewsProvider';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 
@@ -37,29 +38,31 @@ export default function AdminLayoutClient({ children }: AdminLayoutClientProps) 
   }, [isSidebarOpen]);
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar
-        isOpen={isSidebarOpen}
-        onNavigate={() => setIsSidebarOpen(false)}
-      />
-
-      {isSidebarOpen && (
-        <button
-          type="button"
-          className="admin-sidebar-backdrop"
-          aria-label="Close navigation"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      <div className="admin-main">
-        <AdminHeader
-          isSidebarOpen={isSidebarOpen}
-          onMenuToggle={() => setIsSidebarOpen((open) => !open)}
+    <ReviewsProvider>
+      <div className="admin-layout">
+        <AdminSidebar
+          isOpen={isSidebarOpen}
+          onNavigate={() => setIsSidebarOpen(false)}
         />
 
-        <main className="admin-content">{children}</main>
+        {isSidebarOpen && (
+          <button
+            type="button"
+            className="admin-sidebar-backdrop"
+            aria-label="Close navigation"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        <div className="admin-main">
+          <AdminHeader
+            isSidebarOpen={isSidebarOpen}
+            onMenuToggle={() => setIsSidebarOpen((open) => !open)}
+          />
+
+          <main className="admin-content">{children}</main>
+        </div>
       </div>
-    </div>
+    </ReviewsProvider>
   );
 }

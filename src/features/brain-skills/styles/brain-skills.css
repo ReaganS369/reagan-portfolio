@@ -4,9 +4,10 @@
    Brain Skills — Interactive Hemisphere Visualization
 =================================================== */
 
+/* No z-index: the background paints BELOW the fixed scroll-avatar (z 5) so
+   the character stays visible while traveling through; content lifts above. */
 .brain-section {
   position: relative;
-  z-index: 6;
   background: var(--dark);
   padding: 120px 0 140px;
   overflow: hidden;
@@ -31,10 +32,23 @@
 }
 
 .brain-container {
+  position: relative;
+  z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
   /* Content left-biased to stay clear of scroll avatar */
   max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+.brain-section .section-heading-wrapper {
+  position: relative;
+  z-index: 7;
+}
+
+/* Heading alignment wrapper to match featured-section */
+.section-heading-wrapper .heading-container {
+  width: min(1600px, 92%);
+  margin: 0 auto 0;
 }
 
 .brain-hint {
@@ -77,13 +91,17 @@
 .brain-path--active-design {
   fill: rgba(245, 138, 31, 0.12) !important;
   stroke: rgba(245, 138, 31, 0.6) !important;
-  transition: fill 400ms ease, stroke 400ms ease;
+  transition:
+    fill 400ms ease,
+    stroke 400ms ease;
 }
 
 .brain-path--active-dev {
   fill: rgba(223, 19, 138, 0.12) !important;
   stroke: rgba(223, 19, 138, 0.6) !important;
-  transition: fill 400ms ease, stroke 400ms ease;
+  transition:
+    fill 400ms ease,
+    stroke 400ms ease;
 }
 
 /* ===================================================
@@ -247,8 +265,12 @@
 
   /* Brain is now centered in the stage — fix absolute-positioned
      buttons and orbit to follow the centered 320px brain */
-  .brain-btn--design { left: calc(50% - 140px); }
-  .brain-btn--dev    { left: calc(50% - 5px); }
+  .brain-btn--design {
+    left: calc(50% - 140px);
+  }
+  .brain-btn--dev {
+    left: calc(50% - 5px);
+  }
 
   .brain-orbit {
     /* brain-orbit has width:0 so translate(-50%) = 0; left: 50% centers it */
@@ -277,8 +299,12 @@
 
   /* Recalculate for 240px brain centered in stage:
      design is at +10px, dev at +120px from brain left edge */
-  .brain-btn--design { left: calc(50% - 110px); }
-  .brain-btn--dev    { left: 50%; }
+  .brain-btn--design {
+    left: calc(50% - 110px);
+  }
+  .brain-btn--dev {
+    left: 50%;
+  }
 
   /* Scale down skill orbit so nodes fit within viewport */
   .brain-orbit {
@@ -307,8 +333,12 @@
   }
 
   /* Recalculate for 200px brain: design +10px, dev +100px from brain left */
-  .brain-btn--design { left: calc(50% - 90px); }
-  .brain-btn--dev    { left: 50%; }
+  .brain-btn--design {
+    left: calc(50% - 90px);
+  }
+  .brain-btn--dev {
+    left: 50%;
+  }
 
   .brain-orbit {
     transform: translateY(-50%) scale(0.55);

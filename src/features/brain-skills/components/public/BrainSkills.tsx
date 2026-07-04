@@ -39,21 +39,27 @@ export function BrainSkills() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
   const [active, setActive] = useState<Side>(null);
 
-  const currentSkills = active === 'design' ? DESIGN_SKILLS : active === 'dev' ? DEV_SKILLS : [];
+  const currentSkills =
+    active === 'design' ? DESIGN_SKILLS : active === 'dev' ? DEV_SKILLS : [];
 
-  const handleSide = (side: Side) => setActive((prev) => (prev === side ? null : side));
+  const handleSide = (side: Side) =>
+    setActive((prev) => (prev === side ? null : side));
 
   return (
     <section className="brain-section" ref={ref}>
-      <div className="brain-container">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
-          <SectionNumber number="03" title="How I Think" />
-        </motion.div>
+      <div className="section-heading-wrapper">
+        <div className="heading-container">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            <SectionNumber number="03" title="How I Think" />
+          </motion.div>
+        </div>
+      </div>
 
+      <div className="brain-container">
         {/* Instruction hint */}
         <motion.p
           className="brain-hint"
@@ -94,9 +100,27 @@ export function BrainSkills() {
               strokeLinecap="round"
             />
             {/* Gyri (wrinkles) on left */}
-            <path d="M130 90 Q115 110 120 135" stroke="rgba(245,138,31,0.12)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M110 145 Q100 165 108 185" stroke="rgba(245,138,31,0.10)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M145 200 Q135 220 145 240" stroke="rgba(245,138,31,0.10)" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path
+              d="M130 90 Q115 110 120 135"
+              stroke="rgba(245,138,31,0.12)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M110 145 Q100 165 108 185"
+              stroke="rgba(245,138,31,0.10)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M145 200 Q135 220 145 240"
+              stroke="rgba(245,138,31,0.10)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
 
             {/* Right hemisphere */}
             <path
@@ -114,15 +138,46 @@ export function BrainSkills() {
               strokeLinecap="round"
             />
             {/* Gyri (wrinkles) on right */}
-            <path d="M270 90 Q285 110 280 135" stroke="rgba(223,19,138,0.12)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M290 145 Q300 165 292 185" stroke="rgba(223,19,138,0.10)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M255 200 Q265 220 255 240" stroke="rgba(223,19,138,0.10)" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path
+              d="M270 90 Q285 110 280 135"
+              stroke="rgba(223,19,138,0.12)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M290 145 Q300 165 292 185"
+              stroke="rgba(223,19,138,0.10)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M255 200 Q265 220 255 240"
+              stroke="rgba(223,19,138,0.10)"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
 
             {/* Center divider */}
-            <line x1="200" y1="42" x2="200" y2="268" stroke="rgba(242,239,231,0.08)" strokeWidth="1" strokeDasharray="4 6" />
+            <line
+              x1="200"
+              y1="42"
+              x2="200"
+              y2="268"
+              stroke="rgba(242,239,231,0.08)"
+              strokeWidth="1"
+              strokeDasharray="4 6"
+            />
 
             {/* Stem */}
-            <path d="M185 268 Q200 285 215 268" stroke="rgba(242,239,231,0.15)" strokeWidth="2" fill="none" />
+            <path
+              d="M185 268 Q200 285 215 268"
+              stroke="rgba(242,239,231,0.15)"
+              strokeWidth="2"
+              fill="none"
+            />
           </svg>
 
           {/* Clickable overlay buttons */}
@@ -152,7 +207,12 @@ export function BrainSkills() {
                   <motion.div
                     key={`${active}-${skill.name}`}
                     className={`skill-node skill-node--${active}`}
-                    style={{ '--x': `${pos.x}px`, '--y': `${pos.y}px` } as React.CSSProperties}
+                    style={
+                      {
+                        '--x': `${pos.x}px`,
+                        '--y': `${pos.y}px`,
+                      } as React.CSSProperties
+                    }
                     initial={anim.initial}
                     animate={anim.animate}
                     exit={anim.exit}

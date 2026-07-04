@@ -226,6 +226,21 @@ body.admin-nav-open {
   transition: color var(--admin-transition);
 }
 
+.admin-sidebar__badge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--admin-accent);
+  color: #1a1006;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .admin-sidebar-backdrop {
   position: fixed;
   inset: 0;

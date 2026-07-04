@@ -42,9 +42,6 @@ export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
     >
       <span className="story-item__long">{label}</span>
       <span className="story-item__short">
-        <span className="story-item__glow" aria-hidden="true">
-          <span className="story-item__glow-blob" />
-        </span>
         <Magnet
           disabled={!isMagnetActive}
           padding={2000}
@@ -53,6 +50,9 @@ export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
           inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
         >
           <span className="story-item__chars">
+            <span className="story-item__glow" aria-hidden="true">
+              <span className="story-item__glow-blob" />
+            </span>
             {chars.map((char, i) => (
               <span
                 key={i}

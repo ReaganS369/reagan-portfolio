@@ -1,0 +1,22 @@
+/** @format */
+
+.global-loading-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: var(--dark);
+  opacity: 0;
+  transition: opacity 350ms ease;
+  pointer-events: none;
+}
+
+.global-loading-overlay--visible {
+  opacity: 1;
+  pointer-events: all;
+}

@@ -24,6 +24,14 @@ interface ScrollAvatarProps {
 /** natural image aspect: 855 × 2890 */
 const IMG_RATIO = 2890 / 855;
 
+/** Portion of the character's height framed inside the 3D card — a tight
+ *  head-and-chest portrait rather than the full standing body. */
+const CARD_PORTRAIT_FRACTION = 0.34;
+
+/** Fraction of the (scaled) character height cropped ABOVE the card's top
+ *  edge, so the top of the hair runs out of frame like a real portrait. */
+const CARD_TOP_CROP = 0.05;
+
 /** document-space top/left ignoring motion transforms (offset chain) */
 function docTop(el: HTMLElement): number {
   let t = 0;
@@ -129,15 +137,45 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
 
   const heroEnd = marks?.heroEnd ?? 999999;
 
-  /* ------------- hero: casual/formal 50-50 split (unchanged) ------------- */
+  /* ---------------- hero: casual/formal cinematic split wipe ------------- */
 
-  // Casual: left half visible (50% clipped from right) → fully hidden (100%)
-  const casualClip = useTransform(scrollY, [0, heroEnd], [50, 100], { clamp: true });
-  const casualClipPath = useMotionTemplate`inset(0 ${casualClip}% 0 0)`;
-
-  // Formal: right half visible (50% clipped from left) → fully shown (0%)
-  const formalClip = useTransform(scrollY, [0, heroEnd], [50, 0], { clamp: true });
-  const formalClipPath = useMotionTemplate`inset(0 0 0 ${formalClip}%)`;
+  // One shared boundary line between the two halves. At rest it's already a
+  // diagonal cut (top tilts right, bottom tilts left) rather than a plain
+  // vertical split — then as scrolling begins the diagonal steepens and the
+  // line sweeps left and rides off the image, the casual half dissolving
+  // away until only the formal character remains.
+  //
+  // The rotation pivots around the neck/lower-chin (~SPLIT_PIVOT_FROM% from
+  // the image top) rather than mid-image, and the pivot drifts slightly
+  // upward as the wipe progresses — combined with the leftward sweep the
+  // perceived pivot moves toward the upper-left.
+  const SPLIT_REST_TILT = 11; // diagonal amount (%) already visible at rest
+  const SPLIT_TILT = 22; // total horizontal drift (%) once fully wiping away
+  const SPLIT_PIVOT_FROM = 14; // pivot height (% from top) — neck / lower chin
+  const SPLIT_PIVOT_TO = 8; // pivot eases upward as the scroll progresses
+  const split = useTransform(scrollY, [0, heroEnd], [50, -SPLIT_TILT], {
+    clamp: true,
+  });
+  const splitTilt = useTransform(
+    scrollY,
+    [0, heroEnd * 0.35],
+    [SPLIT_REST_TILT, SPLIT_TILT],
+    { clamp: true },
+  );
+  const splitPivot = useTransform(
+    scrollY,
+    [0, heroEnd],
+    [SPLIT_PIVOT_FROM, SPLIT_PIVOT_TO],
+    { clamp: true },
+  );
+  const splitTop = useTransform(
+    [split, splitTilt, splitPivot] as const,
+    ([s, t, p]: number[]) => s + (t * p) / 100,
+  );
+  const splitBottom = useTransform(
+    [split, splitTilt, splitPivot] as const,
+    ([s, t, p]: number[]) => s - (t * (100 - p)) / 100,
+  );
 
   /* --------- one continuous character: hero → 3D card → contact ---------- */
 
@@ -149,44 +187,71 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
   let sOut = [1, 0.5];
   let xIn = [0, 1];
   let xOut = [0, 0];
+  let bIn = [0, 1];
+  let bOut = [0, 0];
   let useProgressScale = true;
 
   if (marks && marks.card && marks.contact) {
     const { vh, rootW, rootCenterX, card, contact, footerTop } = marks;
     const H = rootW * IMG_RATIO; // full unscaled character height
 
-    // fit the whole character inside the modeling card…
-    const kCard = Math.min(1, (card.height * 0.94) / H);
-    // …then keep shrinking — smallest by the contact section
-    const kContact = kCard * 0.7;
+    // The 3D card frames a head-and-chest PORTRAIT: scale up until the
+    // CARD_PORTRAIT_FRACTION slice of the character fills the card height;
+    // everything below runs past the card and is hidden by the black cover.
+    const kCard = Math.min(1, card.height / (H * CARD_PORTRAIT_FRACTION));
+    // By the contact section the FULL standing body is revealed beside the
+    // "let's build something together" copy — fit the whole height there.
+    const kContact = Math.min(0.32, (contact.height * 0.8) / H);
 
     // while these scroll ranges pass, the character is glued to the section
     // (slope −1 keyframes make the fixed element track document content)
-    const sA = card.top - vh * 0.8; // docking begins as the card rises
+    //
+    // The dock needs a real approach runway: card.top − 0.8vh usually falls
+    // BEFORE the hero's end, and mono() then collapsed the whole hero→card
+    // interpolation into a ~2px scroll span — a visible last-frame snap.
+    // Instead the approach starts during the late hero scroll and lands on
+    // the exact same glued state, guaranteeing ≥0.45vh of interpolation.
+    const approachStart = heroEnd * 0.55;
+    const sA = Math.max(card.top - vh * 0.8, approachStart + vh * 0.45);
     const sB = card.top + card.height - vh * 0.4; // card scrolls on, release
     const sC = contact.top - vh * 0.85; // approach contact
     const sEnd = (footerTop ?? contact.top + contact.height) - vh * 0.05;
 
-    const yCardAt = (s: number) => card.top - s + card.height * 0.03;
+    // Image top sits ABOVE the card's top edge so the hair is cropped
+    const yCardAt = (s: number) => card.top - s - H * kCard * CARD_TOP_CROP;
     const yContactAt = (s: number) =>
       contact.top - s + contact.height / 2 - (H * kContact) / 2;
 
     const xCard = card.centerX - rootCenterX;
     const xContact = contact.anchorX - rootCenterX;
 
-    const inputs = mono([0, heroEnd, sA, sB, sC, sEnd]);
+    // Bottom clip (% of the image) while docked: everything below the card's
+    // portrait window folds away smoothly on approach and unfolds again on
+    // the way to the contact section — one continuous character throughout.
+    const visibleFraction = CARD_TOP_CROP + card.height / (H * kCard);
+    const bClip = Math.max(0, (1 - visibleFraction) * 100);
+
+    const inputs = mono([0, approachStart, sA, sB, sC, sEnd]);
     yIn = inputs;
     yOut = [0, 0, yCardAt(inputs[2]), yCardAt(inputs[3]), yContactAt(inputs[4]), yContactAt(inputs[5])];
     sIn = inputs;
     sOut = [1, 1, kCard, kCard, kContact, kContact];
     xIn = inputs;
     xOut = [0, 0, xCard, xCard, xContact, xContact];
+    bIn = inputs;
+    bOut = [0, 0, bClip, bClip, 0, 0];
     useProgressScale = false;
   }
 
   const avatarY = useTransform(scrollY, yIn, yOut, { clamp: true });
   const avatarX = useTransform(scrollY, xIn, xOut, { clamp: true });
   const avatarScalePx = useTransform(scrollY, sIn, sOut, { clamp: true });
+  const bottomClip = useTransform(scrollY, bIn, bOut, { clamp: true });
+  const bottomEdge = useTransform(bottomClip, (v: number) => 100 - v);
+  // Casual: left of the tilted split line. Formal: right of it. Both share
+  // the scroll-driven bottom edge that folds the body away in the 3D card.
+  const casualClipPath = useMotionTemplate`polygon(0% 0%, ${splitTop}% 0%, ${splitBottom}% ${bottomEdge}%, 0% ${bottomEdge}%)`;
+  const formalClipPath = useMotionTemplate`polygon(${splitTop}% 0%, 100% 0%, 100% ${bottomEdge}%, ${splitBottom}% ${bottomEdge}%)`;
   const avatarScaleFallback = useTransform(scrollYProgress, [0, 0.85], [1.0, 0.5], {
     clamp: true,
   });
@@ -203,6 +268,13 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
   );
   const fadeFallback = useTransform(scrollYProgress, [0.88, 0.95], [1, 0], { clamp: true });
   const avatarOpacity = fadeStart !== null ? fadePx : fadeFallback;
+
+  // Top-down black fade over the split casual/formal avatar — hero only.
+  // Fully faded out by the time the hero scrolls away, so it never shows
+  // up once the character docks into the 3D card or the contact section.
+  const heroFadeOpacity = useTransform(scrollY, [0, heroEnd], [1, 0], {
+    clamp: true,
+  });
 
   if (!profile) return null;
 
@@ -229,6 +301,13 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
           draggable={false}
         />
       </motion.div>
+
+      {/* Hero-only top-down fade, black 50% → 0 opacity */}
+      <motion.div
+        className="scroll-avatar-hero-fade"
+        style={{ opacity: heroFadeOpacity }}
+        aria-hidden="true"
+      />
     </motion.div>
   );
 }

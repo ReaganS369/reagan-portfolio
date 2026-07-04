@@ -40,6 +40,27 @@
   pointer-events: none;
 }
 
+/* Hero-only vignette over the split casual/formal avatar — a soft bottom-
+   anchored glow (not a hard-edged band) so it feathers out on all sides
+   instead of reading as a pasted rectangle. Sized to just the lower chest
+   area, not the whole viewport. Opacity is scroll-driven to 0 in
+   ScrollAvatar.tsx so it never appears once the character docks into
+   later sections. */
+.scroll-avatar-hero-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 34dvh;
+  background: radial-gradient(
+    ellipse 70% 100% at 50% 100%,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.22) 55%,
+    rgba(0, 0, 0, 0) 85%
+  );
+  pointer-events: none;
+}
+
 /* Hidden on tablet/mobile — sections are single-column there */
 @media (max-width: 900px) {
   .scroll-avatar-root {

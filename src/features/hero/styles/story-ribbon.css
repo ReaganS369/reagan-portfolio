@@ -74,10 +74,15 @@
   font-size: 20px;
 }
 
+/* Invisible pill hit-area wrapping just the short label — fully rounded
+   corners, 4px top/bottom + 8px sides of breathing room around the text. */
 .story-item__chars {
   display: inline-flex;
   position: relative;
   z-index: 1;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: transparent;
 }
 
 .story-item__char {
@@ -96,12 +101,14 @@
   transform: translateY(15px);
 }
 
-/* Shimmer glow — scoped to just the short-label text area, not the ribbon */
+/* Shimmer glow — lives inside the pill, clipped to it and behind the letters */
 .story-item__glow {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
+  overflow: hidden;
+  border-radius: 999px;
   opacity: 0;
   transition: opacity 200ms ease-in-out;
   transition-delay: 0s;
@@ -125,11 +132,11 @@
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 50% 50%, #fde047 0%, transparent 50%),
-    radial-gradient(circle at 45% 45%, #facc15 0%, transparent 45%),
-    radial-gradient(circle at 55% 55%, #fef08a 0%, transparent 45%),
-    radial-gradient(circle at 45% 55%, #fbbf24 0%, transparent 45%),
-    radial-gradient(circle at 55% 45%, #eab308 0%, transparent 45%);
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--primary) 70%, white) 0%, transparent 50%),
+    radial-gradient(circle at 45% 45%, var(--primary) 0%, transparent 45%),
+    radial-gradient(circle at 55% 55%, color-mix(in srgb, var(--primary) 55%, white) 0%, transparent 45%),
+    radial-gradient(circle at 45% 55%, color-mix(in srgb, var(--primary) 85%, black) 0%, transparent 45%),
+    radial-gradient(circle at 55% 45%, color-mix(in srgb, var(--primary) 70%, black) 0%, transparent 45%);
   mask: radial-gradient(circle at 50% 50%, transparent 0%, transparent 10%, black 25%);
   -webkit-mask: radial-gradient(
     circle at 50% 50%,
@@ -141,7 +148,7 @@
     story-glow-move 2s infinite alternate,
     story-glow-opacity 4s infinite;
   animation-timing-function: cubic-bezier(0.6, 0.8, 0.5, 1);
-  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.6));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--primary) 60%, transparent));
 }
 
 @keyframes story-glow-move {

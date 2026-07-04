@@ -15,23 +15,31 @@ interface HeroData {
   profile: UserProfile | null;
   roles: HeroRole[];
   socialLinks: SocialLink[];
+  isLoading: boolean;
 }
 
 export function useHeroData(): HeroData {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [roles, setRoles] = useState<HeroRole[]>([]);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
+
     async function loadProfile() {
-      const { data } = await supabase.from('profiles').select('*').single();
-      setProfile(data);
+      try {
+        const { data } = await supabase.from('profiles').select('*').single();
+        if (active) setProfile(data);
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function loadRoles() {
       try {
         const data = await getHeroRoles();
-        setRoles(data ?? []);
+        if (active) setRoles(data ?? []);
       } catch (err) {
         console.error(err);
       }
@@ -40,16 +48,22 @@ export function useHeroData(): HeroData {
     async function loadSocialLinks() {
       try {
         const data = await getSocialLinks();
-        setSocialLinks(data ?? []);
+        if (active) setSocialLinks(data ?? []);
       } catch (err) {
         console.error(err);
       }
     }
 
-    loadProfile();
-    loadRoles();
-    loadSocialLinks();
+    Promise.allSettled([loadProfile(), loadRoles(), loadSocialLinks()]).then(
+      () => {
+        if (active) setIsLoading(false);
+      },
+    );
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  return { profile, roles, socialLinks };
+  return { profile, roles, socialLinks, isLoading };
 }

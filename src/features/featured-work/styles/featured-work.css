@@ -4,17 +4,89 @@
    Featured Work — Bento Grid
 =================================================== */
 
+/* No z-index here on purpose: the section must NOT create a stacking
+   context, so its children can interleave with the fixed scroll-avatar
+   (z-index 5) — hole bg below it (4), black cover + cards above (6/7). */
 .featured-section {
   position: relative;
-  z-index: 6;
-  background: var(--dark);
+  background: #000;
   padding: 120px 0 100px;
   overflow: hidden;
 }
 
 .featured-container {
+  position: relative;
+  z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
+}
+
+/* ===================================================
+   Character window layers
+   Layer B (.featured-hole-bg, z 4)  — behind the character, card area only
+   Layer A (.featured-cover,   z 6)  — black, on top of the character,
+                                       everywhere EXCEPT the card area
+   --fw-hole-* vars are measured in FeaturedWork.tsx
+=================================================== */
+
+.featured-hole-bg {
+  position: absolute;
+  top: var(--fw-hole-top, 0px);
+  left: var(--fw-hole-left, 0px);
+  width: var(--fw-hole-w, 0px);
+  height: var(--fw-hole-h, 0px);
+  z-index: 4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0c0509;
+  pointer-events: none;
+}
+
+.featured-hole-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(223, 19, 138, 0.28) 0%,
+    transparent 60%
+  );
+  animation: glow-breathe 5s ease-in-out infinite;
+}
+
+.featured-cover {
+  position: absolute;
+  z-index: 6;
+  background: #000;
+  pointer-events: none;
+}
+
+/* Until measured, the top strip covers the whole section (hole size 0) */
+.featured-cover--top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--fw-hole-top, 100%);
+}
+
+.featured-cover--left {
+  top: var(--fw-hole-top, 100%);
+  left: 0;
+  width: var(--fw-hole-left, 0px);
+  height: var(--fw-hole-h, 0px);
+}
+
+.featured-cover--right {
+  top: var(--fw-hole-top, 100%);
+  left: calc(var(--fw-hole-left, 0px) + var(--fw-hole-w, 0px));
+  right: 0;
+  height: var(--fw-hole-h, 0px);
+}
+
+.featured-cover--bottom {
+  top: calc(var(--fw-hole-top, 100%) + var(--fw-hole-h, 0px));
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* ===================================================
@@ -66,8 +138,18 @@
 }
 
 .bento-card:hover {
-  border-color: rgba(245, 138, 31, 0.35);
+  border-color: rgba(223, 19, 138, 0.45);
   transform: translateY(-4px);
+}
+
+/* 3D card is a transparent window over the fixed character — no fill, and
+   no hover lift (the window must stay aligned with the hole behind it) */
+.bento-card--3d {
+  background: transparent;
+}
+
+.bento-card--3d:hover {
+  transform: none;
 }
 
 .bento-card:hover .bento-cta-overlay {
@@ -93,12 +175,9 @@
   );
 }
 
+/* Transparent — the glow lives in .featured-hole-glow BEHIND the character */
 .bento-visual--3d {
-  background: radial-gradient(
-    ellipse at 50% 30%,
-    rgba(223, 19, 138, 0.14) 0%,
-    transparent 60%
-  );
+  background: none;
 }
 
 .bento-visual--ui {
@@ -152,17 +231,6 @@
   50%       { opacity: 1;   }
 }
 
-.bento-3d-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 50% 20%,
-    rgba(223, 19, 138, 0.2) 0%,
-    transparent 55%
-  );
-  animation: glow-breathe 5s ease-in-out infinite;
-}
-
 @keyframes glow-breathe {
   0%, 100% { opacity: 0.6; }
   50%       { opacity: 1;   }
@@ -192,25 +260,30 @@
   padding: 28px 28px 24px;
 }
 
+/* Category is the big white heading now */
 .bento-category {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* Title becomes the small orange sub */
+.bento-title {
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: clamp(0.7rem, 0.9vw, 0.8rem);
   font-weight: 700;
   letter-spacing: 3px;
+  text-transform: uppercase;
   color: var(--primary);
-  opacity: 0.8;
-  margin-bottom: 10px;
+  line-height: 1.2;
+  margin-bottom: 0;
 }
 
-.bento-title {
-  font-family: var(--font-heading);
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.1;
-  margin-bottom: 10px;
-}
-
+/* Body copy hidden by default — revealed on card hover */
 .bento-desc {
   font-family: var(--font-description);
   font-size: clamp(0.8rem, 1vw, 0.9rem);
@@ -218,6 +291,22 @@
   color: var(--text-muted);
   line-height: 1.6;
   max-width: 40ch;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  overflow: hidden;
+  transition:
+    max-height 320ms ease,
+    opacity 280ms ease,
+    transform 280ms ease,
+    margin-top 320ms ease;
+}
+
+.bento-card:hover .bento-desc {
+  max-height: 8em;
+  opacity: 1;
+  transform: translateY(0);
+  margin-top: 10px;
 }
 
 /* ===================================================
@@ -244,7 +333,7 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--primary);
+  color: var(--secondary);
 }
 
 /* ===================================================

@@ -4,9 +4,11 @@
    Contact CTA — Large Editorial Section
 =================================================== */
 
+/* No z-index: the section's dark background must paint BELOW the fixed
+   scroll-avatar (z 5) so the character's full body is revealed standing
+   beside the copy. The container is lifted above the avatar instead. */
 .contact-cta-section {
   position: relative;
-  z-index: 6;
   background: var(--dark);
   padding: 120px 0 160px;
   overflow: hidden;
@@ -14,7 +16,7 @@
 
 .contact-cta-container {
   position: relative;
-  z-index: 1;
+  z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
   /* Stay in left ~60% to give avatar room */

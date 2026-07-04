@@ -2,66 +2,23 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { SectionNumber } from '@/src/components/home/SectionNumber';
+import ReviewModal from '../ReviewModal';
+import { createReview, getApprovedReviews, type Review } from '../../api/reviews';
+import { recommendationLabel, relationshipLabel } from '../../lib/reviewMeta';
 import '../../styles/testimonials.css';
 
-interface Testimonial {
-  id: number;
-  name: string;
-  role: string;
-  company: string;
-  platform: string;
+export type ReviewFormValues = {
+  avatar: string;
   rating: number;
-  review: string;
-}
-
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: 1,
-    name: 'Alex Johnson',
-    role: 'Creative Director',
-    company: 'Studio Pixel',
-    platform: 'LinkedIn',
-    rating: 5,
-    review:
-      'Reagan delivered exceptional 3D character assets that elevated our entire game project. His ability to blend artistic vision with technical precision is rare — and he hit every deadline.',
-  },
-  {
-    id: 2,
-    name: 'Sarah Chen',
-    role: 'Product Manager',
-    company: 'TechStart Inc.',
-    platform: 'Upwork',
-    rating: 5,
-    review:
-      'Outstanding UI/UX work on our mobile app. Reagan understands both design principles and technical constraints, making collaboration seamless from brief to final build.',
-  },
-  {
-    id: 3,
-    name: 'Marcus Rivera',
-    role: 'Indie Developer',
-    company: 'Solo Games',
-    platform: 'Twitter/X',
-    rating: 5,
-    review:
-      'Worked with Reagan on game art and VFX. The quality exceeded expectations and his communication throughout was excellent. Will definitely collaborate again.',
-  },
-  {
-    id: 4,
-    name: 'Priya Nair',
-    role: 'Startup Founder',
-    company: 'Luminate Labs',
-    platform: 'Upwork',
-    rating: 5,
-    review:
-      'Reagan redesigned our entire app from the ground up. Clean, fast, and beautiful — our retention metrics jumped 40% after the new UI launched. Highly recommend.',
-  },
-];
-
-const AVG_RATING = 4.9;
-const TOTAL_REVIEWS = 24;
+  displayName: string;
+  publicReview: string;
+  privateSuggestion: string;
+  recommend: 'yes' | 'maybe' | 'no' | '';
+  relationship: string;
+};
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
@@ -87,65 +44,180 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+function ReviewPlaceholder() {
+  return (
+    <motion.div className="testimonial-card review-placeholder" variants={item}>
+      <span className="review-placeholder__label">
+        Your review belongs here
+      </span>
+      <p className="review-placeholder__text">
+        Leave feedback about the portfolio, skills, and experience. Approved
+        reviews will appear publicly once the admin reviews them.
+      </p>
+    </motion.div>
+  );
+}
+
+function ReviewPreview({ review }: { review: ReviewFormValues }) {
+  const recommendText = useMemo(() => {
+    if (review.recommend === 'yes') return 'Would recommend';
+    if (review.recommend === 'maybe') return 'May recommend';
+    if (review.recommend === 'no') return 'Would not recommend';
+    return 'No recommendation selected';
+  }, [review.recommend]);
+
+  return (
+    <motion.div
+      className="testimonial-card review-preview-card"
+      variants={item}
+    >
+      <div className="review-preview-header">
+        <div
+          className={`review-avatar review-avatar--${review.avatar}`}
+          aria-hidden="true"
+        />
+        <div>
+          <span className="testimonial-name">{review.displayName}</span>
+          <span className="testimonial-role">
+            {review.relationship || 'Reviewer'} · {recommendText}
+          </span>
+        </div>
+      </div>
+      <StarRating rating={review.rating} />
+      <blockquote className="testimonial-review">
+        "{review.publicReview}"
+      </blockquote>
+      {review.privateSuggestion && (
+        <p className="review-private-note">
+          Private note included for admin review.
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+function ApprovedReviewCard({ review }: { review: Review }) {
+  const recommend = recommendationLabel(review.recommendation);
+  const role = relationshipLabel(review.relationship) ?? 'Reviewer';
+
+  return (
+    <motion.div className="testimonial-card" variants={item}>
+      <div className="review-preview-header">
+        <div
+          className={`review-avatar review-avatar--${review.avatar}`}
+          aria-hidden="true"
+        />
+        <div>
+          <span className="testimonial-name">{review.display_name}</span>
+          <span className="testimonial-role">
+            {recommend ? `${role} · ${recommend}` : role}
+          </span>
+        </div>
+      </div>
+      <StarRating rating={review.rating} />
+      <blockquote className="testimonial-review">
+        "{review.public_review}"
+      </blockquote>
+    </motion.div>
+  );
+}
+
 export function Testimonials() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [submittedReview, setSubmittedReview] =
+    useState<ReviewFormValues | null>(null);
+  const [approvedReviews, setApprovedReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void getApprovedReviews()
+      .then((reviews) => {
+        if (active) setApprovedReviews(reviews);
+      })
+      .catch(() => {
+        if (active) setApprovedReviews([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleSubmit = (values: ReviewFormValues) => {
+    setSubmittedReview(values);
+    setModalOpen(false);
+
+    void createReview({
+      avatar: values.avatar || 'neutral-1',
+      rating: values.rating,
+      display_name: values.displayName,
+      public_review: values.publicReview,
+      private_suggestion: values.privateSuggestion || null,
+      recommendation: values.recommend || 'maybe',
+      relationship: values.relationship || null,
+    }).catch(() => {
+      /* submission is best-effort; the preview still reflects their input */
+    });
+  };
 
   return (
     <section className="testimonials-section" ref={ref}>
-      <div className="testimonials-container">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
-          <SectionNumber number="04" title="What Others Say" />
-        </motion.div>
+      <div className="section-heading-wrapper">
+        <div className="heading-container">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            <SectionNumber number="04" title="What Others Say" />
+          </motion.div>
+        </div>
+      </div>
 
+      <div className="testimonials-container">
         <motion.div
           className="testimonials-grid"
           variants={container}
           initial="hidden"
           animate={isInView ? 'show' : 'hidden'}
         >
-          {/* Average rating feature card */}
-          <motion.div className="avg-card" variants={item}>
-            <div className="avg-card__bg" />
-            <div className="avg-card__content">
-              <span className="avg-card__label">AVERAGE RATING</span>
-              <div className="avg-card__number">
-                {AVG_RATING}<span className="avg-card__star">★</span>
-              </div>
-              <StarRating rating={5} />
-              <p className="avg-card__count">Based on {TOTAL_REVIEWS} reviews</p>
-              <div className="avg-card__platforms">
-                <span>LinkedIn</span>
-                <span>·</span>
-                <span>Upwork</span>
-                <span>·</span>
-                <span>Direct</span>
-              </div>
-            </div>
+          <motion.div className="review-cta-card" variants={item}>
+            <span className="avg-card__label">Leave Feedback</span>
+            <h3 className="review-cta-card__title">
+              Share your experience with Reagan’s portfolio.
+            </h3>
+            <p className="review-cta-card__text">
+              Rate the work, choose a premium avatar, and submit a short public
+              review. Optional private suggestions let you speak directly to the
+              admin.
+            </p>
+            <button
+              type="button"
+              className="review-cta-button"
+              onClick={() => setModalOpen(true)}
+            >
+              Leave a Review
+            </button>
           </motion.div>
 
-          {/* Individual testimonial cards */}
-          {TESTIMONIALS.map((t) => (
-            <motion.div key={t.id} className="testimonial-card" variants={item}>
-              <StarRating rating={t.rating} />
-              <blockquote className="testimonial-review">"{t.review}"</blockquote>
-              <div className="testimonial-footer">
-                <div className="testimonial-meta">
-                  <span className="testimonial-name">{t.name}</span>
-                  <span className="testimonial-role">
-                    {t.role} · {t.company}
-                  </span>
-                </div>
-                <span className="testimonial-platform">{t.platform}</span>
-              </div>
-            </motion.div>
+          {approvedReviews.map((review) => (
+            <ApprovedReviewCard key={review.id} review={review} />
           ))}
+
+          {submittedReview ? (
+            <ReviewPreview review={submittedReview} />
+          ) : (
+            approvedReviews.length === 0 && <ReviewPlaceholder />
+          )}
         </motion.div>
       </div>
+
+      <ReviewModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleSubmit}
+      />
     </section>
   );
 }

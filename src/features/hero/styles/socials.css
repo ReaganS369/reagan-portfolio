@@ -4,10 +4,11 @@
    Hero — Social Links
 =================================================== */
 
+/* CTA buttons → Social icons */
 .hero-socials {
   display: flex;
   gap: 48px;
-  margin-top: 42px;
+  margin-top: 36px;
   justify-content: flex-start;
   align-items: center;
 }

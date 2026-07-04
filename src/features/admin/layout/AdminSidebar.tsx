@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { adminNavigation, isNavItemActive } from '@/src/features/admin/constants/navigation';
+import { useReviews } from '@/src/features/testimonials/context/ReviewsProvider';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -14,6 +15,7 @@ type SidebarProps = {
 
 export default function Sidebar({ isOpen, onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const { pendingCount } = useReviews();
 
   return (
     <aside
@@ -60,6 +62,14 @@ export default function Sidebar({ isOpen, onNavigate }: SidebarProps) {
                         aria-hidden="true"
                       />
                       <span>{item.label}</span>
+                      {item.badge === 'pendingReviews' && pendingCount > 0 && (
+                        <span
+                          className="admin-sidebar__badge"
+                          aria-label={`${pendingCount} pending reviews`}
+                        >
+                          {pendingCount}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 );

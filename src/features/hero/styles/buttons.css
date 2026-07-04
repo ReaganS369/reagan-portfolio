@@ -4,52 +4,106 @@
    Hero — Buttons
 =================================================== */
 
+/* Subtitle → CTA buttons */
 .hero-buttons {
   display: flex;
   gap: 18px;
-  margin-top: 42px;
+  margin-top: 36px;
 }
 
+/* ===================================================
+   3D layered button (layerA = top face, layerB = base)
+=================================================== */
+
+.btn-3d {
+  --btn-h: 54px;
+  --btn-lift: 4px;
+  --btn-hover-lift: 2px;
+  position: relative;
+  display: inline-block;
+  height: calc(var(--btn-h) + var(--btn-lift));
+}
+
+.btn-3d--primary {
+  width: 300px;
+  max-width: 100%;
+}
+
+.btn-3d--secondary {
+  width: 200px;
+  max-width: 100%;
+}
+
+/* layerB — stationary base, top-aligned with layerA */
+.btn-3d__base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--btn-h) + var(--btn-lift));
+  border-radius: 8px;
+  pointer-events: none;
+  transition: height 90ms ease-out, top 90ms ease-out;
+}
+
+.btn-3d__base--primary {
+  background: var(--primary);
+  border: 0.5px solid var(--primary);
+}
+
+.btn-3d__base--secondary {
+  background: var(--text);
+  border: 0.5px solid var(--text);
+}
+
+/* layerA — the real, interactive top face */
 .primary-btn,
 .secondary-btn {
-  height: 54px;
-  padding: 16px 32px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--btn-h);
+  padding: 0 32px;
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-ui);
   font-size: 18px;
   font-weight: 700;
   box-sizing: border-box;
   cursor: pointer;
-  transition:
-    background 220ms ease,
-    border 220ms ease,
-    color 220ms ease,
-    transform 220ms ease;
+  transform: translateY(0);
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .primary-btn {
-  border: none;
+  border: 0.5px solid var(--primary);
   background: var(--primarydark);
   color: var(--text);
 }
 
-.primary-btn:hover {
-  background: var(--secondary);
-  border-color: var(--secondary);
-  color: var(--text);
-  transform: translateY(-3px);
-}
-
 .secondary-btn {
-  background: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary);
+  border: 0.5px solid var(--text);
+  background: var(--dark);
+  color: var(--text);
 }
 
-.secondary-btn:hover {
-  background: transparent;
-  border-color: var(--secondary);
-  color: var(--secondary);
+.btn-3d:hover .primary-btn,
+.btn-3d:hover .secondary-btn {
+  transform: translateY(calc(-1 * var(--btn-hover-lift)));
+}
+
+.btn-3d:active .btn-3d__base {
+  top: var(--btn-lift);
+  height: var(--btn-h);
+}
+
+.btn-3d:active .primary-btn,
+.btn-3d:active .secondary-btn {
+  transform: translateY(var(--btn-lift));
+  transition: transform 90ms ease-out;
 }
 
 /* ===================================================
@@ -70,10 +124,13 @@
     flex-wrap: wrap;
   }
 
+  .btn-3d {
+    --btn-h: 48px;
+  }
+
   .primary-btn,
   .secondary-btn {
-    height: 48px;
-    padding: 12px 22px;
+    padding: 0 22px;
     font-size: clamp(14px, 4vw, 18px);
   }
 }

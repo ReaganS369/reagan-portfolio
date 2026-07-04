@@ -2,8 +2,9 @@
 
 'use client';
 
-import { RefObject } from 'react';
+import { RefObject, useEffect } from 'react';
 import { useHeroData } from '../../hooks/useHeroData';
+import { useReportHomeReady } from '@/src/components/ui/loading/GlobalLoadingProvider';
 import { HeroNavigationRibbon } from './HeroNavigationRibbon';
 import { HeroCVRibbon } from './HeroCVRibbon';
 import { HeroContent } from './HeroContent';
@@ -15,11 +16,12 @@ interface HomeHeroProps {
 }
 
 export default function HomeHero({ sectionRef }: HomeHeroProps) {
-  const { profile, roles, socialLinks } = useHeroData();
+  const { profile, roles, socialLinks, isLoading } = useHeroData();
+  const reportHomeReady = useReportHomeReady();
 
-  if (!profile || roles.length === 0) {
-    return <div className="home-hero-loading">Loading...</div>;
-  }
+  useEffect(() => {
+    if (!isLoading) reportHomeReady();
+  }, [isLoading, reportHomeReady]);
 
   return (
     <section className="home-hero" ref={sectionRef}>
@@ -30,11 +32,15 @@ export default function HomeHero({ sectionRef }: HomeHeroProps) {
 
       <div className="hero-grid">
         <HeroContent roles={roles} socialLinks={socialLinks} />
-        {/* Right grid column: empty on desktop (ScrollAvatar fixed overlay handles it),
-            shows cropped casual head/shoulders on mobile (≤900px) */}
         <div className="hero-right">
           <div className="character-wrapper">
-            <img src={profile.casual_avatar} className="character" alt="" />
+            {profile?.casual_avatar && (
+              <img
+                src={profile.casual_avatar}
+                className="character"
+                alt="Casual avatar"
+              />
+            )}
           </div>
         </div>
       </div>

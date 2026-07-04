@@ -32,6 +32,56 @@
   pointer-events: none;
 }
 
+.home-hero__load-state {
+  position: relative;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.home-hero__load-state--visible {
+  opacity: 1;
+}
+
+.home-hero__loader {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: var(--dark);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.home-hero__loader--visible {
+  opacity: 1;
+}
+
+.home-hero-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-background);
+  opacity: 0;
+  transition: opacity 350ms ease;
+  pointer-events: none;
+}
+
+.home-hero-loader-overlay--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
 .hero-grid {
   position: relative;
   flex: 1;
@@ -40,11 +90,15 @@
   display: grid;
   grid-template-columns: 58% 42%;
   align-items: end;
+  /* Guarantees clearance under the two ribbons even on short viewports,
+     where flex-end alignment alone would let the name ride up into them. */
+  padding-top: clamp(100px, 14vh, 160px);
 }
 
 .hero-left {
   position: relative;
-  z-index: 5;
+  /* Explicitly above the fixed scroll-avatar (z 5) and its hero-only fade */
+  z-index: 6;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -63,16 +117,20 @@
    Hero — Content Typography
 =================================================== */
 
+/* 128px title on desktop, scaling down responsively */
 .hero-name {
   font-size: clamp(3rem, 8.9vw, 8rem);
 }
 
+/* Name → Role */
 .hero-role-container {
   position: relative;
-  margin-top: 30px;
+  margin-top: 36px;
   height: 40px;
+  display: flex;
+  align-items: center;
   font-family: var(--font-subtitle);
-  font-size: clamp(1.125rem, 1.5vw + 0.5rem, 2rem);
+  font-size: clamp(1.25rem, 1.5vw + 0.65rem, 2rem); /* 32px desktop */
   font-weight: 500;
   letter-spacing: 0.5px;
   color: var(--primary);
@@ -89,15 +147,15 @@
   flex-shrink: 0;
 }
 
-
+/* Role → Subtitle */
 .hero-description {
   width: max-content;
   max-width: 100%;
-  margin-top: 28px;
+  margin-top: 20px;
   color: var(--text-muted);
   font-family: var(--font-description);
   font-weight: 500;
-  font-size: clamp(1rem, 1vw + 0.5rem, 1.25rem);
+  font-size: clamp(1.125rem, 1vw + 0.75rem, 1.5rem); /* 24px desktop */
   line-height: 1.5;
   white-space: nowrap;
 }

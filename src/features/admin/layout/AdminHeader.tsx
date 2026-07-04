@@ -4,6 +4,7 @@
 
 import { Menu, X } from 'lucide-react';
 import { logoutAdmin } from '@/src/features/admin/actions/auth';
+import ReviewNotificationBell from '@/src/features/testimonials/components/admin/ReviewNotificationBell';
 
 type HeaderProps = {
   onMenuToggle: () => void;
@@ -31,6 +32,8 @@ export default function Header({ onMenuToggle, isSidebarOpen }: HeaderProps) {
       </div>
 
       <div className="admin-header__end">
+        <ReviewNotificationBell />
+
         <form action={logoutAdmin}>
           <button
             type="submit"

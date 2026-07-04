@@ -13,6 +13,7 @@ import {
   TableHeadCell,
   TableRow,
 } from '@/src/components/ui';
+import DashboardRecentReviews from '@/src/features/testimonials/components/admin/DashboardRecentReviews';
 
 const stats = [
   { label: 'Projects', value: '—', hint: 'Published portfolio work' },
@@ -78,6 +79,8 @@ export default function AdminDashboard() {
           ))}
         </div>
       </Section>
+
+      <DashboardRecentReviews />
 
       <Section
         title="Recent activity"

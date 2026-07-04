@@ -2,9 +2,10 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import HomeHero from '@/src/features/hero/components/public/HomeHero';
+import { useMagneticSnap } from '@/src/features/hero/hooks/useMagneticSnap';
 import {
   ScrollAvatar,
   type AvatarProfile,
@@ -18,7 +19,23 @@ import { HomeFooter } from '@/src/components/home/HomeFooter';
 
 export default function Home() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const [avatarProfile, setAvatarProfile] = useState<AvatarProfile | null>(null);
+  const [avatarProfile, setAvatarProfile] = useState<AvatarProfile | null>(
+    null,
+  );
+
+  // Always start at the hero: stop the browser from restoring the previous
+  // scroll position on reload — the scroll-driven avatar/section choreography
+  // is designed to begin from the top.
+  useLayoutEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Magnetic scroll: glide from Hero to the next section once the hero title
+  // has left the viewport and the user's downward scroll comes to rest.
+  useMagneticSnap(heroRef);
 
   useEffect(() => {
     supabase

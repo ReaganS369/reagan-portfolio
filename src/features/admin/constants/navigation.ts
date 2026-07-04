@@ -8,16 +8,21 @@ import {
   Images,
   LayoutDashboard,
   Link2,
+  MessageSquareQuote,
   Settings,
   Sparkles,
   Upload,
   Wrench,
 } from 'lucide-react';
 
+/** Keys for dynamic notification badges resolved at render time. */
+export type AdminNavBadge = 'pendingReviews';
+
 export type AdminNavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+  badge?: AdminNavBadge;
 };
 
 export type AdminNavGroup = {
@@ -37,6 +42,12 @@ export const adminNavigation: AdminNavGroup[] = [
       { label: 'Skills Explorer', href: '/admin/skills', icon: Wrench },
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
       { label: 'Social Links', href: '/admin/social-links', icon: Link2 },
+      {
+        label: 'Reviews',
+        href: '/admin/reviews',
+        icon: MessageSquareQuote,
+        badge: 'pendingReviews',
+      },
     ],
   },
   {

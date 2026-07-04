@@ -30,15 +30,20 @@ export function AboutJourney() {
 
   return (
     <section className="about-section" ref={ref}>
-      <div className="about-container">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
-          <SectionNumber number="02" title="The Journey" />
-        </motion.div>
+      {/* Full-width header to match FeaturedWork alignment */}
+      <div className="section-heading-wrapper">
+        <div className="heading-container">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            <SectionNumber number="02" title="The Journey" />
+          </motion.div>
+        </div>
+      </div>
 
+      <div className="about-container">
         <div className="about-years">
           {JOURNEY.map((entry, i) => (
             <div key={entry.year} className="year-row">
@@ -52,17 +57,23 @@ export function AboutJourney() {
                 onMouseEnter={() => setHoveredYear(entry.year)}
                 onMouseLeave={() => setHoveredYear(null)}
                 onClick={() =>
-                  setExpandedYear(expandedYear === entry.year ? null : entry.year)
+                  setExpandedYear(
+                    expandedYear === entry.year ? null : entry.year,
+                  )
                 }
               >
                 <span className="year-num">{entry.year}</span>
                 <div className="year-meta">
                   <span className="year-title">{entry.title}</span>
                   {entry.projects !== null && (
-                    <span className="year-count">{entry.projects} projects</span>
+                    <span className="year-count">
+                      {entry.projects} projects
+                    </span>
                   )}
                 </div>
-                <span className="year-toggle">{expandedYear === entry.year ? '−' : '+'}</span>
+                <span className="year-toggle">
+                  {expandedYear === entry.year ? '−' : '+'}
+                </span>
               </motion.div>
 
               {/* Inline expanded panel */}
@@ -102,13 +113,18 @@ export function AboutJourney() {
                     <p className="year-float__summary">{entry.summary}</p>
                     <div className="year-float__tech">
                       {entry.tech.map((t) => (
-                        <span key={t} className="year-tech-tag year-tech-tag--small">
+                        <span
+                          key={t}
+                          className="year-tech-tag year-tech-tag--small"
+                        >
                           {t}
                         </span>
                       ))}
                     </div>
                     {entry.projects !== null && (
-                      <span className="year-float__stat">{entry.projects} projects</span>
+                      <span className="year-float__stat">
+                        {entry.projects} projects
+                      </span>
                     )}
                   </motion.div>
                 )}

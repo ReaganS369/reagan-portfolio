@@ -150,7 +150,7 @@ function RoleLayerView({ layer }: { layer: RoleLayer }) {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
+        gap: 8,
         whiteSpace: 'nowrap',
         opacity: 0,
       }}
