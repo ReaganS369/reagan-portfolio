@@ -16,21 +16,21 @@
 =================================================== */
 
 .btn-3d {
-  --btn-h: 54px;
+  --btn-h: 56px;
   --btn-lift: 4px;
   --btn-hover-lift: 2px;
+  /* Cursor spotlight (set from JS): 0 = light far away, 1 = light on top */
+  --spot: 0;
+  --spot-x: 50%;
+  --spot-y: 50%;
   position: relative;
   display: inline-block;
   height: calc(var(--btn-h) + var(--btn-lift));
 }
 
-.btn-3d--primary {
-  width: 300px;
-  max-width: 100%;
-}
-
+.btn-3d--primary,
 .btn-3d--secondary {
-  width: 200px;
+  width: 280px;
   max-width: 100%;
 }
 
@@ -56,6 +56,11 @@
   border: 0.5px solid var(--text);
 }
 
+/* The shadow the object casts deepens as the light source approaches */
+.btn-3d__base {
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, calc(0.65 * var(--spot)));
+}
+
 /* layerA — the real, interactive top face */
 .primary-btn,
 .secondary-btn {
@@ -69,13 +74,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   font-family: var(--font-ui);
   font-size: 18px;
   font-weight: 700;
+  text-decoration: none;
   box-sizing: border-box;
   cursor: pointer;
   transform: translateY(0);
   transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+
+/* Soft press ripple travelling across the face from the press point */
+.btn-ripple {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.12) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: btn-ripple-travel 650ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes btn-ripple-travel {
+  to {
+    transform: translate(-50%, -50%) scale(42);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-ripple {
+    display: none;
+  }
 }
 
 .primary-btn {
@@ -92,7 +133,6 @@
 
 .btn-3d:hover .primary-btn,
 .btn-3d:hover .secondary-btn {
-  transform: translateY(calc(-1 * var(--btn-hover-lift)));
 }
 
 .btn-3d:active .btn-3d__base {

@@ -2,12 +2,18 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { SectionNumber } from '@/src/components/home/SectionNumber';
 import ReviewModal from '../ReviewModal';
-import { createReview, getApprovedReviews, type Review } from '../../api/reviews';
-import { recommendationLabel, relationshipLabel } from '../../lib/reviewMeta';
+import {
+  createReview,
+  getApprovedReviews,
+  subscribeToReviews,
+  type Review,
+} from '../../api/reviews';
+import { ReviewsCarousel } from './ReviewsCarousel';
+import ReviewReadMoreModal from './ReviewReadMoreModal';
 import '../../styles/testimonials.css';
 
 export type ReviewFormValues = {
@@ -22,12 +28,7 @@ export type ReviewFormValues = {
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } },
-};
-
-const item = {
+const heading = {
   hidden: { opacity: 0, y: 32 },
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
 };
@@ -44,21 +45,7 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function ReviewPlaceholder() {
-  return (
-    <motion.div className="testimonial-card review-placeholder" variants={item}>
-      <span className="review-placeholder__label">
-        Your review belongs here
-      </span>
-      <p className="review-placeholder__text">
-        Leave feedback about the portfolio, skills, and experience. Approved
-        reviews will appear publicly once the admin reviews them.
-      </p>
-    </motion.div>
-  );
-}
-
-function ReviewPreview({ review }: { review: ReviewFormValues }) {
+function PendingPreviewCard({ review }: { review: ReviewFormValues }) {
   const recommendText = useMemo(() => {
     if (review.recommend === 'yes') return 'Would recommend';
     if (review.recommend === 'maybe') return 'May recommend';
@@ -67,10 +54,8 @@ function ReviewPreview({ review }: { review: ReviewFormValues }) {
   }, [review.recommend]);
 
   return (
-    <motion.div
-      className="testimonial-card review-preview-card"
-      variants={item}
-    >
+    <div className="review-preview-card">
+      <span className="review-preview-badge">Pending admin approval</span>
       <div className="review-preview-header">
         <div
           className={`review-avatar review-avatar--${review.avatar}`}
@@ -87,62 +72,50 @@ function ReviewPreview({ review }: { review: ReviewFormValues }) {
       <blockquote className="testimonial-review">
         "{review.publicReview}"
       </blockquote>
-      {review.privateSuggestion && (
-        <p className="review-private-note">
-          Private note included for admin review.
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-function ApprovedReviewCard({ review }: { review: Review }) {
-  const recommend = recommendationLabel(review.recommendation);
-  const role = relationshipLabel(review.relationship) ?? 'Reviewer';
-
-  return (
-    <motion.div className="testimonial-card" variants={item}>
-      <div className="review-preview-header">
-        <div
-          className={`review-avatar review-avatar--${review.avatar}`}
-          aria-hidden="true"
-        />
-        <div>
-          <span className="testimonial-name">{review.display_name}</span>
-          <span className="testimonial-role">
-            {recommend ? `${role} · ${recommend}` : role}
-          </span>
-        </div>
-      </div>
-      <StarRating rating={review.rating} />
-      <blockquote className="testimonial-review">
-        "{review.public_review}"
-      </blockquote>
-    </motion.div>
+      <p className="review-preview-note">
+        Thanks for your feedback! This will appear publicly once approved.
+      </p>
+    </div>
   );
 }
 
 export function Testimonials() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [submittedReview, setSubmittedReview] =
     useState<ReviewFormValues | null>(null);
+
   const [approvedReviews, setApprovedReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [readMoreReview, setReadMoreReview] = useState<Review | null>(null);
+
+  const loadReviews = useCallback(async () => {
+    try {
+      const reviews = await getApprovedReviews();
+      setApprovedReviews(reviews);
+      setError(null);
+    } catch {
+      setError('Unable to load reviews right now.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let active = true;
-    void getApprovedReviews()
-      .then((reviews) => {
-        if (active) setApprovedReviews(reviews);
-      })
-      .catch(() => {
-        if (active) setApprovedReviews([]);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+    void loadReviews();
+    // Live sync: admin approvals/edits/deletes appear here without a refresh.
+    const unsubscribe = subscribeToReviews(() => void loadReviews());
+    return unsubscribe;
+  }, [loadReviews]);
+
+  const averageRating = useMemo(() => {
+    if (approvedReviews.length === 0) return 0;
+    const sum = approvedReviews.reduce((acc, r) => acc + r.rating, 0);
+    return sum / approvedReviews.length;
+  }, [approvedReviews]);
 
   const handleSubmit = (values: ReviewFormValues) => {
     setSubmittedReview(values);
@@ -164,34 +137,34 @@ export function Testimonials() {
   return (
     <section className="testimonials-section" ref={ref}>
       <div className="section-heading-wrapper">
-        <div className="heading-container">
+        <div className="heading-container testimonials-heading-row">
           <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: EASE }}
+            initial="hidden"
+            animate={isInView ? 'show' : 'hidden'}
+            variants={heading}
           >
             <SectionNumber number="04" title="What Others Say" />
           </motion.div>
-        </div>
-      </div>
 
-      <div className="testimonials-container">
-        <motion.div
-          className="testimonials-grid"
-          variants={container}
-          initial="hidden"
-          animate={isInView ? 'show' : 'hidden'}
-        >
-          <motion.div className="review-cta-card" variants={item}>
-            <span className="avg-card__label">Leave Feedback</span>
-            <h3 className="review-cta-card__title">
-              Share your experience with Reagan’s portfolio.
-            </h3>
-            <p className="review-cta-card__text">
-              Rate the work, choose a premium avatar, and submit a short public
-              review. Optional private suggestions let you speak directly to the
-              admin.
-            </p>
+          <motion.div
+            className="testimonials-heading-meta"
+            initial="hidden"
+            animate={isInView ? 'show' : 'hidden'}
+            variants={heading}
+            transition={{ delay: 0.1 }}
+          >
+            {approvedReviews.length > 0 && (
+              <div className="testimonials-avg" aria-hidden="true">
+                <span className="testimonials-avg__number">
+                  {averageRating.toFixed(1)}
+                </span>
+                <StarRating rating={Math.round(averageRating)} />
+                <span className="testimonials-avg__count">
+                  from {approvedReviews.length} review
+                  {approvedReviews.length === 1 ? '' : 's'}
+                </span>
+              </div>
+            )}
             <button
               type="button"
               className="review-cta-button"
@@ -200,23 +173,38 @@ export function Testimonials() {
               Leave a Review
             </button>
           </motion.div>
-
-          {approvedReviews.map((review) => (
-            <ApprovedReviewCard key={review.id} review={review} />
-          ))}
-
-          {submittedReview ? (
-            <ReviewPreview review={submittedReview} />
-          ) : (
-            approvedReviews.length === 0 && <ReviewPlaceholder />
-          )}
-        </motion.div>
+        </div>
       </div>
+
+      <motion.div
+        className="testimonials-container"
+        initial={{ opacity: 0, y: 24 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
+      >
+        {submittedReview && <PendingPreviewCard review={submittedReview} />}
+
+        <ReviewsCarousel
+          reviews={approvedReviews}
+          loading={loading}
+          error={error}
+          onRetry={() => {
+            setLoading(true);
+            void loadReviews();
+          }}
+          onReadMore={setReadMoreReview}
+        />
+      </motion.div>
 
       <ReviewModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={handleSubmit}
+      />
+
+      <ReviewReadMoreModal
+        review={readMoreReview}
+        onClose={() => setReadMoreReview(null)}
       />
     </section>
   );

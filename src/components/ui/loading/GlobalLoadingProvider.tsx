@@ -12,11 +12,35 @@ import {
 } from 'react';
 import { usePathname } from 'next/navigation';
 import KineticTextLoader from '../KineticTextLoader';
+import { getStorageUrl } from '@/src/lib/storage';
 import './global-loading-overlay.css';
 
 const HOME_PATH = '/';
 const MIN_LOADING_MS = 1500;
 const FADE_OUT_MS = 350;
+
+/* ===== Cinematic intro (first home visit per session) =====
+   The approved intro clip is fetched IN FULL behind the loading screen and
+   played from a blob: URL, so playback can never stall or show the browser
+   spinner. The loading overlay only lifts once the browser confirms
+   stall-free playback (canplaythrough on the fully-local source); the clip
+   plays exactly once above the already-rendered Hero, then dissolves into
+   it and is removed from the DOM. */
+const INTRO_VIDEO_URL = getStorageUrl('videos/intro.mp4');
+const INTRO_WATCHED_KEY = 'reagan-intro-watched';
+/** Give up preloading after this long and load the page normally. */
+const INTRO_PRELOAD_TIMEOUT_MS = 15000;
+const INTRO_FADE_OUT_MS = 800;
+
+type IntroPhase = 'inactive' | 'preloading' | 'ready' | 'playing' | 'fading';
+
+function markIntroWatched() {
+  try {
+    sessionStorage.setItem(INTRO_WATCHED_KEY, '1');
+  } catch {
+    /* private browsing — replaying on the next load is harmless */
+  }
+}
 
 interface LoadingContextValue {
   reportHomeReady: () => void;
@@ -47,15 +71,140 @@ export function GlobalLoadingProvider({
   const scheduleTimeoutRef = useRef<number | null>(null);
   const fadeTimeoutRef = useRef<number | null>(null);
 
-  // The single place that hides the overlay: fade out, then unmount.
+  const [introPhase, setIntroPhase] = useState<IntroPhase>('inactive');
+  const [introSrc, setIntroSrc] = useState<string | null>(null);
+  const introPhaseRef = useRef<IntroPhase>('inactive');
+  const introSrcRef = useRef<string | null>(null);
+  const introAttemptedRef = useRef(false);
+  const pendingHideRef = useRef(false);
+  const introVideoRef = useRef<HTMLVideoElement>(null);
+  const introFadeTimeoutRef = useRef<number | null>(null);
+
+  const setIntro = useCallback((phase: IntroPhase) => {
+    introPhaseRef.current = phase;
+    setIntroPhase(phase);
+  }, []);
+
+  // The single place that hides the overlay: fade out, then unmount. When
+  // the intro is still buffering, the hide is parked and re-fired the moment
+  // the clip is playable (or preloading is abandoned).
   const hide = useCallback(() => {
     if (hiddenRef.current) return;
+
+    if (introPhaseRef.current === 'preloading') {
+      pendingHideRef.current = true;
+      return;
+    }
+
     hiddenRef.current = true;
+
+    if (introPhaseRef.current === 'ready') {
+      // Reveal the intro beneath the lifting overlay. The clip opens on the
+      // same dark backdrop the overlay uses, so the crossfade is seamless.
+      setIntro('playing');
+      introVideoRef.current?.play().catch(() => {
+        // Autoplay rejection — dissolve straight into the Hero.
+        setIntro('fading');
+        introFadeTimeoutRef.current = window.setTimeout(() => {
+          setIntro('inactive');
+        }, INTRO_FADE_OUT_MS);
+      });
+    }
+
     setFading(true);
     fadeTimeoutRef.current = window.setTimeout(() => {
       setVisible(false);
     }, FADE_OUT_MS);
-  }, []);
+  }, [setIntro]);
+
+  // Abandon the intro (fetch error / timeout) and release any parked hide.
+  const skipIntro = useCallback(() => {
+    if (
+      introPhaseRef.current !== 'preloading' &&
+      introPhaseRef.current !== 'ready'
+    ) {
+      return;
+    }
+    setIntro('inactive');
+    if (pendingHideRef.current) {
+      pendingHideRef.current = false;
+      hide();
+    }
+  }, [hide, setIntro]);
+
+  // First home visit per session (desktop, full motion): preload the entire
+  // intro clip behind the loading screen. Runs once for the app's lifetime.
+  useEffect(() => {
+    if (introAttemptedRef.current || !isHome) return;
+    introAttemptedRef.current = true;
+
+    const desktop = window.matchMedia('(min-width: 901px)').matches;
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    let watched = false;
+    try {
+      watched = sessionStorage.getItem(INTRO_WATCHED_KEY) === '1';
+    } catch {
+      /* ignore */
+    }
+    if (!desktop || reduced || watched) return;
+
+    setIntro('preloading');
+
+    const abort = new AbortController();
+    const timeout = window.setTimeout(() => {
+      abort.abort();
+      skipIntro();
+    }, INTRO_PRELOAD_TIMEOUT_MS);
+
+    fetch(INTRO_VIDEO_URL, { signal: abort.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`intro fetch ${res.status}`);
+        return res.blob();
+      })
+      .then((blob) => {
+        window.clearTimeout(timeout);
+        const url = URL.createObjectURL(blob);
+        introSrcRef.current = url;
+        setIntroSrc(url);
+        // canplaythrough on the blob-backed <video> flips the phase to
+        // 'ready' and releases any parked hide.
+      })
+      .catch(() => {
+        window.clearTimeout(timeout);
+        skipIntro();
+      });
+
+    return () => window.clearTimeout(timeout);
+  }, [isHome, setIntro, skipIntro]);
+
+  // Fully-local source is decodable end to end — the intro may now start.
+  const handleIntroCanPlay = useCallback(() => {
+    if (introPhaseRef.current !== 'preloading') return;
+    setIntro('ready');
+    if (pendingHideRef.current) {
+      pendingHideRef.current = false;
+      hide();
+    }
+  }, [hide, setIntro]);
+
+  // Played exactly once: dissolve into the live Hero, then leave the DOM.
+  const handleIntroEnded = useCallback(() => {
+    markIntroWatched();
+    setIntro('fading');
+    introFadeTimeoutRef.current = window.setTimeout(() => {
+      setIntro('inactive');
+    }, INTRO_FADE_OUT_MS);
+  }, [setIntro]);
+
+  // Release the blob once the intro has left the DOM.
+  useEffect(() => {
+    if (introPhase !== 'inactive' || !introSrcRef.current) return;
+    URL.revokeObjectURL(introSrcRef.current);
+    introSrcRef.current = null;
+    setIntroSrc(null);
+  }, [introPhase]);
 
   // loading time = MAX(page loading time, MIN_LOADING_MS)
   const scheduleHide = useCallback(() => {
@@ -118,21 +267,51 @@ export function GlobalLoadingProvider({
       if (fadeTimeoutRef.current !== null) {
         window.clearTimeout(fadeTimeoutRef.current);
       }
+      if (introFadeTimeoutRef.current !== null) {
+        window.clearTimeout(introFadeTimeoutRef.current);
+      }
+      if (introSrcRef.current) {
+        URL.revokeObjectURL(introSrcRef.current);
+      }
     };
   }, []);
 
+  const introOnScreen = introPhase === 'playing';
+
   useEffect(() => {
-    if (!visible) return undefined;
+    if (!visible && !introOnScreen) return undefined;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [visible]);
+  }, [visible, introOnScreen]);
+
+  const introMounted = introPhase !== 'inactive' && introSrc !== null;
+  const introLayerClass =
+    introPhase === 'playing'
+      ? 'global-intro-layer global-intro-layer--active'
+      : introPhase === 'fading'
+        ? 'global-intro-layer global-intro-layer--leaving'
+        : 'global-intro-layer';
 
   return (
     <LoadingContext.Provider value={{ reportHomeReady }}>
+      {introMounted && (
+        <div className={introLayerClass} aria-hidden="true">
+          <video
+            ref={introVideoRef}
+            className="global-intro-layer__video"
+            src={introSrc}
+            muted
+            playsInline
+            preload="auto"
+            onCanPlayThrough={handleIntroCanPlay}
+            onEnded={handleIntroEnded}
+          />
+        </div>
+      )}
       {visible && (
         <div
           className={`global-loading-overlay ${fading ? '' : 'global-loading-overlay--visible'}`}

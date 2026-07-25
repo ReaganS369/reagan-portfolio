@@ -1,0 +1,49 @@
+/** @format */
+
+/* =========================================================
+   About — My Story
+========================================================= */
+
+.about-story {
+  position: relative;
+  padding: 60px 0;
+}
+
+.about-story__container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+.about-story__heading {
+  margin-top: 18px;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.about-story__body {
+  margin-top: 34px;
+  width: clamp(320px, 62vw, 860px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.about-story__paragraph {
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-size: clamp(1rem, 1vw + 0.55rem, 1.15rem);
+  line-height: 1.75;
+}
+
+@media (max-width: 860px) {
+  .about-story {
+    padding: 44px 0;
+  }
+
+  .about-story__body {
+    width: 100%;
+  }
+}

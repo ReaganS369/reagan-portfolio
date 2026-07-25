@@ -1,0 +1,82 @@
+/** @format */
+
+/* =========================================================
+   About — Current Focus
+========================================================= */
+
+@property --about-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.about-focus {
+  position: relative;
+  padding: 80px 0 100px;
+}
+
+.about-focus__container {
+  width: min(1300px, 92%);
+  margin: 0 auto;
+}
+
+.about-focus__row {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.about-focus__card {
+  position: relative;
+  flex: 1 1 220px;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--about-angle),
+    var(--primary),
+    var(--secondary),
+    rgba(245, 138, 31, 0.2),
+    var(--primary)
+  );
+  animation: about-spin-gradient 5s linear infinite;
+}
+
+.about-focus__card-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 22px 24px;
+  border-radius: 14.5px;
+  background: #1f1414;
+}
+
+.about-focus__icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.about-focus__label {
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+@keyframes about-spin-gradient {
+  to {
+    --about-angle: 360deg;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-focus {
+    padding: 60px 0 80px;
+  }
+
+  .about-focus__card {
+    flex: 1 1 100%;
+  }
+}

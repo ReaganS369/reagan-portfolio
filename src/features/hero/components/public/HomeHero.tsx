@@ -8,14 +8,20 @@ import { useReportHomeReady } from '@/src/components/ui/loading/GlobalLoadingPro
 import { HeroNavigationRibbon } from './HeroNavigationRibbon';
 import { HeroCVRibbon } from './HeroCVRibbon';
 import { HeroContent } from './HeroContent';
+import { HeroVideoStage } from './HeroVideoStage';
 import '../../styles/base.css';
 import '../../styles/avatar.css';
 
 interface HomeHeroProps {
   sectionRef?: RefObject<HTMLElement | null>;
+  /** True while a cinematic avatar video is covering the hero. */
+  onVideoActiveChange?: (active: boolean) => void;
 }
 
-export default function HomeHero({ sectionRef }: HomeHeroProps) {
+export default function HomeHero({
+  sectionRef,
+  onVideoActiveChange,
+}: HomeHeroProps) {
   const { profile, roles, socialLinks, isLoading } = useHeroData();
   const reportHomeReady = useReportHomeReady();
 
@@ -26,6 +32,8 @@ export default function HomeHero({ sectionRef }: HomeHeroProps) {
   return (
     <section className="home-hero" ref={sectionRef}>
       <div className="hero-background" />
+
+      <HeroVideoStage onActiveChange={onVideoActiveChange} />
 
       <HeroNavigationRibbon />
       <HeroCVRibbon />

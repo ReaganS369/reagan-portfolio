@@ -4,7 +4,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import Magnet from '@/src/components/effects/Magnet';
+
 
 interface StoryItemProps {
   label: string;
@@ -23,13 +23,11 @@ export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
 
   function handleEnter() {
     setIsHovered(true);
-    timerRef.current = setTimeout(() => setIsMagnetActive(true), magnetDelay);
   }
 
   function handleLeave() {
     if (timerRef.current) clearTimeout(timerRef.current);
     setIsHovered(false);
-    setIsMagnetActive(false);
   }
 
   return (
@@ -42,28 +40,20 @@ export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
     >
       <span className="story-item__long">{label}</span>
       <span className="story-item__short">
-        <Magnet
-          disabled={!isMagnetActive}
-          padding={2000}
-          magnetStrength={6}
-          activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
-          inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
-        >
-          <span className="story-item__chars">
-            <span className="story-item__glow" aria-hidden="true">
-              <span className="story-item__glow-blob" />
-            </span>
-            {chars.map((char, i) => (
-              <span
-                key={i}
-                className="story-item__char"
-                style={{ '--char-index': i } as React.CSSProperties}
-              >
-                {char}
-              </span>
-            ))}
+        <span className="story-item__chars">
+          <span className="story-item__glow" aria-hidden="true">
+            <span className="story-item__glow-blob" />
           </span>
-        </Magnet>
+          {chars.map((char, i) => (
+            <span
+              key={i}
+              className="story-item__char"
+              style={{ '--char-index': i } as React.CSSProperties}
+            >
+              {char}
+            </span>
+          ))}
+        </span>
       </span>
     </Link>
   );

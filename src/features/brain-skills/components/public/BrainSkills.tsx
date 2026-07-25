@@ -46,7 +46,8 @@ export function BrainSkills() {
     setActive((prev) => (prev === side ? null : side));
 
   return (
-    <section className="brain-section" ref={ref}>
+    <section className="brain-section" ref={ref} aria-labelledby="skills-heading">
+      <h2 id="skills-heading" className="sr-only">Technical Skills and Software Expertise</h2>
       <div className="section-heading-wrapper">
         <div className="heading-container">
           <motion.div

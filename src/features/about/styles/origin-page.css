@@ -35,11 +35,11 @@
 
 /* ------------------------ timeline ----------------------- */
 
-.origin-timeline {
+.simple-timeline {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
   padding-left: 8px;
 }
 
@@ -61,27 +61,28 @@
   transform-origin: top center;
 }
 
-.origin-entry {
+.simple-entry {
   position: relative;
   display: grid;
   grid-template-columns: 132px 1fr;
+  align-items: baseline;
   gap: 28px;
-  padding: 28px 24px 32px 30px;
+  padding: 22px 24px 22px 30px;
   border-radius: 18px;
   border: 1px solid transparent;
   transition: border-color 350ms ease, background 350ms ease;
 }
 
-.origin-entry:hover {
+.simple-entry:hover {
   border-color: rgba(245, 138, 31, 0.22);
   background: rgba(245, 138, 31, 0.03);
 }
 
-.origin-entry__yearcol {
+.simple-entry__yearcol {
   position: relative;
 }
 
-.origin-entry__dot {
+.simple-entry__dot {
   position: absolute;
   left: -26px;
   top: 9px;
@@ -93,7 +94,7 @@
   box-shadow: 0 0 10px rgba(245, 138, 31, 0.55);
 }
 
-.origin-entry__year {
+.simple-entry__year {
   position: relative;
   z-index: 1;
   color: var(--text);
@@ -101,89 +102,22 @@
   font-size: 1.6rem;
 }
 
-/* oversized ghost year adds depth without noise */
-.origin-entry__year-ghost {
-  position: absolute;
-  left: -12px;
-  top: -26px;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 5rem;
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(242, 239, 231, 0.05);
-  pointer-events: none;
-  user-select: none;
-  transition: -webkit-text-stroke-color 350ms ease;
-}
-
-.origin-entry:hover .origin-entry__year-ghost {
-  -webkit-text-stroke-color: rgba(245, 138, 31, 0.18);
-}
-
-.origin-entry__heading {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.origin-entry__title {
-  color: var(--text);
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-}
-
-.origin-entry__count {
-  color: var(--primary);
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(245, 138, 31, 0.3);
-  background: rgba(245, 138, 31, 0.06);
-}
-
-.origin-entry__summary {
-  margin-top: 10px;
-  color: var(--text);
-  font-family: var(--font-description);
-  font-size: 1.05rem;
-}
-
-.origin-entry__detail {
-  margin-top: 8px;
+.simple-entry__desc {
   color: var(--text-muted);
   font-family: var(--font-description);
-  font-size: 0.95rem;
+  font-size: 1.02rem;
   line-height: 1.65;
-  max-width: 64ch;
+  max-width: 60ch;
 }
 
-.origin-entry__tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.origin-tag {
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  transition: border-color 250ms ease, color 250ms ease, background 250ms ease;
-}
-
-.origin-tag:hover {
-  border-color: rgba(245, 138, 31, 0.5);
-  color: var(--primary);
-  background: rgba(245, 138, 31, 0.06);
+.simple-entry__arrow {
+  display: block;
+  width: 132px;
+  margin-left: 30px;
+  text-align: center;
+  color: rgba(245, 138, 31, 0.4);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* --------------------- experience / education --------------------- */
@@ -251,17 +185,17 @@
 /* ---------------------- responsive ---------------------- */
 
 @media (max-width: 700px) {
-  .origin-entry {
+  .simple-entry {
     grid-template-columns: 1fr;
     gap: 8px;
     padding-left: 26px;
   }
 
-  .origin-entry__year-ghost {
+  .simple-entry__arrow {
     display: none;
   }
 
-  .origin-entry__dot {
+  .simple-entry__dot {
     left: -22px;
   }
 

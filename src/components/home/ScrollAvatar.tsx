@@ -19,6 +19,12 @@ export interface AvatarProfile {
 interface ScrollAvatarProps {
   heroRef: RefObject<HTMLElement | null>;
   profile: AvatarProfile | null;
+  /** Hidden while a cinematic hero video covers the avatar spot. */
+  suppressed?: boolean;
+  /** True when the formal-loop video plays inside the 3D bento card — the
+   *  static character hands the card window over to the footage while
+   *  docked, re-emerging on the way to the contact section. */
+  dockVideoActive?: boolean;
 }
 
 /** natural image aspect: 855 × 2890 */
@@ -61,6 +67,9 @@ interface PageMarks {
   rootCenterX: number;
   card: { top: number; height: number; centerX: number } | null;
   contact: { top: number; height: number; anchorX: number } | null;
+  /** The Journey section — the character hides while it owns the viewport so
+   *  the full-bleed footage reads clean underneath. */
+  about: { top: number; height: number } | null;
   footerTop: number | null;
 }
 
@@ -73,7 +82,12 @@ function mono(values: number[]): number[] {
   return out;
 }
 
-export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
+export function ScrollAvatar({
+  heroRef,
+  profile,
+  suppressed,
+  dockVideoActive,
+}: ScrollAvatarProps) {
   // Pixel scroll — every phase below is keyed in document pixels
   const { scrollY, scrollYProgress } = useScroll();
 
@@ -96,6 +110,7 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
 
       const cardEl = document.querySelector<HTMLElement>('.bento-card--3d');
       const contactEl = document.querySelector<HTMLElement>('.contact-cta-section');
+      const aboutEl = document.querySelector<HTMLElement>('.about-section');
       const footerEl = document.querySelector<HTMLElement>('.home-footer');
 
       setMarks({
@@ -116,6 +131,9 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
               height: contactEl.offsetHeight,
               anchorX: docLeft(contactEl) + contactEl.offsetWidth * 0.8,
             }
+          : null,
+        about: aboutEl
+          ? { top: docTop(aboutEl), height: aboutEl.offsetHeight }
           : null,
         footerTop: footerEl ? docTop(footerEl) : null,
       });
@@ -190,6 +208,9 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
   let bIn = [0, 1];
   let bOut = [0, 0];
   let useProgressScale = true;
+  // Dock hand-off to the formal-loop video (identity when inactive)
+  let dockIn = [0, 1];
+  let dockOut = [1, 1];
 
   if (marks && marks.card && marks.contact) {
     const { vh, rootW, rootCenterX, card, contact, footerTop } = marks;
@@ -231,6 +252,14 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
     const visibleFraction = CARD_TOP_CROP + card.height / (H * kCard);
     const bClip = Math.max(0, (1 - visibleFraction) * 100);
 
+    // While the formal-loop video owns the card window, the continuous
+    // character dissolves on approach and re-materialises as the card
+    // releases — the footage carries the docked portrait instead.
+    if (dockVideoActive) {
+      dockIn = mono([approachStart, sA, sB, sB + vh * 0.45]);
+      dockOut = [1, 0, 0, 1];
+    }
+
     const inputs = mono([0, approachStart, sA, sB, sC, sEnd]);
     yIn = inputs;
     yOut = [0, 0, yCardAt(inputs[2]), yCardAt(inputs[3]), yContactAt(inputs[4]), yContactAt(inputs[5])];
@@ -267,7 +296,34 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
     { clamp: true },
   );
   const fadeFallback = useTransform(scrollYProgress, [0.88, 0.95], [1, 0], { clamp: true });
-  const avatarOpacity = fadeStart !== null ? fadePx : fadeFallback;
+  const footerFade = fadeStart !== null ? fadePx : fadeFallback;
+
+  // Compose the footer fade with the dock hand-off (1 everywhere when the
+  // formal-loop video is absent, so this is a no-op today).
+  const dockFade = useTransform(scrollY, dockIn, dockOut, { clamp: true });
+
+  // Hide the traveling character while the Journey section owns the viewport:
+  // its full-bleed footage is the subject there, so the avatar fades out on
+  // approach and fades back in as the section scrolls away.
+  let aboutIn = [0, 1];
+  let aboutOut = [1, 1];
+  if (marks?.about) {
+    const { top, height } = marks.about;
+    const vh = marks.vh;
+    aboutIn = mono([
+      top - vh * 0.55,
+      top - vh * 0.1,
+      top + height - vh * 0.85,
+      top + height - vh * 0.4,
+    ]);
+    aboutOut = [1, 0, 0, 1];
+  }
+  const aboutFade = useTransform(scrollY, aboutIn, aboutOut, { clamp: true });
+
+  const avatarOpacity = useTransform(
+    [footerFade, dockFade, aboutFade] as const,
+    ([a, b, c]: number[]) => a * b * c,
+  );
 
   // Top-down black fade over the split casual/formal avatar — hero only.
   // Fully faded out by the time the hero scrolls away, so it never shows
@@ -279,7 +335,10 @@ export function ScrollAvatar({ heroRef, profile }: ScrollAvatarProps) {
   if (!profile) return null;
 
   return (
-    <motion.div className="scroll-avatar-root" style={{ opacity: avatarOpacity }}>
+    <motion.div
+      className={`scroll-avatar-root${suppressed ? ' scroll-avatar-root--suppressed' : ''}`}
+      style={{ opacity: avatarOpacity }}
+    >
       <motion.div
         className="scroll-avatar-inner"
         style={{ x: avatarX, y: avatarY, scale: avatarScale }}

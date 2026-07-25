@@ -1,0 +1,72 @@
+/** @format */
+
+/* =========================================================
+   About — Beyond Work
+========================================================= */
+
+.about-beyond {
+  position: relative;
+  padding: 80px 0;
+}
+
+.about-beyond__container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+.about-beyond__grid {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.about-beyond__card {
+  padding: 30px 26px 28px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, rgba(245, 138, 31, 0.035), rgba(29, 16, 16, 0) 45%);
+  transition: border-color 350ms ease, transform 350ms ease, box-shadow 350ms ease;
+}
+
+.about-beyond__card:hover {
+  border-color: rgba(245, 138, 31, 0.35);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+}
+
+.about-beyond__icon {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+.about-beyond__title {
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.about-beyond__desc {
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .about-beyond__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .about-beyond {
+    padding: 60px 0;
+  }
+
+  .about-beyond__grid {
+    grid-template-columns: 1fr;
+  }
+}

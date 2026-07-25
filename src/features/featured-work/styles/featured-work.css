@@ -53,6 +53,26 @@
   animation: glow-breathe 5s ease-in-out infinite;
 }
 
+/* Formal-loop portrait video — fills the card window, above the glow,
+   below the fixed character (z 5) which fades out while docked here */
+.featured-hole-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  /* Hidden until the browser confirms stall-free playback, then dissolves
+     in over the docked static portrait (the poster). GPU-composited. */
+  opacity: 0;
+  transition: opacity 900ms ease;
+  transform: translateZ(0);
+}
+
+.featured-hole-video--live {
+  opacity: 1;
+}
+
 .featured-cover {
   position: absolute;
   z-index: 6;
@@ -128,6 +148,12 @@
 =================================================== */
 
 .bento-card {
+  /* Cursor light (written by usePointerLight): proximity, position, parallax */
+  --spot: 0;
+  --spot-x: 50%;
+  --spot-y: 50%;
+  --spot-px: 0px;
+  --spot-py: 0px;
   position: relative;
   border-radius: 16px;
   overflow: hidden;
@@ -140,6 +166,39 @@
 .bento-card:hover {
   border-color: rgba(223, 19, 138, 0.45);
   transform: translateY(-4px);
+}
+
+/* Interior light — a soft warm pool that follows the cursor */
+.bento-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--spot-x) var(--spot-y),
+    rgba(245, 138, 31, 0.11),
+    rgba(245, 138, 31, 0.04) 45%,
+    transparent 72%
+  );
+  opacity: var(--spot);
+  pointer-events: none;
+}
+
+/* Rim light — the card's edge catches the approaching light */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  border: 1px solid rgba(245, 138, 31, calc(0.4 * var(--spot)));
+  pointer-events: none;
+}
+
+/* Physical depth — the shadow underneath deepens as the light nears */
+.bento-card:not(.bento-card--3d) {
+  box-shadow: 0 20px 44px -20px rgba(0, 0, 0, calc(0.75 * var(--spot)));
 }
 
 /* 3D card is a transparent window over the fixed character — no fill, and
@@ -165,6 +224,16 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  /* Mouse parallax: the visual layer drifts with the light; slight
+     over-scale keeps edges covered while it moves */
+  transform: translate3d(var(--spot-px), var(--spot-py), 0) scale(1.05);
+  transition: transform 120ms linear;
+  will-change: transform;
+}
+
+/* The 3D card is a window over the fixed character — its layer stays put */
+.bento-visual--3d {
+  transform: none;
 }
 
 .bento-visual--game {

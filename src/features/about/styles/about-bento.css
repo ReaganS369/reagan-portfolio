@@ -1,0 +1,91 @@
+/** @format */
+
+/* =========================================================
+   About — What I Do (Bento Grid)
+========================================================= */
+
+.about-bento {
+  position: relative;
+  padding: 80px 0;
+}
+
+.about-bento__container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+.about-bento__grid {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.about-bento__card {
+  position: relative;
+  padding: 34px 32px 30px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: linear-gradient(160deg, #251717 0%, #1f1212 100%);
+  overflow: hidden;
+  cursor: default;
+  transition: border-color 350ms ease, transform 350ms ease, box-shadow 350ms ease;
+}
+
+.about-bento__card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(245, 138, 31, 0.4);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 0 48px rgba(245, 138, 31, 0.1);
+}
+
+.about-bento__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(245, 138, 31, 0.16), transparent 65%);
+  transition: opacity 350ms ease;
+  pointer-events: none;
+}
+
+.about-bento__card:hover .about-bento__glow {
+  opacity: 1;
+}
+
+.about-bento__icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+
+.about-bento__title {
+  position: relative;
+  z-index: 1;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.about-bento__desc {
+  position: relative;
+  z-index: 1;
+  color: var(--text-muted);
+  font-family: var(--font-description);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  max-width: 42ch;
+}
+
+@media (max-width: 768px) {
+  .about-bento {
+    padding: 60px 0;
+  }
+
+  .about-bento__grid {
+    grid-template-columns: 1fr;
+  }
+}

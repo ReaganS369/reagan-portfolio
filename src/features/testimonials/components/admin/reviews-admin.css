@@ -882,3 +882,111 @@
     width: 280px;
   }
 }
+
+/* ============================= toast stack ============================ */
+
+.rvw-toast-stack {
+  position: fixed;
+  right: var(--admin-space-5);
+  bottom: var(--admin-space-5);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(360px, calc(100vw - 32px));
+}
+
+.rvw-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+  background: var(--admin-bg-surface);
+  box-shadow: var(--admin-shadow-md);
+  font-size: 0.85rem;
+  color: var(--admin-text);
+  cursor: pointer;
+  animation: rvw-toast-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes rvw-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rvw-toast--success {
+  border-color: rgba(52, 211, 153, 0.32);
+}
+
+.rvw-toast--success svg {
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+.rvw-toast--error {
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+.rvw-toast--error svg {
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+/* ============================ loading skeletons ======================== */
+
+@keyframes rvw-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.rvw-skeleton {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--admin-bg-elevated) 25%,
+    var(--admin-bg-hover) 50%,
+    var(--admin-bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: rvw-shimmer 1.6s ease-in-out infinite;
+  color: transparent !important;
+}
+
+.rvw-skeleton-text {
+  display: inline-block;
+  height: 0.9em;
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--admin-bg-elevated) 25%,
+    var(--admin-bg-hover) 50%,
+    var(--admin-bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: rvw-shimmer 1.6s ease-in-out infinite;
+}
+
+.rvw-skeleton-avatar {
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--admin-bg-elevated) 25%,
+    var(--admin-bg-hover) 50%,
+    var(--admin-bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: rvw-shimmer 1.6s ease-in-out infinite;
+}

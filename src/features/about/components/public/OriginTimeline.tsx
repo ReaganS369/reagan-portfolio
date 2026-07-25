@@ -4,7 +4,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
-import { JOURNEY } from '../../constants';
+import { ORIGIN_JOURNEY } from '../../constants';
 import { getEducation, type Education } from '@/src/features/education/api/education';
 import { getExperience, type Experience } from '@/src/features/experience/api/experience';
 import '../../styles/origin-page.css';
@@ -43,47 +43,34 @@ export function OriginTimeline() {
     <div className="origin-container">
       <section className="origin-block">
         <motion.h2 className="origin-block__title" {...entrance} transition={{ duration: 0.7, ease: EASE }}>
-          The Timeline
+          Journey
         </motion.h2>
-        <div className="origin-timeline" ref={timelineRef}>
+        <div className="simple-timeline" ref={timelineRef}>
           <div className="origin-spine" aria-hidden>
             <motion.span
               className="origin-spine__fill"
               style={{ scaleY: spineScale }}
             />
           </div>
-          {JOURNEY.map((entry, i) => (
-            <motion.div
-              key={entry.year}
-              className="origin-entry"
-              {...entrance}
-              transition={{ duration: 0.8, delay: 0.05 * (i % 2), ease: EASE }}
-            >
-              <div className="origin-entry__yearcol">
-                <span className="origin-entry__dot" aria-hidden />
-                <span className="origin-entry__year">{entry.year}</span>
-                <span className="origin-entry__year-ghost" aria-hidden>
-                  {entry.year}
+          {ORIGIN_JOURNEY.map((entry, i) => (
+            <div key={entry.year}>
+              <motion.div
+                className="simple-entry"
+                {...entrance}
+                transition={{ duration: 0.7, delay: 0.06 * i, ease: EASE }}
+              >
+                <div className="simple-entry__yearcol">
+                  <span className="simple-entry__dot" aria-hidden />
+                  <span className="simple-entry__year">{entry.year}</span>
+                </div>
+                <p className="simple-entry__desc">{entry.description}</p>
+              </motion.div>
+              {i < ORIGIN_JOURNEY.length - 1 && (
+                <span className="simple-entry__arrow" aria-hidden>
+                  ↓
                 </span>
-              </div>
-              <div className="origin-entry__body">
-                <div className="origin-entry__heading">
-                  <h3 className="origin-entry__title">{entry.title}</h3>
-                  {entry.projects !== null && (
-                    <span className="origin-entry__count">{entry.projects} projects</span>
-                  )}
-                </div>
-                <p className="origin-entry__summary">{entry.summary}</p>
-                <p className="origin-entry__detail">{entry.detail}</p>
-                <div className="origin-entry__tech">
-                  {entry.tech.map((tag) => (
-                    <span key={tag} className="origin-tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+              )}
+            </div>
           ))}
         </div>
       </section>

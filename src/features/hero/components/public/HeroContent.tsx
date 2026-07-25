@@ -26,7 +26,7 @@ export function HeroContent({ roles, socialLinks }: HeroContentProps) {
 
   return (
     <div className="hero-left">
-      <div ref={containerRef} className="hero-name">
+      <h1 ref={containerRef} className="hero-name">
         <VariableProximity
           label="REAGAN"
           className="hero-first-name"
@@ -51,7 +51,7 @@ export function HeroContent({ roles, socialLinks }: HeroContentProps) {
           }}
           entrance={HERO_TITLE_ENTRANCE}
         />
-      </div>
+      </h1>
 
       <HeroMorphRoles roles={roles} />
 

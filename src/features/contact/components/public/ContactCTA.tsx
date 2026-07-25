@@ -47,7 +47,8 @@ export function ContactCTA() {
   const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section className="contact-cta-section" ref={ref}>
+    <section className="contact-cta-section" ref={ref} aria-labelledby="contact-heading">
+      <h2 id="contact-heading" className="sr-only">Contact and Connect with Reagan Sagolsem</h2>
       <div className="contact-cta-container">
         {/* Editorial big type */}
         <div className="contact-cta-type">

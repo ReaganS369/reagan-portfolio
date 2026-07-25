@@ -61,6 +61,13 @@
   pointer-events: none;
 }
 
+/* While a cinematic hero video covers the avatar spot the static system
+   yields instantly — the video layer above provides the crossfade, so a
+   transition here would only drag against the scroll-driven opacity. */
+.scroll-avatar-root--suppressed {
+  opacity: 0 !important;
+}
+
 /* Hidden on tablet/mobile — sections are single-column there */
 @media (max-width: 900px) {
   .scroll-avatar-root {

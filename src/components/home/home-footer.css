@@ -20,23 +20,54 @@
 .footer-hero-text {
   width: min(1600px, 92%);
   margin: 0 auto;
-  /* Stay left to give avatar room */
-  max-width: calc(min(1600px, 92%) * 0.66);
+  /* Full width now that it's a single word — the avatar has already faded
+     out by the time the footer scrolls in, so no side clearance is needed. */
+  overflow: hidden;
 }
 
 .footer-name-line {
   font-family: var(--font-heading);
-  font-size: clamp(5rem, 14vw, 18rem);
+  font-size: clamp(6rem, 19vw, 23rem);
   font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -8px;
-  color: var(--text);
+  line-height: 0.85;
+  letter-spacing: -10px;
   white-space: nowrap;
+  background: linear-gradient(
+    100deg,
+    var(--text) 0%,
+    var(--text) 30%,
+    var(--primary) 48%,
+    var(--secondary) 58%,
+    var(--text) 76%,
+    var(--text) 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 42px rgba(245, 138, 31, 0.16));
+  animation: footer-name-shimmer 9s ease-in-out infinite;
+  transition: filter 400ms ease;
 }
 
-.footer-name-line--outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(242, 239, 231, 0.2);
+.footer-name-line:hover {
+  filter: drop-shadow(0 0 64px rgba(245, 138, 31, 0.3));
+}
+
+@keyframes footer-name-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-name-line {
+    animation: none;
+  }
 }
 
 /* ===================================================
@@ -129,9 +160,8 @@
     gap: 20px;
   }
 
-  /* Prevent "SAGOLSEM" from overflowing at small viewport widths */
   .footer-name-line {
-    font-size: clamp(3.5rem, 14vw, 18rem);
+    font-size: clamp(4rem, 18vw, 18rem);
     letter-spacing: -5px;
   }
 }

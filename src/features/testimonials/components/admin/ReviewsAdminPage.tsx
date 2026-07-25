@@ -13,6 +13,7 @@ import {
   type ReviewUpdate,
 } from '../../api/reviews';
 import { useReviews } from '../../context/ReviewsProvider';
+import useReviewToasts from '../../hooks/useReviewToasts';
 import {
   filterAndSortReviews,
   formatReviewDate,
@@ -28,12 +29,22 @@ import {
 import ReviewDetailDrawer from './ReviewDetailDrawer';
 import ReviewEditModal from './ReviewEditModal';
 import ReviewNotificationBanner from './ReviewNotificationBanner';
+import ReviewToastStack from './ReviewToastStack';
 import './reviews-admin.css';
 
 type BusyAction = 'approve' | 'hide' | 'feature' | 'unfeature' | 'delete';
 
+const ACTION_SUCCESS_MESSAGE: Record<BusyAction, string> = {
+  approve: 'Review approved — now live on the public portfolio.',
+  hide: 'Review hidden from the public portfolio.',
+  feature: 'Review featured — pinned to the top publicly.',
+  unfeature: 'Review unfeatured.',
+  delete: 'Review permanently deleted.',
+};
+
 export default function ReviewsAdminPage() {
   const { reviews, loading, error, stats, refresh, setReviews } = useReviews();
+  const toast = useReviewToasts();
 
   const [filter, setFilter] = useState<ReviewFilter>('all');
   const [search, setSearch] = useState('');
@@ -82,10 +93,11 @@ export default function ReviewsAdminPage() {
       const updated = await updateReview(review.id, patch);
       applyLocal(updated);
       void refresh();
+      toast.success(ACTION_SUCCESS_MESSAGE[action]);
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : 'Action failed. Please retry.',
-      );
+      const message = err instanceof Error ? err.message : 'Action failed. Please retry.';
+      setActionError(message);
+      toast.error(message);
     } finally {
       setBusyAction(null);
     }
@@ -110,10 +122,11 @@ export default function ReviewsAdminPage() {
       setReviews((prev) => prev.filter((r) => r.id !== review.id));
       setSelectedId(null);
       void refresh();
+      toast.success(ACTION_SUCCESS_MESSAGE.delete);
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : 'Failed to delete review.',
-      );
+      const message = err instanceof Error ? err.message : 'Failed to delete review.';
+      setActionError(message);
+      toast.error(message);
     } finally {
       setBusyAction(null);
     }
@@ -127,6 +140,7 @@ export default function ReviewsAdminPage() {
       applyLocal(updated);
       void refresh();
       setEditing(null);
+      toast.success('Review changes saved.');
     } finally {
       setIsSaving(false);
     }
@@ -155,9 +169,13 @@ export default function ReviewsAdminPage() {
         {statCards.map((card) => (
           <Card key={card.label} padding="md" className="rvw-stat-card">
             <p className="rvw-stat-card__label">{card.label}</p>
-            <p className={`rvw-stat-card__value rvw-stat-card__value--${card.tone}`}>
-              {card.value}
-            </p>
+            {loading ? (
+              <p className="rvw-stat-card__value rvw-skeleton">00</p>
+            ) : (
+              <p className={`rvw-stat-card__value rvw-stat-card__value--${card.tone}`}>
+                {card.value}
+              </p>
+            )}
           </Card>
         ))}
       </div>
@@ -213,11 +231,31 @@ export default function ReviewsAdminPage() {
               </thead>
               <tbody className="admin-table__body">
                 {loading ? (
-                  <tr>
-                    <td className="admin-table__cell rvw-table__empty" colSpan={7}>
-                      Loading reviews…
-                    </td>
-                  </tr>
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="admin-table__row">
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-avatar" style={{ width: 34, height: 34, display: 'block' }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 120 }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 70 }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 90 }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 80 }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 70 }} />
+                      </td>
+                      <td className="admin-table__cell">
+                        <span className="rvw-skeleton-text" style={{ maxWidth: 90 }} />
+                      </td>
+                    </tr>
+                  ))
                 ) : visible.length === 0 ? (
                   <tr>
                     <td className="admin-table__cell rvw-table__empty" colSpan={7}>
@@ -300,6 +338,8 @@ export default function ReviewsAdminPage() {
         }}
         onSubmit={handleEditSubmit}
       />
+
+      <ReviewToastStack toasts={toast.toasts} onDismiss={toast.dismiss} />
     </>
   );
 }

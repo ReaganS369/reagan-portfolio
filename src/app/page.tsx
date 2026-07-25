@@ -16,12 +16,18 @@ import { BrainSkills } from '@/src/features/brain-skills/components/public/Brain
 import { Testimonials } from '@/src/features/testimonials/components/public/Testimonials';
 import { ContactCTA } from '@/src/features/contact/components/public/ContactCTA';
 import { HomeFooter } from '@/src/components/home/HomeFooter';
+import { FilmGrain } from '@/src/components/effects/FilmGrain';
 
 export default function Home() {
   const heroRef = useRef<HTMLElement | null>(null);
   const [avatarProfile, setAvatarProfile] = useState<AvatarProfile | null>(
     null,
   );
+  // While a cinematic hero video plays, the static scroll-avatar yields.
+  const [videoStageActive, setVideoStageActive] = useState(false);
+  // True once the 3D-card loop has buffered — only then does the docked
+  // static portrait hand the card window over to the footage.
+  const [cardVideoReady, setCardVideoReady] = useState(false);
 
   // Always start at the hero: stop the browser from restoring the previous
   // scroll position on reload — the scroll-driven avatar/section choreography
@@ -50,15 +56,23 @@ export default function Home() {
   return (
     <>
       {/* Fixed avatar: 50/50 split in hero → formal-only in all sections below */}
-      <ScrollAvatar heroRef={heroRef} profile={avatarProfile} />
+      <ScrollAvatar
+        heroRef={heroRef}
+        profile={avatarProfile}
+        suppressed={videoStageActive}
+        dockVideoActive={cardVideoReady}
+      />
 
-      <HomeHero sectionRef={heroRef} />
-      <FeaturedWork />
+      <HomeHero sectionRef={heroRef} onVideoActiveChange={setVideoStageActive} />
+      <FeaturedWork onHoleVideoReady={() => setCardVideoReady(true)} />
       <AboutJourney />
       <BrainSkills />
       <Testimonials />
       <ContactCTA />
       <HomeFooter />
+
+      {/* Cinematic treatment over everything */}
+      <FilmGrain />
     </>
   );
 }

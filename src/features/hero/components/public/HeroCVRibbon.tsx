@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import Magnet from '@/src/components/effects/Magnet';
+
 import { cvRibbonMessages } from '../../constants';
 import { MarqueeTrack } from './MarqueeTrack';
 import '../../styles/cv-ribbon.css';
@@ -19,13 +19,11 @@ export function HeroCVRibbon() {
 
   function handleEnter() {
     setIsHovered(true);
-    timerRef.current = setTimeout(() => setIsMagnetActive(true), CV_MAGNET_DELAY);
   }
 
   function handleLeave() {
     if (timerRef.current) clearTimeout(timerRef.current);
     setIsHovered(false);
-    setIsMagnetActive(false);
   }
 
   return (
@@ -40,30 +38,22 @@ export function HeroCVRibbon() {
         className="cv-ribbon__track marquee-track"
       />
       <div className="cv-ribbon__label" aria-hidden="true">
-        <Magnet
-          disabled={!isMagnetActive}
-          padding={2000}
-          magnetStrength={6}
-          activeTransition="transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)"
-          inactiveTransition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
-        >
-          <span className="cv-ribbon__label--desktop">
-            <span className="cv-ribbon__chars">
-              <span className="cv-ribbon__glow" aria-hidden="true">
-                <span className="cv-ribbon__glow-blob" />
-              </span>
-              {CV_CHARS.map((char, i) => (
-                <span
-                  key={i}
-                  className={`cv-ribbon__char${isHovered ? ' is-visible' : ''}`}
-                  style={{ '--char-index': i } as React.CSSProperties}
-                >
-                  {char === ' ' ? ' ' : char}
-                </span>
-              ))}
+        <span className="cv-ribbon__label--desktop">
+          <span className="cv-ribbon__chars">
+            <span className="cv-ribbon__glow" aria-hidden="true">
+              <span className="cv-ribbon__glow-blob" />
             </span>
+            {CV_CHARS.map((char, i) => (
+              <span
+                key={i}
+                className={`cv-ribbon__char${isHovered ? ' is-visible' : ''}`}
+                style={{ '--char-index': i } as React.CSSProperties}
+              >
+                {char === ' ' ? ' ' : char}
+              </span>
+            ))}
           </span>
-        </Magnet>
+        </span>
         <span className="cv-ribbon__label--mobile">CV</span>
       </div>
     </div>

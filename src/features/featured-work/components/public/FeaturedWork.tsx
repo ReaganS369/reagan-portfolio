@@ -2,10 +2,14 @@
 
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { SectionNumber } from '@/src/components/home/SectionNumber';
+import { usePointerLight } from '@/src/components/effects/usePointerLight';
+import { useHeroVideos } from '@/src/features/hero/hooks/useHeroVideos';
 import '../../styles/featured-work.css';
+
+import { SEO_CONFIG, PERSON_SCHEMA } from '@/src/config/seo';
 
 const CARDS = [
   {
@@ -13,36 +17,49 @@ const CARDS = [
     category: 'GAME DEVELOPMENT',
     title: 'Where Stories Live',
     description:
-      'Immersive game worlds built with Unity and Unreal Engine — from narrative design to polished mechanics.',
+      'Immersive game worlds built with Unity and Unreal Engine — from narrative design to advanced technical art and polished mechanics.',
     cta: 'View Projects →',
     className: 'bento-card bento-card--game',
+    schemaType: 'VideoGame',
+    dateCreated: '2025',
+    softwareRequirements: 'Unreal Engine 5, Unity',
+    programmingLanguage: 'C++, C#',
   },
   {
     key: '3d',
-    category: '3D MODELING & RIGGING',
+    category: 'TECHNICAL 3D ART',
     title: 'Giving Shape to Ideas',
     description:
-      'Character rigs, environment assets, and cinematic renders that bridge concept and reality.',
+      'Procedural generation, shader programming, character rigs, and cinematic animations that bridge mathematical concepts and reality.',
     cta: 'View Gallery →',
     className: 'bento-card bento-card--3d',
+    schemaType: 'VisualArtwork',
+    dateCreated: '2026',
+    softwareRequirements: 'Houdini, Blender, Substance Designer',
   },
   {
-    key: 'ui',
-    category: 'UI / APP DEVELOPMENT',
+    key: 'xr',
+    category: 'XR & APP DEVELOPMENT',
     title: 'Interfaces That Think',
     description:
-      'Purposeful UI design paired with React and React Native — built fast, built right.',
+      'Purposeful spatial computing and UI design paired with Next.js, WebGL, and React Native — built fast, built right.',
     cta: 'Explore Work →',
     className: 'bento-card bento-card--ui',
+    schemaType: 'SoftwareApplication',
+    dateCreated: '2025',
+    softwareRequirements: 'React Native, Next.js 15, WebGL',
+    programmingLanguage: 'TypeScript, GLSL',
   },
   {
     key: 'design',
     category: 'GRAPHIC DESIGN',
     title: 'Visual Language',
     description:
-      'Brand identity, editorial layouts, and motion graphics crafted with intent and precision.',
+      'Brand identity, procedural layouts, and motion graphics crafted with intent and precision.',
     cta: 'See Designs →',
     className: 'bento-card bento-card--design',
+    schemaType: 'VisualArtwork',
+    dateCreated: '2024',
   },
 ];
 
@@ -53,15 +70,92 @@ const container = {
   show: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
 };
 
+// Cards emerge from darkness: unlit and low, then rise as the light comes up
 const cardAnim = {
-  hidden: { opacity: 0, y: 48 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
+  hidden: { opacity: 0, y: 48, filter: 'brightness(0.3)' },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: 'brightness(1)',
+    transition: { duration: 0.9, ease: EASE },
+  },
 };
 
-export function FeaturedWork() {
+interface FeaturedWorkProps {
+  /** Fired once the 3D-card loop has buffered enough for smooth playback —
+   *  the page gates the avatar→video dock dissolve on this so the static
+   *  portrait (the "poster") never yields to an unbuffered video. */
+  onHoleVideoReady?: () => void;
+}
+
+export function FeaturedWork({ onHoleVideoReady }: FeaturedWorkProps) {
   const ref = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  // Lazy media: the loop's src is only attached when the section approaches
+  // the viewport, and the element fades in over the static portrait once the
+  // browser confirms it can play through without stalling.
+  const [nearSection, setNearSection] = useState(false);
+  const [videoLive, setVideoLive] = useState(false);
+  const videoLiveRef = useRef(false);
+
+  // Cursor light across the bento: interior highlight and rim glow brighten,
+  // shadows deepen, and each card's visual layer drifts a few px in parallax.
+  usePointerLight(ref, {
+    targets: '.bento-card',
+    radius: 340,
+    parallaxX: 10,
+    parallaxY: 8,
+  });
+
+  // Formal-loop portrait (Higgsfield video 4): when the clip exists it plays
+  // inside the 3D card window instead of the docked static avatar — the
+  // ScrollAvatar fades out across the dock range (see page.tsx wiring).
+  const { sources } = useHeroVideos();
+
+  // Attach the video src only when the section is approaching (one-shot).
+  useEffect(() => {
+    const section = ref.current;
+    if (!section) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNearSection(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, []);
+
+  // Fade from the static portrait into the loop once fully bufferable.
+  const handleCanPlayThrough = () => {
+    if (videoLiveRef.current) return;
+    videoLiveRef.current = true;
+    setVideoLive(true);
+    onHoleVideoReady?.();
+  };
+
+  // Only spin the video while the card is actually on screen.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      },
+      { threshold: 0.15 },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, [sources.formalLoop, nearSection]);
 
   // The section paints a black cover ABOVE the fixed scroll-avatar with a
   // window cut out over the 3D card, so the character shows only inside the
@@ -100,11 +194,49 @@ export function FeaturedWork() {
   }, []);
 
   return (
-    <section className="featured-section" ref={ref}>
+    <section className="featured-section" ref={ref} aria-labelledby="featured-work-heading">
+      <h2 id="featured-work-heading" className="sr-only">Featured Technical Art and Game Development Projects</h2>
+      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            itemListElement: CARDS.map((card, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              item: {
+                '@type': card.schemaType,
+                name: card.title,
+                description: card.description,
+                genre: card.category,
+                dateCreated: card.dateCreated,
+                softwareRequirements: card.softwareRequirements,
+                programmingLanguage: card.programmingLanguage,
+                url: SEO_CONFIG.baseUrl,
+                creator: { '@id': PERSON_SCHEMA['@id'] }
+              }
+            }))
+          })
+        }}
+      />
       {/* Layer B — sits BEHIND the fixed character, only in the card window:
           dark base + pink glow the character stands against */}
       <div className="featured-hole-bg" aria-hidden="true">
         <div className="featured-hole-glow" />
+        {sources.formalLoop && nearSection && (
+          <video
+            ref={videoRef}
+            className={`featured-hole-video${videoLive ? ' featured-hole-video--live' : ''}`}
+            src={sources.formalLoop}
+            muted
+            playsInline
+            loop
+            preload="auto"
+            onCanPlayThrough={handleCanPlayThrough}
+          />
+        )}
       </div>
 
       {/* Layer A — black cover ABOVE the character everywhere except the

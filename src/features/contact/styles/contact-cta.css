@@ -77,9 +77,7 @@
   transition:
     background 240ms ease,
     border-color 240ms ease,
-    color 240ms ease,
-    transform 240ms ease,
-    box-shadow 240ms ease;
+    color 240ms ease;
 }
 
 .cta-action--primary {
@@ -91,8 +89,6 @@
 .cta-action--primary:hover {
   background: var(--secondary);
   border-color: var(--secondary);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(223, 19, 138, 0.25);
 }
 
 .cta-action--outline {
@@ -104,7 +100,6 @@
 .cta-action--outline:hover {
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-3px);
 }
 
 /* ===================================================

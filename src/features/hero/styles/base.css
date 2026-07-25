@@ -30,6 +30,25 @@
   );
   filter: blur(170px);
   pointer-events: none;
+  /* Everything breathes — the ambient glow drifts almost imperceptibly */
+  animation: hero-glow-drift 16s ease-in-out infinite alternate;
+}
+
+@keyframes hero-glow-drift {
+  from {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-46%) translateX(-48px) scale(1.07);
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-background {
+    animation: none;
+  }
 }
 
 .home-hero__load-state {

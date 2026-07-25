@@ -1,0 +1,41 @@
+/** @format */
+
+/* =========================================================
+   About — Closing Statement
+========================================================= */
+
+.about-closing {
+  position: relative;
+  padding: 120px 0 160px;
+  overflow: hidden;
+}
+
+.about-closing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(223, 19, 138, 0.1), transparent 65%);
+  pointer-events: none;
+}
+
+.about-closing__container {
+  position: relative;
+  z-index: 1;
+  width: min(1000px, 90%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-closing__line {
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4.4vw, 3.6rem);
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .about-closing {
+    padding: 90px 0 120px;
+  }
+}

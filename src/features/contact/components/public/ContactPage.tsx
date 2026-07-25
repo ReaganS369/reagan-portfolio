@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, MapPin, Clock3, Send, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
-import Magnet from '@/src/components/effects/Magnet';
+
 import { getSocialLinks, type SocialLink } from '@/src/features/social-links/api/social-links';
 import { createContactSubmission } from '../../api/contactSubmissions';
 import './contact.css';
@@ -169,12 +169,10 @@ export function ContactPage() {
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
 
-          <Magnet padding={60} magnetStrength={5}>
-            <button type="submit" className="send-btn" disabled={status === 'pending'}>
-              <Send size={18} />
-              <span>{status === 'pending' ? 'Sending…' : 'Send Message'}</span>
-            </button>
-          </Magnet>
+          <button type="submit" className="send-btn" disabled={status === 'pending'}>
+            <Send size={18} />
+            <span>{status === 'pending' ? 'Sending…' : 'Send Message'}</span>
+          </button>
 
           <AnimatePresence>
             {status === 'success' && (

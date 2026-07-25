@@ -1,0 +1,61 @@
+/** @format */
+
+/* ===================================================
+   Hero — Cinematic Video Stage
+   Full-bleed video layer over the hero. z 5 keeps it
+   above the ambient glow, below the z-6 typography
+   and the z-19/20 ribbons.
+=================================================== */
+
+.hero-video-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.hero-video-stage--active {
+  opacity: 1;
+}
+
+.hero-video-stage__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.hero-video-stage__video--visible {
+  opacity: 1;
+}
+
+/* Transformation hand-off: lights out over everything, then the page
+   glides to Skills behind the black and fades back in. */
+.hero-video-blackout {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: #000;
+  opacity: 0;
+  transition: opacity 650ms ease;
+  pointer-events: none;
+}
+
+.hero-video-blackout--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ≤900px uses the handcrafted mobile hero — no video layer */
+@media (max-width: 900px) {
+  .hero-video-stage {
+    display: none;
+  }
+}
