@@ -1,6 +1,6 @@
 export const SEO_CONFIG = {
   baseUrl: 'https://reagan.nngtw.com',
-  title: 'Reagan Sagolsem | Technical 3D Artist & Game Developer',
+  title: 'Reagan Sagolsem | Technical Artist, Game Developer & XR Creator',
   description:
     'Portfolio of Reagan Sagolsem, Technical 3D Artist and Game Developer from Manipur. Founder of NNGTW Studio, specializing in XR, real-time rendering, and procedural pipelines.',
   keywords: [

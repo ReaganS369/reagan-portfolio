@@ -35,8 +35,8 @@ export default function HomeHero({
 
       <HeroVideoStage onActiveChange={onVideoActiveChange} />
 
-      <HeroNavigationRibbon />
-      <HeroCVRibbon />
+      <HeroNavigationRibbon heroRef={sectionRef} />
+      <HeroCVRibbon heroRef={sectionRef} />
 
       <div className="hero-grid">
         <HeroContent roles={roles} socialLinks={socialLinks} />

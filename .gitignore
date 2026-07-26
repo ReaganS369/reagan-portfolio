@@ -44,7 +44,7 @@ next-env.d.ts
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
-# Temporary local video fallback — production source is Supabase Storage
-# (nngtw-assets/videos/journey.mp4). Remove this entry + the file once the
-# render is promoted to the bucket. See HERO_VIDEO_DEV_FALLBACKS.
-/public/videos/journey.mp4
+# Video renders are never committed or shipped in /public — they live in
+# Supabase Storage (nngtw-assets/videos/). See HERO_VIDEO_DEV_FALLBACKS if a
+# brand-new render needs a temporary local stand-in during development.
+/public/videos/

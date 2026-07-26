@@ -53,26 +53,6 @@
   animation: glow-breathe 5s ease-in-out infinite;
 }
 
-/* Formal-loop portrait video — fills the card window, above the glow,
-   below the fixed character (z 5) which fades out while docked here */
-.featured-hole-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  /* Hidden until the browser confirms stall-free playback, then dissolves
-     in over the docked static portrait (the poster). GPU-composited. */
-  opacity: 0;
-  transition: opacity 900ms ease;
-  transform: translateZ(0);
-}
-
-.featured-hole-video--live {
-  opacity: 1;
-}
-
 .featured-cover {
   position: absolute;
   z-index: 6;

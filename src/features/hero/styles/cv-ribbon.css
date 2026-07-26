@@ -5,16 +5,15 @@
 =================================================== */
 
 .cv-ribbon {
-  position: absolute;
+  position: fixed;
   top: 18px;
   left: -5%;
   width: 110%;
-  height: 67px;
+  height: var(--nav-h);
   background: var(--primarydark);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  transform: rotate(7deg);
   transform-origin: center;
   z-index: 19;
   overflow: hidden;
@@ -173,6 +172,59 @@
     opacity: 1;
     transform: translateY(0);
     transition-delay: calc(var(--char-index) * 30ms + 220ms);
+  }
+}
+
+/* ===================================================
+   Docked — the sliver left showing past the story
+   ribbon's diagonal cut, which reads as ————/‒
+
+   Only ~18vw of this ribbon survives the cut, far too narrow for the running
+   sentence, so the marquee gives way to the standing CV mark. Timings trail
+   the bar's own sweep so the label arrives with the slice that reveals it.
+=================================================== */
+
+.cv-ribbon--docked .cv-ribbon__track {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+/* Centre the mark in the surviving slice: the cut lands at
+   0.745 * 110vw ≈ 82vw, so the slice spans 82vw → 100vw and its midpoint is
+   ~91vw. Measured back from this ribbon's own right edge (110vw in its local
+   box, since it starts at -5vw) that is ~14vw of padding. */
+.cv-ribbon--docked .cv-ribbon__label {
+  padding-right: 14vw;
+}
+
+.cv-ribbon--docked .cv-ribbon__label--desktop {
+  color: var(--text);
+}
+
+/* Outranks `.cv-ribbon__char:nth-child(odd/even)`, which parks the letters at
+   ±15px with the same (0,2,0) weight the plain descendant pair would carry. */
+.cv-ribbon--docked .cv-ribbon__chars .cv-ribbon__char {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--char-index) * 30ms + 900ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-ribbon--docked .cv-ribbon__chars .cv-ribbon__char {
+    transition-delay: 0ms;
+  }
+}
+
+/* Phone: the cut moves to 80%, so the slice spans 88vw → 100vw and centres at
+   ~94vw — 11vw in from this ribbon's right edge. */
+@media (max-width: 767px) {
+  .cv-ribbon--docked .cv-ribbon__label {
+    padding-right: 11vw;
+  }
+
+  .cv-ribbon--docked .cv-ribbon__label--mobile {
+    font-size: 13px;
+    letter-spacing: 2px;
   }
 }
 

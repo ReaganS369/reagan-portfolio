@@ -5,18 +5,63 @@
 =================================================== */
 
 .story-ribbon {
-  position: absolute;
+  position: fixed;
   top: 5px;
+  left: 0;
   width: 110%;
-  height: 67px;
+  height: var(--nav-h);
   background: var(--card);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  transform: rotate(-1deg);
   transform-origin: center;
   z-index: 20;
   overflow: hidden;
+  /* Full rectangle at rest — same point count as the docked polygon so the
+     two interpolate cleanly. */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  /* Undocking. A transition is read off the state being moved TO, so this is
+     the return trip only — and it has to be quick and undelayed. Sharing the
+     docked timing below would hold the cut open for 600ms while the ribbon
+     is already tilting away, leaving a chopped bar with a wedge of hero
+     showing through its right end.
+     Closing it here rather than behind a same-coloured backing layer is the
+     same pixels for one less element: a backing wide enough to fill that
+     wedge would also cover the CV ribbon, which is what the cut exists to
+     reveal. Kept just long enough to sweep rather than pop. */
+  transition: clip-path 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================================================
+   Docked sequence — runs once the scroll has snapped
+   and both ribbons have flattened into one bar.
+
+   Stage 1 (0 → ~450ms)  long sentences give way to the short legend
+   Stage 2 (600 → 1600ms) the right edge sweeps in along a diagonal,
+                          uncovering the orange CV ribbon: ————/‒
+=================================================== */
+
+:root {
+  --nav-split-delay: 600ms;
+}
+
+.story-ribbon--docked {
+  clip-path: polygon(
+    0 0,
+    var(--nav-cut) 0,
+    var(--nav-cut-bottom) 100%,
+    0 100%
+  );
+  /* Docking: hold while the legend re-forms, then sweep the edge in. */
+  transition: clip-path 1s cubic-bezier(0.65, 0, 0.35, 1)
+    var(--nav-split-delay);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-ribbon {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
 }
 
 .story-track {
@@ -42,7 +87,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 67px;
+  height: var(--nav-h);
   padding-inline: 50px;
   margin-inline: -50px;
   letter-spacing: 5px;
@@ -204,5 +249,78 @@
     opacity: 1;
     transform: translateY(0);
     transition: none;
+  }
+}
+
+/* ===================================================
+   Docked stage 1 — the legend swap
+
+   Lives at the end of the file on purpose: the char rules below have to
+   outrank `.story-item__char:nth-child(odd/even)`, which parks the letters
+   at ±15px and carries the same (0,2,0) specificity. The extra `.story-item`
+   makes these (0,3,0) so they win on weight rather than on source order.
+=================================================== */
+
+/* The legend swap is a hard cut — the marquee's transform resets and the long
+   labels leave the flow, neither of which can be tweened. Replacing the
+   marquee with a keyframe that *begins* at opacity 0 hides the relayout
+   outright: the track is already invisible on the frame it happens, then the
+   short legend fades up in its place.
+
+   A nav is not a ticker, so the loop stops and the first set of labels is
+   spread evenly across the bar's surviving width. Frozen where it stood, the
+   track would stop mid-loop with the leading label chopped against the left
+   edge; the duplicate set that makes the loop seamless is redundant once it
+   no longer scrolls. */
+@keyframes nav-legend-in {
+  0%,
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.story-ribbon--docked .story-track {
+  animation: nav-legend-in 500ms ease both;
+  width: var(--nav-cut);
+  justify-content: space-evenly;
+  gap: 0;
+}
+
+.story-ribbon--docked .story-track > :nth-child(n + 5) {
+  display: none;
+}
+
+/* The long sentence is what sizes each item, so hiding it alone leaves the
+   legend spaced for text nobody can see — at 390px that pushes STATS and
+   COMMS clean off the bar. Taking it out of flow lets each item shrink to
+   its short label. */
+.story-ribbon--docked .story-item__long {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.story-ribbon--docked .story-item__short {
+  position: static;
+}
+
+/* Outranks `.story-item__char:nth-child(odd/even)`, which parks the letters
+   at ±15px with the same (0,2,0) weight a plain descendant pair would carry. */
+.story-ribbon--docked .story-item .story-item__char {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--char-index) * 30ms);
+}
+
+/* Phone: BUILDS ORIGIN STATS COMMS is 22 characters, which overruns a 390px
+   bar at the hero's 20px/5px tracking — tighten both so all four labels fit
+   inside the cut. */
+@media (max-width: 767px) {
+  .story-ribbon--docked .story-item__short {
+    font-size: 12px;
+    letter-spacing: 1.5px;
   }
 }

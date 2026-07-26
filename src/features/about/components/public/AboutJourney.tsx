@@ -12,6 +12,11 @@ import '../../styles/about-journey.css';
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
+/** Horizontal berth for each successive entry. One entry is on screen at a
+ *  time, so cycling left → right → centre makes the timeline traverse the
+ *  frame instead of stamping every year in the same spot. */
+const POSITIONS = ['left', 'right', 'center'] as const;
+
 const YEAR_ANIM = {
   hidden: { opacity: 0, y: 20 },
   show: {
@@ -42,11 +47,15 @@ export function AboutJourney() {
   const isInView = useInView(trackRef, { once: true, margin: '-60px' });
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
-    if (p <= 0.02 || p >= 0.98) {
+    // Nothing to show before the section pins, but there is deliberately NO
+    // upper cutoff: once the last entry is reached it HOLDS to the end of the
+    // runway. The footage running out must not blank the timeline while the
+    // visitor is still inside the section.
+    if (p <= 0.02) {
       setActiveIndex(-1);
       return;
     }
-    const normalized = (p - 0.02) / 0.96;
+    const normalized = (p - 0.02) / 0.98;
     const index = Math.min(JOURNEY.length - 1, Math.max(0, Math.floor(normalized * JOURNEY.length)));
     setActiveIndex(index);
   });
@@ -80,7 +89,7 @@ export function AboutJourney() {
                 return (
                   <motion.div
                     key={entry.year}
-                    className="year-row"
+                    className={`year-row year-row--${POSITIONS[activeIndex % POSITIONS.length]}`}
                     variants={YEAR_ANIM}
                     initial="hidden"
                     animate="show"

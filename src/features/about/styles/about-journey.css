@@ -4,29 +4,35 @@
    About Journey — Editorial Year Timeline
 =================================================== */
 
-/* No z-index: the background paints BELOW the fixed scroll-avatar (z 5) so
-   the character stays visible while traveling through; content lifts above. */
 .journey-scroll-track {
   position: relative;
   height: 500vh;
 }
 
+/* Unlike the other sections, the Journey paints ABOVE the fixed scroll-avatar
+   (z 5): its full-bleed footage is the subject here, so the traveling
+   character is occluded by the section rather than faded out. Sticky already
+   makes this a stacking context, so the z-indices inside it are unaffected.
+   This also hides the character's hand-off out of the 3D card, which happens
+   across the Journey's scroll runway. */
 .about-section {
   position: sticky;
   top: 0;
+  z-index: 6;
   height: 100vh;
   background: var(--dark);
   padding: 120px 0;
   overflow: hidden;
 }
 
+/* Full width: the section now paints above the scroll avatar (see z-index
+   note above), so entries no longer have to hug the left to stay clear of the
+   traveling character — they use the whole frame. */
 .about-container {
   position: relative;
   z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
-  /* Content lives in left ~58% to stay clear of the scroll avatar */
-  max-width: calc(min(1600px, 92%) * 0.62);
 }
 
 .about-section .section-heading-wrapper {
@@ -53,6 +59,20 @@
   overflow: hidden;
   pointer-events: none;
   transform: translateZ(0);
+  /* Held at 0 until a real frame is decoded (JourneyScrub adds --ready), so
+     the footage dissolves in instead of popping from flat black. */
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.journey-bg--ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-bg {
+    transition: none;
+  }
 }
 
 .journey-bg__video {
@@ -67,8 +87,16 @@
 }
 
 /* Even, restrained darkening so the footage clearly reads as the background
-   while keeping the year list legible — heavier on the left where the text
-   sits, but never an opaque wall that hides the video. */
+   while keeping the year list legible — never an opaque wall that hides it.
+
+   Deliberately near-even left-to-right: entries now cycle through left, right
+   and centre berths, so the old left-heavy ramp would have left the right-hand
+   ones stranded on bright footage. Per-entry legibility is handled locally by
+   .year-row::before instead.
+
+   Every stop is --dark (#1d1010 = 29,16,16) at varying alpha. Tinting toward a
+   colder near-black instead would leave the footage sitting in a different
+   colour world from the section and the page around it. */
 .journey-bg__scrim {
   position: absolute;
   inset: 0;
@@ -76,22 +104,38 @@
   background:
     linear-gradient(
       90deg,
-      rgba(12, 7, 7, 0.72) 0%,
-      rgba(12, 7, 7, 0.5) 42%,
-      rgba(12, 7, 7, 0.32) 72%,
-      rgba(12, 7, 7, 0.28) 100%
+      rgba(29, 16, 16, 0.6) 0%,
+      rgba(29, 16, 16, 0.48) 40%,
+      rgba(29, 16, 16, 0.44) 72%,
+      rgba(29, 16, 16, 0.46) 100%
     ),
-    linear-gradient(0deg, rgba(12, 7, 7, 0.22), rgba(12, 7, 7, 0.22));
+    linear-gradient(0deg, rgba(29, 16, 16, 0.18), rgba(29, 16, 16, 0.18));
 }
 
-/* Top/bottom fade into the surrounding page + a soft center vignette for depth */
+/* Soft seams into the surrounding page + a gentle vignette for depth.
+   The seams are deliberately SHORT: .about-section is sticky and fills the
+   viewport, so a tall band would park permanently across the top and bottom of
+   the screen and read as letterboxing rather than as a full-bleed background.
+   Stops fade to rgba(29,16,16,0) — i.e. --dark at zero alpha — because fading
+   to `transparent` interpolates through transparent BLACK and smears a muddy
+   grey band through the gradient. */
 .journey-bg__vignette {
   position: absolute;
   inset: 0;
   z-index: 3;
   background:
-    linear-gradient(180deg, var(--dark) 0%, transparent 14%, transparent 82%, var(--dark) 100%),
-    radial-gradient(ellipse at 70% 50%, transparent 45%, rgba(10, 6, 6, 0.55) 100%);
+    linear-gradient(
+      180deg,
+      var(--dark) 0%,
+      rgba(29, 16, 16, 0) 7%,
+      rgba(29, 16, 16, 0) 93%,
+      var(--dark) 100%
+    ),
+    radial-gradient(
+      ellipse at 68% 50%,
+      rgba(29, 16, 16, 0) 52%,
+      rgba(20, 11, 11, 0.5) 100%
+    );
 }
 
 /* Subtle film-grain texture layer for cinematic polish */
@@ -104,20 +148,25 @@
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
+/* Narrow viewports: the year list spans the full width, so the scrim turns
+   vertical — but it stays translucent throughout. Opening on a solid --dark
+   stop would blank out the top third of the footage. */
 @media (max-width: 1024px) {
   .journey-bg__scrim {
     background: linear-gradient(
       180deg,
-      var(--dark) 0%,
-      rgba(20, 12, 12, 0.55) 40%,
-      rgba(20, 12, 12, 0.8) 100%
+      rgba(29, 16, 16, 0.5) 0%,
+      rgba(29, 16, 16, 0.42) 40%,
+      rgba(29, 16, 16, 0.72) 100%
     );
   }
 }
 
 @media (max-width: 640px) {
   .journey-bg__video {
-    opacity: 0.5;
+    /* Knocked back for text contrast, but still clearly moving footage —
+       stacked with the scrim above, 0.5 left it all but invisible. */
+    opacity: 0.72;
   }
 }
 
@@ -221,11 +270,74 @@ html.auto-journey-lock .year-toggle {
 
 .year-row {
   position: relative;
+  width: min(100%, 900px);
   border-bottom: 1px solid rgba(53, 32, 32, 0.6);
 }
 
 .year-row:first-of-type {
   border-top: 1px solid rgba(53, 32, 32, 0.6);
+}
+
+/* A local pool of shade travelling with the active entry. The global scrim
+   can't do this job any more: entries now appear left, right AND centre, so a
+   left-heavy gradient would leave the right-hand ones sitting unreadable on
+   bright footage. Sits at z-index -1 within .about-container's stacking
+   context — behind the type, still above the video layers. */
+.year-row::before {
+  content: '';
+  position: absolute;
+  inset: -65% -9%;
+  z-index: -1;
+  pointer-events: none;
+  /* Horizontal fade from the background, vertical fade from the mask. A single
+     radial-gradient cannot do this in a box this wide and short: with default
+     farthest-corner sizing its top and bottom edges never reach the transparent
+     stop, so the panel showed hard horizontal seams across the footage. */
+  background: linear-gradient(
+    90deg,
+    rgba(16, 9, 9, 0) 0%,
+    rgba(16, 9, 9, 0.74) 17%,
+    rgba(16, 9, 9, 0.74) 60%,
+    rgba(16, 9, 9, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 27%,
+    #000 73%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 27%,
+    #000 73%,
+    transparent 100%
+  );
+}
+
+/* The three berths. Only above 900px — narrow viewports keep every entry
+   full-width, where shifting would just cramp the text. */
+@media (min-width: 901px) {
+  .year-row--left {
+    margin-right: auto;
+  }
+
+  .year-row--right {
+    margin-left: auto;
+  }
+
+  .year-row--center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* A right-hand entry has no room for the hover card on its right, so the
+     card swings over to the entry's left instead of overflowing the frame. */
+  .year-row--right .year-float-card {
+    left: auto;
+    right: calc(100% + 24px);
+  }
 }
 
 /* ===================================================
@@ -266,7 +378,15 @@ html.auto-journey-lock .year-toggle {
   font-weight: 700;
   line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(242, 239, 231, 0.2);
+  /* Was a 1px stroke at 0.2 alpha — designed for a flat dark panel, and all
+     but invisible now that real footage runs behind it. Thicker and brighter,
+     plus a soft dark halo: text-shadow paints from the glyph outline even
+     though the fill is transparent, so it darkens the footage directly behind
+     the numeral and the outline reads on any frame. */
+  -webkit-text-stroke: 1.5px rgba(242, 239, 231, 0.62);
+  text-shadow:
+    0 0 26px rgba(12, 7, 7, 0.9),
+    0 0 62px rgba(12, 7, 7, 0.6);
   letter-spacing: -4px;
   transition:
     color 300ms ease,

@@ -21,10 +21,6 @@ interface ScrollAvatarProps {
   profile: AvatarProfile | null;
   /** Hidden while a cinematic hero video covers the avatar spot. */
   suppressed?: boolean;
-  /** True when the formal-loop video plays inside the 3D bento card — the
-   *  static character hands the card window over to the footage while
-   *  docked, re-emerging on the way to the contact section. */
-  dockVideoActive?: boolean;
 }
 
 /** natural image aspect: 855 × 2890 */
@@ -37,6 +33,14 @@ const CARD_PORTRAIT_FRACTION = 0.34;
 /** Fraction of the (scaled) character height cropped ABOVE the card's top
  *  edge, so the top of the hair runs out of frame like a real portrait. */
 const CARD_TOP_CROP = 0.05;
+
+/** Portion of the character framed beside the skills section — head down to
+ *  the upper thigh, i.e. a half body rather than the full standing figure. */
+const SKILLS_PORTRAIT_FRACTION = 0.52;
+
+/** How much of the viewport height that half body fills. Parked (not glued to
+ *  the section), so the framing holds for the whole skills scroll. */
+const SKILLS_VIEW_FRACTION = 0.78;
 
 /** document-space top/left ignoring motion transforms (offset chain) */
 function docTop(el: HTMLElement): number {
@@ -67,9 +71,12 @@ interface PageMarks {
   rootCenterX: number;
   card: { top: number; height: number; centerX: number } | null;
   contact: { top: number; height: number; anchorX: number } | null;
-  /** The Journey section — the character hides while it owns the viewport so
-   *  the full-bleed footage reads clean underneath. */
-  about: { top: number; height: number } | null;
+  /** The Journey's full scroll runway (the sticky track, not the 100vh pane).
+   *  The section paints over the character, so the card→skills hand-off is
+   *  timed to finish before this runway ends. */
+  journey: { top: number; height: number } | null;
+  /** The skills section — the character parks beside it as a half body. */
+  skills: { top: number; height: number } | null;
   footerTop: number | null;
 }
 
@@ -86,7 +93,6 @@ export function ScrollAvatar({
   heroRef,
   profile,
   suppressed,
-  dockVideoActive,
 }: ScrollAvatarProps) {
   // Pixel scroll — every phase below is keyed in document pixels
   const { scrollY, scrollYProgress } = useScroll();
@@ -110,7 +116,8 @@ export function ScrollAvatar({
 
       const cardEl = document.querySelector<HTMLElement>('.bento-card--3d');
       const contactEl = document.querySelector<HTMLElement>('.contact-cta-section');
-      const aboutEl = document.querySelector<HTMLElement>('.about-section');
+      const journeyEl = document.querySelector<HTMLElement>('.journey-scroll-track');
+      const skillsEl = document.querySelector<HTMLElement>('.brain-section');
       const footerEl = document.querySelector<HTMLElement>('.home-footer');
 
       setMarks({
@@ -132,8 +139,11 @@ export function ScrollAvatar({
               anchorX: docLeft(contactEl) + contactEl.offsetWidth * 0.8,
             }
           : null,
-        about: aboutEl
-          ? { top: docTop(aboutEl), height: aboutEl.offsetHeight }
+        journey: journeyEl
+          ? { top: docTop(journeyEl), height: journeyEl.offsetHeight }
+          : null,
+        skills: skillsEl
+          ? { top: docTop(skillsEl), height: skillsEl.offsetHeight }
           : null,
         footerTop: footerEl ? docTop(footerEl) : null,
       });
@@ -195,7 +205,7 @@ export function ScrollAvatar({
     ([s, t, p]: number[]) => s - (t * (100 - p)) / 100,
   );
 
-  /* --------- one continuous character: hero → 3D card → contact ---------- */
+  /* ----- one continuous character: hero → 3D card → skills → contact ----- */
 
   // Keyframes are computed from measured page geometry. Until measurement
   // lands (or if a section is missing) we fall back to the old gentle shrink.
@@ -208,12 +218,10 @@ export function ScrollAvatar({
   let bIn = [0, 1];
   let bOut = [0, 0];
   let useProgressScale = true;
-  // Dock hand-off to the formal-loop video (identity when inactive)
-  let dockIn = [0, 1];
-  let dockOut = [1, 1];
 
   if (marks && marks.card && marks.contact) {
-    const { vh, rootW, rootCenterX, card, contact, footerTop } = marks;
+    const { vh, rootW, rootCenterX, card, contact, journey, skills, footerTop } =
+      marks;
     const H = rootW * IMG_RATIO; // full unscaled character height
 
     // The 3D card frames a head-and-chest PORTRAIT: scale up until the
@@ -234,7 +242,12 @@ export function ScrollAvatar({
     // the exact same glued state, guaranteeing ≥0.45vh of interpolation.
     const approachStart = heroEnd * 0.55;
     const sA = Math.max(card.top - vh * 0.8, approachStart + vh * 0.45);
-    const sB = card.top + card.height - vh * 0.4; // card scrolls on, release
+    // Stay glued for as long as ANY part of the card is on screen. Releasing
+    // earlier let the character slide out of the card window while the window
+    // was still visible — the cover strips only mask the section, not the
+    // hole. Ending the dock once the card has fully cleared the viewport top
+    // keeps the character strictly inside the card for its whole appearance.
+    const sB = card.top + card.height;
     const sC = contact.top - vh * 0.85; // approach contact
     const sEnd = (footerTop ?? contact.top + contact.height) - vh * 0.05;
 
@@ -247,28 +260,60 @@ export function ScrollAvatar({
     const xContact = contact.anchorX - rootCenterX;
 
     // Bottom clip (% of the image) while docked: everything below the card's
-    // portrait window folds away smoothly on approach and unfolds again on
-    // the way to the contact section — one continuous character throughout.
+    // portrait window folds away, so the body never runs past the frame.
     const visibleFraction = CARD_TOP_CROP + card.height / (H * kCard);
-    const bClip = Math.max(0, (1 - visibleFraction) * 100);
+    const bCard = Math.max(0, (1 - visibleFraction) * 100);
 
-    // While the formal-loop video owns the card window, the continuous
-    // character dissolves on approach and re-materialises as the card
-    // releases — the footage carries the docked portrait instead.
-    if (dockVideoActive) {
-      dockIn = mono([approachStart, sA, sB, sB + vh * 0.45]);
-      dockOut = [1, 0, 0, 1];
+    // Skills stop — a half body parked at the lower right. Unlike the card and
+    // contact stops this one is NOT glued to the section: the y is a viewport
+    // constant, so the framing holds identically for the whole section instead
+    // of drifting up and out of frame as it scrolls.
+    const kSkills = Math.min(
+      1,
+      (vh * SKILLS_VIEW_FRACTION) / (H * SKILLS_PORTRAIT_FRACTION),
+    );
+    const skillsVisibleH = H * kSkills * SKILLS_PORTRAIT_FRACTION;
+    const ySkills = vh - skillsVisibleH; // half body standing on the fold
+    const bSkills = (1 - SKILLS_PORTRAIT_FRACTION) * 100;
+
+    // The card→skills hand-off is timed to land before the Journey's runway
+    // ends, because the Journey paints over the character (z 6) — the whole
+    // re-framing happens out of sight and it emerges already composed.
+    const journeyEnd = journey
+      ? journey.top + journey.height
+      : (skills?.top ?? sC);
+    const sS0 = Math.max(sB + vh * 0.3, journeyEnd - vh * 0.5);
+    const sS1 = skills
+      ? Math.max(sS0 + vh * 0.3, skills.top + skills.height - vh * 0.45)
+      : sS0 + vh * 0.3;
+
+    const raw = [0, approachStart, sA, sB];
+    if (skills) raw.push(sS0, sS1);
+    raw.push(sC, sEnd);
+
+    const inputs = mono(raw);
+    const iC = inputs.length - 2;
+    const iEnd = inputs.length - 1;
+
+    yOut = [0, 0, yCardAt(inputs[2]), yCardAt(inputs[3])];
+    sOut = [1, 1, kCard, kCard];
+    xOut = [0, 0, xCard, xCard];
+    bOut = [0, 0, bCard, bCard];
+    if (skills) {
+      yOut.push(ySkills, ySkills);
+      sOut.push(kSkills, kSkills);
+      xOut.push(0, 0); // already right-aligned by the fixed root
+      bOut.push(bSkills, bSkills);
     }
+    yOut.push(yContactAt(inputs[iC]), yContactAt(inputs[iEnd]));
+    sOut.push(kContact, kContact);
+    xOut.push(xContact, xContact);
+    bOut.push(0, 0);
 
-    const inputs = mono([0, approachStart, sA, sB, sC, sEnd]);
     yIn = inputs;
-    yOut = [0, 0, yCardAt(inputs[2]), yCardAt(inputs[3]), yContactAt(inputs[4]), yContactAt(inputs[5])];
     sIn = inputs;
-    sOut = [1, 1, kCard, kCard, kContact, kContact];
     xIn = inputs;
-    xOut = [0, 0, xCard, xCard, xContact, xContact];
     bIn = inputs;
-    bOut = [0, 0, bClip, bClip, 0, 0];
     useProgressScale = false;
   }
 
@@ -298,32 +343,10 @@ export function ScrollAvatar({
   const fadeFallback = useTransform(scrollYProgress, [0.88, 0.95], [1, 0], { clamp: true });
   const footerFade = fadeStart !== null ? fadePx : fadeFallback;
 
-  // Compose the footer fade with the dock hand-off (1 everywhere when the
-  // formal-loop video is absent, so this is a no-op today).
-  const dockFade = useTransform(scrollY, dockIn, dockOut, { clamp: true });
-
-  // Hide the traveling character while the Journey section owns the viewport:
-  // its full-bleed footage is the subject there, so the avatar fades out on
-  // approach and fades back in as the section scrolls away.
-  let aboutIn = [0, 1];
-  let aboutOut = [1, 1];
-  if (marks?.about) {
-    const { top, height } = marks.about;
-    const vh = marks.vh;
-    aboutIn = mono([
-      top - vh * 0.55,
-      top - vh * 0.1,
-      top + height - vh * 0.85,
-      top + height - vh * 0.4,
-    ]);
-    aboutOut = [1, 0, 0, 1];
-  }
-  const aboutFade = useTransform(scrollY, aboutIn, aboutOut, { clamp: true });
-
-  const avatarOpacity = useTransform(
-    [footerFade, dockFade, aboutFade] as const,
-    ([a, b, c]: number[]) => a * b * c,
-  );
+  // The Journey section needs no opacity ramp: it paints above the character
+  // (z 6, see about-journey.css) and simply occludes it while it owns the
+  // viewport — no dissolve to mistime, and nothing spills over the footage.
+  const avatarOpacity = footerFade;
 
   // Top-down black fade over the split casual/formal avatar — hero only.
   // Fully faded out by the time the hero scrolls away, so it never shows

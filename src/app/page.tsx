@@ -25,9 +25,6 @@ export default function Home() {
   );
   // While a cinematic hero video plays, the static scroll-avatar yields.
   const [videoStageActive, setVideoStageActive] = useState(false);
-  // True once the 3D-card loop has buffered — only then does the docked
-  // static portrait hand the card window over to the footage.
-  const [cardVideoReady, setCardVideoReady] = useState(false);
 
   // Always start at the hero: stop the browser from restoring the previous
   // scroll position on reload — the scroll-driven avatar/section choreography
@@ -60,11 +57,10 @@ export default function Home() {
         heroRef={heroRef}
         profile={avatarProfile}
         suppressed={videoStageActive}
-        dockVideoActive={cardVideoReady}
       />
 
       <HomeHero sectionRef={heroRef} onVideoActiveChange={setVideoStageActive} />
-      <FeaturedWork onHoleVideoReady={() => setCardVideoReady(true)} />
+      <FeaturedWork />
       <AboutJourney />
       <BrainSkills />
       <Testimonials />
