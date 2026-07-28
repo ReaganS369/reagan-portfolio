@@ -40,6 +40,85 @@ body {
   --glow-primary: #ffd700;
   --glow-secondary: #ff69b4;
 
+  /* ---------------------------------
+     Nav ribbons
+
+     These live here rather than with the hero styles because the bar is now
+     pinned on every route — the hero's stylesheet only loads on the home page,
+     which would leave these undefined everywhere else.
+  --------------------------------- */
+
+  /* 64px is the Material / Tailwind desktop app-bar height and sits on the
+     8px grid, leaving ~23px of breathing room around the 18px marquee. */
+  --nav-h: 64px;
+  /* The RS monogram's slot at the head of the bar. */
+  --nav-brand: 9vw;
+  /* Where the docked bar's diagonal cut lands, expressed against the ribbon's
+     own 110%-of-viewport box: brand + four slots = 9 + 82 = 91vw of viewport,
+     and 91 / 110 ≈ 82.73%. The 1.6-point delta is the diagonal's rake.
+
+     The monogram takes its width from the CV slice rather than from the slots.
+     Splitting 82vw five ways instead of four would drop each slot to ~259px,
+     and "Where Connections Begin" is 333px — adjacent hero labels would
+     actually overlap. The CV slice has the room to give. */
+  --nav-cut: 82.73%;
+  --nav-cut-bottom: 81.13%;
+  /* One legend slot. The four of them tile the bar after the monogram.
+     Every marquee item carries this width in the hero too, so docking is a
+     pure stop — the labels are already sitting in their slots and nothing has
+     to be re-laid out. It also makes the loop repeat on a slot boundary. */
+  --nav-cell: 20.5vw;
+  /* Gap between one legend label starting to swap and the next. */
+  --nav-stagger: 90ms;
+}
+
+/* Phone: 56px is the Material mobile app-bar height. Four legend labels can't
+   hold desktop tracking in 390px, so the bar also keeps a larger share of the
+   width and the labels tighten. */
+@media (max-width: 767px) {
+  :root {
+    --nav-h: 56px;
+    --nav-cut: 80%;
+    --nav-cut-bottom: 78.4%;
+    /* Here the monogram comes out of the slots instead: 0.80 * 110vw = 88vw of
+       bar, less a 14vw monogram, leaves 74vw over four slots. Phone labels run
+       at 12px so 18.5vw (~72px) is ample, and the CV slice keeps its width. */
+    --nav-brand: 14vw;
+    --nav-cell: 18.5vw;
+  }
+}
+
+/* ===================================
+   Nav ribbons — shared track layout
+=================================== */
+
+.story-track,
+.cv-ribbon__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* Direct children only — story-item/cv-ribbon internals define their own
+   typography and would otherwise be clobbered by this rule's higher
+   specificity (class + type selector beats a lone class selector). */
+.story-track > span,
+.story-track > .story-item,
+.cv-ribbon__track > span {
+  color: var(--text-muted);
+  font-size: 18px;
+  letter-spacing: 5px;
+}
+
+@keyframes cv-ribbon-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ===================================

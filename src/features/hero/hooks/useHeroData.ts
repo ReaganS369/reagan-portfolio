@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/src/lib/supabase/client';
+import { getProfile } from '@/src/features/profile/api/profile';
 import { getHeroRoles } from '../api/heroRoles';
 import {
   getSocialLinks,
@@ -29,7 +29,7 @@ export function useHeroData(): HeroData {
 
     async function loadProfile() {
       try {
-        const { data } = await supabase.from('profiles').select('*').single();
+        const data = await getProfile();
         if (active) setProfile(data);
       } catch (err) {
         console.error(err);

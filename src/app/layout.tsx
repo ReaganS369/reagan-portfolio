@@ -12,6 +12,7 @@ import {
   posterama2001UltraBlack,
 } from '@/src/fonts';
 import { GlobalLoadingProvider } from '@/src/components/ui/loading/GlobalLoadingProvider';
+import { SiteNav } from '@/src/components/site/SiteNav';
 import './globals.css';
 
 const geistSans = Geist({
@@ -102,7 +103,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <GlobalLoadingProvider>{children}</GlobalLoadingProvider>
+        <GlobalLoadingProvider>
+          <SiteNav />
+          {children}
+        </GlobalLoadingProvider>
       </body>
     </html>
   );

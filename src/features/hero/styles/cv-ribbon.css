@@ -22,6 +22,12 @@
     background 200ms ease;
 }
 
+/* Off the home page there is no hero to cross over, so the ribbon skips its
+   18px resting offset and mounts flush under the story bar. */
+.cv-ribbon--static {
+  top: 0;
+}
+
 .cv-ribbon:hover {
   cursor: pointer;
   filter: brightness(1.05);
@@ -184,45 +190,56 @@
    the bar's own sweep so the label arrives with the slice that reveals it.
 =================================================== */
 
-.cv-ribbon--docked .cv-ribbon__track {
-  animation-play-state: paused;
+/* The loop is under JS control while `--docked` (spinning down), so the track
+   is left alone until it stops. On `--settled` the running sentence gives way
+   to the standing CV mark. */
+.cv-ribbon--settled .cv-ribbon__track {
+  animation: none;
+  transform: none;
   opacity: 0;
 }
 
-/* Centre the mark in the surviving slice: the cut lands at
-   0.745 * 110vw ≈ 82vw, so the slice spans 82vw → 100vw and its midpoint is
-   ~91vw. Measured back from this ribbon's own right edge (110vw in its local
-   box, since it starts at -5vw) that is ~14vw of padding. */
-.cv-ribbon--docked .cv-ribbon__label {
-  padding-right: 14vw;
+/* Centre the mark in the surviving slice. The cut now lands at
+   0.8273 * 110vw ≈ 91vw to make room for the RS monogram, so the slice spans
+   91vw → 100vw with its midpoint at ~95.5vw. This ribbon's right edge sits at
+   105vw (it starts at -5vw and runs 110vw), so centring a ~1.8vw half-width
+   mark there needs 105 − 95.5 − 1.8 ≈ 7.8vw of padding.
+
+   Left at the old 14vw the mark landed at 91vw — flush against the cut, which
+   put it behind the story bar entirely. */
+.cv-ribbon--settled .cv-ribbon__label {
+  padding-right: 7.8vw;
 }
 
-.cv-ribbon--docked .cv-ribbon__label--desktop {
+.cv-ribbon--settled .cv-ribbon__label--desktop {
   color: var(--text);
 }
 
 /* Outranks `.cv-ribbon__char:nth-child(odd/even)`, which parks the letters at
    ±15px with the same (0,2,0) weight the plain descendant pair would carry. */
-.cv-ribbon--docked .cv-ribbon__chars .cv-ribbon__char {
+.cv-ribbon--settled .cv-ribbon__chars .cv-ribbon__char {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: calc(var(--char-index) * 30ms + 900ms);
+  /* Trails the bar's 400ms-delayed sweep so the mark arrives with the slice
+     that uncovers it, rather than fading up against still-covered orange. */
+  transition-delay: calc(var(--char-index) * 30ms + 550ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cv-ribbon--docked .cv-ribbon__chars .cv-ribbon__char {
+  .cv-ribbon--settled .cv-ribbon__chars .cv-ribbon__char {
     transition-delay: 0ms;
   }
 }
 
-/* Phone: the cut moves to 80%, so the slice spans 88vw → 100vw and centres at
-   ~94vw — 11vw in from this ribbon's right edge. */
+/* Phone keeps its 80% cut — the monogram comes out of the slots there — so the
+   slice still spans 88vw → 100vw, centring at ~94vw. The mark is a larger
+   share of a 390px viewport, hence the different padding. */
 @media (max-width: 767px) {
-  .cv-ribbon--docked .cv-ribbon__label {
-    padding-right: 11vw;
+  .cv-ribbon--settled .cv-ribbon__label {
+    padding-right: 8vw;
   }
 
-  .cv-ribbon--docked .cv-ribbon__label--mobile {
+  .cv-ribbon--settled .cv-ribbon__label--mobile {
     font-size: 13px;
     letter-spacing: 2px;
   }

@@ -3,7 +3,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { supabase } from '@/src/lib/supabase/client';
+import { getProfile } from '@/src/features/profile/api/profile';
 import VariableProximity from '@/src/components/effects/VariableProximity';
 
 export default function Projects() {
@@ -49,9 +49,7 @@ export default function Projects() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data } = await supabase.from('profiles').select('*').single();
-
-      setProfile(data);
+      setProfile(await getProfile());
     }
 
     loadProfile();

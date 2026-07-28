@@ -3,7 +3,7 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { supabase } from '@/src/lib/supabase/client';
+import { getProfile } from '@/src/features/profile/api/profile';
 import HomeHero from '@/src/features/hero/components/public/HomeHero';
 import { useMagneticSnap } from '@/src/features/hero/hooks/useMagneticSnap';
 import {
@@ -41,13 +41,11 @@ export default function Home() {
   useMagneticSnap(heroRef);
 
   useEffect(() => {
-    supabase
-      .from('profiles')
-      .select('casual_avatar, formal_avatar')
-      .single()
-      .then(({ data }) => {
+    getProfile()
+      .then((data) => {
         if (data) setAvatarProfile(data as AvatarProfile);
-      });
+      })
+      .catch(console.error);
   }, []);
 
   return (

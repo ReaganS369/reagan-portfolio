@@ -3,9 +3,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, MapPin, Clock3, Send, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, Clock3, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 import { getSocialLinks, type SocialLink } from '@/src/features/social-links/api/social-links';
 import { createContactSubmission } from '../../api/contactSubmissions';
@@ -50,12 +49,7 @@ export function ContactPage() {
   return (
     <section className="contact-section">
       <div className="contact-container">
-        <motion.div {...rise} transition={{ duration: 0.7, ease: EASE }}>
-          <Link href="/" className="contact-back">
-            <ArrowLeft size={16} />
-            <span>Back home</span>
-          </Link>
-        </motion.div>
+        {/* The pinned nav's RS monogram is the way home now. */}
 
         <div className="contact-top">
           <div className="contact-left">

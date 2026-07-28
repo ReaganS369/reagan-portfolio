@@ -2,52 +2,110 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import { SectionNumber } from '@/src/components/home/SectionNumber';
-import { DESIGN_SKILLS, DEV_SKILLS } from '../../constants';
+import { getAllSkillNodes } from '@/src/features/skills/api/skillNodes';
+import { getAllSkillTools } from '@/src/features/skills/api/skillTools';
+import { buildSkillTree, type SkillTreeNode } from '@/src/features/skills/lib/tree';
+import {
+  BRAIN_OUTLINE_D,
+  BRAIN_REGIONS,
+  BRAIN_VIEWBOX,
+} from '../../data/brainRegions';
+import { allocateRegions } from '../../lib/allocateRegions';
 import '../../styles/brain-skills.css';
-
-type Side = 'design' | 'dev' | null;
-
-const RING_RADIUS = { 1: 190, 2: 270 };
-
-function skillPosition(angle: number, ring: 1 | 2) {
-  const r = RING_RADIUS[ring];
-  const rad = (angle - 90) * (Math.PI / 180);
-  return {
-    x: Math.cos(rad) * r,
-    y: Math.sin(rad) * r,
-  };
-}
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
-const nodeAnim = (i: number) => ({
-  initial: { opacity: 0, scale: 0.5 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.5 },
-  transition: {
-    duration: 0.4,
-    ease: EASE,
-    delay: i * 0.04,
-  },
-});
+interface Tool {
+  id: string;
+  name: string;
+  icon: string | null;
+  rating: number | null;
+}
 
+/**
+ * The brain is a view onto the `skill_nodes` tree (the same tree the /stats
+ * explorer renders, edited in nngtw-admin). Nothing about the hierarchy lives
+ * in this file: the top level's children claim the hemispheres, and drilling
+ * into one re-projects *its* children across the whole brain. How much of the
+ * brain a skill occupies is derived from its rating, never hand-entered.
+ */
 export function BrainSkills() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const [active, setActive] = useState<Side>(null);
 
-  const currentSkills =
-    active === 'design' ? DESIGN_SKILLS : active === 'dev' ? DEV_SKILLS : [];
+  const [roots, setRoots] = useState<SkillTreeNode[] | null>(null);
+  const [toolsByNode, setToolsByNode] = useState<Map<string, Tool[]>>(new Map());
+  const [trail, setTrail] = useState<SkillTreeNode[]>([]);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const handleSide = (side: Side) =>
-    setActive((prev) => (prev === side ? null : side));
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([getAllSkillNodes(), getAllSkillTools()])
+      .then(([nodes, tools]) => {
+        if (cancelled) return;
+        const map = new Map<string, Tool[]>();
+        for (const t of tools) {
+          const list = map.get(t.skill_node_id) ?? [];
+          list.push({ id: t.id, name: t.name, icon: t.icon, rating: t.rating });
+          map.set(t.skill_node_id, list);
+        }
+        setToolsByNode(map);
+        setRoots(buildSkillTree(nodes.filter((n) => n.is_active)));
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) setRoots([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const parent = trail.length > 0 ? trail[trail.length - 1] : null;
+  const level = useMemo(() => {
+    const list = parent ? parent.children : (roots ?? []);
+    return list.filter((n) => n.is_active);
+  }, [parent, roots]);
+
+  const alloc = useMemo(() => allocateRegions(level), [level]);
+
+  const selected = level.find((n) => n.id === selectedId) ?? null;
+  const focusId = hovered ?? selectedId;
+
+  const open = (node: SkillTreeNode) => {
+    const kids = node.children.filter((c) => c.is_active);
+    if (kids.length > 0) {
+      setTrail((t) => [...t, node]);
+      setSelectedId(null);
+      setHovered(null);
+    } else {
+      setSelectedId((prev) => (prev === node.id ? null : node.id));
+    }
+  };
+
+  const goTo = (depth: number) => {
+    setTrail((t) => t.slice(0, depth));
+    setSelectedId(null);
+    setHovered(null);
+  };
+
+  const hint = roots === null
+    ? 'Loading the map…'
+    : level.length === 0
+      ? 'No skills published yet'
+      : parent
+        ? `Inside ${parent.name} — click a region to go deeper`
+        : 'Click a region of the brain to explore';
 
   return (
     <section className="brain-section" ref={ref} aria-labelledby="skills-heading">
-      <h2 id="skills-heading" className="sr-only">Technical Skills and Software Expertise</h2>
+      <h2 id="skills-heading" className="sr-only">
+        Technical Skills and Software Expertise
+      </h2>
       <div className="section-heading-wrapper">
         <div className="heading-container">
           <motion.div
@@ -61,183 +119,218 @@ export function BrainSkills() {
       </div>
 
       <div className="brain-container">
-        {/* Instruction hint */}
+        {/* Breadcrumb trail */}
+        <motion.nav
+          className="brain-trail"
+          aria-label="Skill map breadcrumb"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.45, duration: 0.6 }}
+        >
+          <button
+            type="button"
+            className="brain-trail__crumb"
+            onClick={() => goTo(0)}
+            disabled={trail.length === 0}
+          >
+            Mind
+          </button>
+          {trail.map((node, i) => (
+            <span key={node.id} className="brain-trail__step">
+              <span className="brain-trail__sep" aria-hidden="true">
+                /
+              </span>
+              <button
+                type="button"
+                className="brain-trail__crumb"
+                onClick={() => goTo(i + 1)}
+                disabled={i === trail.length - 1}
+              >
+                {node.name}
+              </button>
+            </span>
+          ))}
+        </motion.nav>
+
         <motion.p
           className="brain-hint"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Click a hemisphere to explore
+          {hint}
         </motion.p>
 
-        {/* Brain visualization */}
-        <motion.div
-          className="brain-stage"
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ delay: 0.3, duration: 0.9, ease: EASE }}
-        >
-          {/* SVG brain shape */}
-          <svg
-            className="brain-svg"
-            viewBox="0 0 400 320"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        <div className="brain-layout">
+          {/* ---------------- Brain ---------------- */}
+          <motion.div
+            className="brain-stage"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.3, duration: 0.9, ease: EASE }}
           >
-            {/* Left hemisphere */}
-            <path
-              d="M200 40 C160 35 120 50 95 80 C70 110 65 145 70 175 C75 210 95 240 130 258 C155 270 178 272 200 268"
-              stroke="rgba(245,138,31,0.3)"
-              strokeWidth="1.5"
-              fill="rgba(245,138,31,0.04)"
-              className={active === 'design' ? 'brain-path--active-design' : ''}
-            />
-            <path
-              d="M200 40 C160 35 120 50 95 80 C70 110 65 145 70 175 C75 210 95 240 130 258 C155 270 178 272 200 268"
-              stroke="rgba(245,138,31,0.15)"
-              strokeWidth="8"
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Gyri (wrinkles) on left */}
-            <path
-              d="M130 90 Q115 110 120 135"
-              stroke="rgba(245,138,31,0.12)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d="M110 145 Q100 165 108 185"
-              stroke="rgba(245,138,31,0.10)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d="M145 200 Q135 220 145 240"
-              stroke="rgba(245,138,31,0.10)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
+            <svg
+              className="brain-svg"
+              viewBox={BRAIN_VIEWBOX}
+              xmlns="http://www.w3.org/2000/svg"
+              role="group"
+              aria-label="Interactive brain map of skills"
+            >
+              {/* Every lobe is the same amber; only the focused one changes. The
+                  rest are left exactly as they are — no dimming. */}
+              {BRAIN_REGIONS.map((region) => {
+                const owner = alloc.ownerByRegion.get(region.id);
+                const isFocus = owner ? owner.id === focusId : false;
 
-            {/* Right hemisphere */}
-            <path
-              d="M200 40 C240 35 280 50 305 80 C330 110 335 145 330 175 C325 210 305 240 270 258 C245 270 222 272 200 268"
-              stroke="rgba(223,19,138,0.3)"
-              strokeWidth="1.5"
-              fill="rgba(223,19,138,0.04)"
-              className={active === 'dev' ? 'brain-path--active-dev' : ''}
-            />
-            <path
-              d="M200 40 C240 35 280 50 305 80 C330 110 335 145 330 175 C325 210 305 240 270 258 C245 270 222 272 200 268"
-              stroke="rgba(223,19,138,0.15)"
-              strokeWidth="8"
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Gyri (wrinkles) on right */}
-            <path
-              d="M270 90 Q285 110 280 135"
-              stroke="rgba(223,19,138,0.12)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d="M290 145 Q300 165 292 185"
-              stroke="rgba(223,19,138,0.10)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d="M255 200 Q265 220 255 240"
-              stroke="rgba(223,19,138,0.10)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-
-            {/* Center divider */}
-            <line
-              x1="200"
-              y1="42"
-              x2="200"
-              y2="268"
-              stroke="rgba(242,239,231,0.08)"
-              strokeWidth="1"
-              strokeDasharray="4 6"
-            />
-
-            {/* Stem */}
-            <path
-              d="M185 268 Q200 285 215 268"
-              stroke="rgba(242,239,231,0.15)"
-              strokeWidth="2"
-              fill="none"
-            />
-          </svg>
-
-          {/* Clickable overlay buttons */}
-          <button
-            className={`brain-btn brain-btn--design ${active === 'design' ? 'brain-btn--active' : ''}`}
-            onClick={() => handleSide('design')}
-            aria-pressed={active === 'design'}
-          >
-            <span className="brain-btn__label">Design</span>
-          </button>
-
-          <button
-            className={`brain-btn brain-btn--dev ${active === 'dev' ? 'brain-btn--active' : ''}`}
-            onClick={() => handleSide('dev')}
-            aria-pressed={active === 'dev'}
-          >
-            <span className="brain-btn__label">Dev</span>
-          </button>
-
-          {/* Skill nodes orbit */}
-          <div className="brain-orbit">
-            <AnimatePresence>
-              {currentSkills.map((skill, i) => {
-                const pos = skillPosition(skill.angle, skill.ring as 1 | 2);
-                const anim = nodeAnim(i);
                 return (
-                  <motion.div
-                    key={`${active}-${skill.name}`}
-                    className={`skill-node skill-node--${active}`}
-                    style={
-                      {
-                        '--x': `${pos.x}px`,
-                        '--y': `${pos.y}px`,
-                      } as React.CSSProperties
-                    }
-                    initial={anim.initial}
-                    animate={anim.animate}
-                    exit={anim.exit}
-                    transition={anim.transition}
-                  >
-                    {skill.name}
-                  </motion.div>
+                  <path
+                    key={region.id}
+                    d={region.d}
+                    className={`brain-lobe${isFocus ? ' brain-lobe--focus' : ''}`}
+                    tabIndex={owner ? 0 : -1}
+                    role={owner ? 'button' : undefined}
+                    aria-label={owner ? owner.name : undefined}
+                    onMouseEnter={() => owner && setHovered(owner.id)}
+                    onMouseLeave={() => setHovered(null)}
+                    onFocus={() => owner && setHovered(owner.id)}
+                    onBlur={() => setHovered(null)}
+                    onClick={() => owner && open(owner)}
+                    onKeyDown={(e) => {
+                      if (owner && (e.key === 'Enter' || e.key === ' ')) {
+                        e.preventDefault();
+                        open(owner);
+                      }
+                    }}
+                  />
                 );
               })}
-            </AnimatePresence>
-          </div>
-        </motion.div>
 
-        {/* Legend */}
-        <div className="brain-legend">
-          <div className="brain-legend__item">
-            <span className="brain-legend__dot brain-legend__dot--design" />
-            <span>Design</span>
-          </div>
-          <div className="brain-legend__item">
-            <span className="brain-legend__dot brain-legend__dot--dev" />
-            <span>Development</span>
-          </div>
+              {/* Contour linework, painted over the lobes */}
+              <path className="brain-outline" d={BRAIN_OUTLINE_D} />
+            </svg>
+          </motion.div>
+
+          {/* ---------------- Region list ---------------- */}
+          <motion.div
+            className="brain-panel"
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.55, duration: 0.8, ease: EASE }}
+          >
+            {trail.length > 0 && (
+              <button
+                type="button"
+                className="brain-back"
+                onClick={() => goTo(trail.length - 1)}
+              >
+                ← Back to {trail.length > 1 ? trail[trail.length - 2].name : 'Mind'}
+              </button>
+            )}
+
+            <ul className="brain-list">
+              <AnimatePresence mode="popLayout">
+                {level.map((node, i) => {
+                  const share = alloc.shareByNode.get(node.id) ?? 0;
+                  const kids = node.children.filter((c) => c.is_active);
+                  const isFocus = node.id === focusId;
+
+                  return (
+                    <motion.li
+                      key={node.id}
+                      layout
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 12 }}
+                      transition={{ duration: 0.35, ease: EASE, delay: i * 0.04 }}
+                    >
+                      <button
+                        type="button"
+                        className={`brain-row${isFocus ? ' brain-row--focus' : ''}${
+                          share === 0 ? ' brain-row--overflow' : ''
+                        }`}
+                        onMouseEnter={() => setHovered(node.id)}
+                        onMouseLeave={() => setHovered(null)}
+                        onFocus={() => setHovered(node.id)}
+                        onBlur={() => setHovered(null)}
+                        onClick={() => open(node)}
+                      >
+                        <span className="brain-row__dot" />
+                        <span className="brain-row__name">{node.name}</span>
+                        <span className="brain-row__share">
+                          {share > 0 ? `${Math.round(share * 100)}%` : '—'}
+                        </span>
+                        <span className="brain-row__go" aria-hidden="true">
+                          {kids.length > 0 ? '→' : ''}
+                        </span>
+                      </button>
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
+            </ul>
+
+            {alloc.overflow.length > 0 && (
+              <p className="brain-note">
+                {alloc.overflow.length} skill
+                {alloc.overflow.length === 1 ? '' : 's'} below the top eight share
+                the list but not the map.
+              </p>
+            )}
+
+            {/* Leaf detail */}
+            <AnimatePresence>
+              {selected && (
+                <motion.div
+                  key={selected.id}
+                  className="brain-detail"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 12 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                >
+                  <h3 className="brain-detail__name">{selected.name}</h3>
+                  {selected.rating !== null && (
+                    <p className="brain-detail__rating">{selected.rating} / 5</p>
+                  )}
+                  {selected.description && (
+                    <p className="brain-detail__body">{selected.description}</p>
+                  )}
+                  {(toolsByNode.get(selected.id) ?? []).length > 0 && (
+                    <ul className="brain-detail__tools">
+                      {toolsByNode.get(selected.id)!.map((tool) => (
+                        <li key={tool.id} className="brain-detail__tool">
+                          {tool.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
+
+        <p className="brain-credit">
+          <a
+            href="https://iconscout.com/icons/brain"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Brain
+          </a>{' '}
+          by{' '}
+          <a
+            href="https://iconscout.com/contributors/icon-click"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Vector Place
+          </a>{' '}
+          on{' '}
+          <a href="https://iconscout.com" target="_blank" rel="noopener noreferrer">
+            IconScout
+          </a>
+        </p>
       </div>
     </section>
   );

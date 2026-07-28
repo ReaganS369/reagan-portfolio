@@ -1,7 +1,7 @@
 /** @format */
 
 /* ===================================================
-   Brain Skills — Interactive Hemisphere Visualization
+   Brain Skills — skill_nodes projected onto the brain
 =================================================== */
 
 /* No z-index: the background paints BELOW the fixed scroll-avatar (z 5) so
@@ -9,8 +9,12 @@
 .brain-section {
   position: relative;
   background: var(--dark);
-  padding: 120px 0 140px;
+  padding: 96px 0 104px;
   overflow: hidden;
+
+  /* The brain is one colour; hover is the only thing that recolours anything. */
+  --brain-amber: hsl(34, 72%, 56%);
+  --brain-focus: var(--secondary, #df138a);
 }
 
 .brain-section::before {
@@ -31,13 +35,17 @@
   pointer-events: none;
 }
 
+/* Full-width so it lines up with the section heading; the inner layout is what
+   stays left-biased, clearing the fixed scroll avatar on the right. */
 .brain-container {
   position: relative;
   z-index: 7;
   width: min(1600px, 92%);
   margin: 0 auto;
-  /* Content left-biased to stay clear of scroll avatar */
-  max-width: calc(min(1600px, 92%) * 0.62);
+}
+
+.brain-container > * {
+  max-width: 62%;
 }
 
 .brain-section .section-heading-wrapper {
@@ -51,6 +59,55 @@
   margin: 0 auto 0;
 }
 
+/* ===================================================
+   Breadcrumb + hint
+=================================================== */
+
+.brain-trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 14px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.brain-trail__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.brain-trail__sep {
+  color: var(--text-muted);
+  opacity: 0.35;
+}
+
+.brain-trail__crumb {
+  border: none;
+  background: none;
+  padding: 2px 4px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--primary);
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.brain-trail__crumb:hover {
+  opacity: 0.7;
+}
+
+.brain-trail__crumb:disabled {
+  color: var(--text-muted);
+  opacity: 0.55;
+  cursor: default;
+}
+
 .brain-hint {
   font-family: var(--font-ui);
   font-size: 12px;
@@ -58,21 +115,22 @@
   letter-spacing: 3px;
   color: var(--text-muted);
   opacity: 0.5;
-  margin-bottom: 60px;
+  margin-bottom: 28px;
 }
 
 /* ===================================================
-   Brain Stage — the interactive area
+   Layout — brain beside the region list
 =================================================== */
+
+.brain-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
 
 .brain-stage {
   position: relative;
-  width: 100%;
-  /* Height enough to contain brain + orbit nodes */
-  height: 700px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
 }
 
 /* ===================================================
@@ -80,202 +138,279 @@
 =================================================== */
 
 .brain-svg {
-  width: 320px;
+  display: block;
+  width: 100%;
   height: auto;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 30px rgba(245, 138, 31, 0.08));
-  z-index: 1;
-  position: relative;
+  overflow: visible;
+  filter: drop-shadow(0 0 40px rgba(245, 138, 31, 0.1));
 }
 
-.brain-path--active-design {
-  fill: rgba(245, 138, 31, 0.12) !important;
-  stroke: rgba(245, 138, 31, 0.6) !important;
-  transition:
-    fill 400ms ease,
-    stroke 400ms ease;
-}
-
-.brain-path--active-dev {
-  fill: rgba(223, 19, 138, 0.12) !important;
-  stroke: rgba(223, 19, 138, 0.6) !important;
-  transition:
-    fill 400ms ease,
-    stroke 400ms ease;
-}
-
-/* ===================================================
-   Brain Clickable Buttons
-=================================================== */
-
-.brain-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
+/* Uniform amber. Un-hovered lobes never change — no dimming, no tint shift —
+   so the single pink lobe is the only signal on the whole shape. */
+.brain-lobe {
+  fill: var(--brain-amber);
+  stroke: color-mix(in srgb, var(--brain-amber) 70%, transparent);
+  stroke-width: 0.35;
   cursor: pointer;
-  z-index: 2;
-  transition: background 300ms ease;
+  outline: none;
+  transition:
+    fill 300ms ease,
+    stroke 300ms ease;
 }
 
-.brain-btn--design {
-  left: 20px;
+.brain-lobe--focus {
+  fill: var(--brain-focus);
+  stroke: var(--brain-focus);
+  stroke-width: 0.5;
 }
 
-.brain-btn--dev {
-  left: 155px;
+.brain-lobe:focus-visible {
+  stroke: var(--light, #f2efe7);
+  stroke-width: 0.6;
 }
 
-.brain-btn:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.brain-btn--design.brain-btn--active {
-  background: rgba(245, 138, 31, 0.06);
-}
-
-.brain-btn--dev.brain-btn--active {
-  background: rgba(223, 19, 138, 0.06);
-}
-
-.brain-btn__label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: transparent;
-  transition: color 250ms ease;
-}
-
-.brain-btn--design .brain-btn__label {
-  color: rgba(245, 138, 31, 0.4);
-}
-
-.brain-btn--dev .brain-btn__label {
-  color: rgba(223, 19, 138, 0.4);
-}
-
-.brain-btn--design:hover .brain-btn__label,
-.brain-btn--design.brain-btn--active .brain-btn__label {
-  color: var(--primary);
-}
-
-.brain-btn--dev:hover .brain-btn__label,
-.brain-btn--dev.brain-btn--active .brain-btn__label {
-  color: var(--secondary);
-}
-
-/* ===================================================
-   Skill Orbit — nodes around the brain
-=================================================== */
-
-.brain-orbit {
-  position: absolute;
-  /* Centered on the brain's center point */
-  left: 160px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-}
-
-.skill-node {
-  position: absolute;
-  transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
-  padding: 7px 16px;
-  border-radius: 50px;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  white-space: nowrap;
+/* The original artwork draws its contour as a filled path — recoloured here so
+   it reads as linework on the dark section instead of disappearing into it. */
+.brain-outline {
+  fill: rgba(242, 239, 231, 0.22);
   pointer-events: none;
 }
 
-.skill-node--design {
-  background: rgba(245, 138, 31, 0.1);
-  border: 1px solid rgba(245, 138, 31, 0.3);
-  color: var(--primary);
-  text-shadow: 0 0 20px rgba(245, 138, 31, 0.4);
-}
-
-.skill-node--dev {
-  background: rgba(223, 19, 138, 0.1);
-  border: 1px solid rgba(223, 19, 138, 0.3);
-  color: var(--secondary);
-  text-shadow: 0 0 20px rgba(223, 19, 138, 0.4);
-}
-
 /* ===================================================
-   Legend
+   Region list
 =================================================== */
 
-.brain-legend {
-  display: flex;
-  gap: 32px;
-  margin-top: 40px;
+.brain-panel {
+  min-width: 0;
 }
 
-.brain-legend__item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.brain-back {
+  border: none;
+  background: none;
+  padding: 0 0 16px;
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--text-muted);
-  opacity: 0.6;
+  cursor: pointer;
+  transition: color 200ms ease;
 }
 
-.brain-legend__dot {
+.brain-back:hover {
+  color: var(--primary);
+}
+
+.brain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Rows are white at rest; the focused one is the only coloured thing. */
+.brain-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--light, #f2efe7);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease;
+}
+
+.brain-row:hover,
+.brain-row--focus {
+  color: var(--brain-focus);
+  background: color-mix(in srgb, var(--brain-focus) 12%, transparent);
+  border-left-color: var(--brain-focus);
+}
+
+.brain-row__dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
+  background: currentColor;
+  transition: box-shadow 250ms ease;
 }
 
-.brain-legend__dot--design {
-  background: var(--primary);
-  box-shadow: 0 0 8px rgba(245, 138, 31, 0.6);
+.brain-row:hover .brain-row__dot,
+.brain-row--focus .brain-row__dot {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--brain-focus) 80%, transparent);
 }
 
-.brain-legend__dot--dev {
-  background: var(--secondary);
-  box-shadow: 0 0 8px rgba(223, 19, 138, 0.6);
+.brain-row__name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: currentColor;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brain-row__share,
+.brain-row__go {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: currentColor;
+  opacity: 0.55;
+}
+
+.brain-row:hover .brain-row__share,
+.brain-row--focus .brain-row__share,
+.brain-row:hover .brain-row__go,
+.brain-row--focus .brain-row__go {
+  opacity: 1;
+}
+
+/* Skills past the eighth: still listed and clickable, just not on the map. */
+.brain-row--overflow .brain-row__dot {
+  background: transparent;
+  border: 1px solid currentColor;
+  box-shadow: none;
+}
+
+.brain-row--overflow .brain-row__name {
+  opacity: 0.6;
+}
+
+.brain-note {
+  margin-top: 14px;
+  padding-left: 16px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* ===================================================
+   Leaf detail
+=================================================== */
+
+.brain-detail {
+  /* Matches the hover highlight, so a selected leaf and its lobe read as one. */
+  color: var(--brain-focus);
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+
+.brain-detail__name {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: currentColor;
+}
+
+.brain-detail__rating {
+  margin: 4px 0 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+.brain-detail__body {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.brain-detail__tools {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brain-detail__tool {
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: currentColor;
+}
+
+/* ===================================================
+   Attribution
+=================================================== */
+
+.brain-credit {
+  margin-top: 32px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  opacity: 0.45;
+}
+
+.brain-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 200ms ease;
+}
+
+.brain-credit a:hover {
+  color: var(--primary);
 }
 
 /* ===================================================
    Responsive
 =================================================== */
 
+@media (max-width: 1100px) {
+  .brain-layout {
+    gap: 36px;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 900px) {
-  .brain-container {
+  .brain-container > * {
     max-width: 100%;
   }
 
+  .brain-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    justify-items: center;
+  }
+
   .brain-stage {
-    height: 600px;
-    justify-content: center;
+    width: min(340px, 80%);
   }
 
-  /* Brain is now centered in the stage — fix absolute-positioned
-     buttons and orbit to follow the centered 320px brain */
-  .brain-btn--design {
-    left: calc(50% - 140px);
-  }
-  .brain-btn--dev {
-    left: calc(50% - 5px);
-  }
-
-  .brain-orbit {
-    /* brain-orbit has width:0 so translate(-50%) = 0; left: 50% centers it */
-    left: 50%;
-    transform: translateY(-50%);
+  .brain-panel {
+    width: 100%;
   }
 }
 
@@ -284,74 +419,31 @@
     padding: 80px 0 100px;
   }
 
+  .brain-hint {
+    margin-bottom: 32px;
+  }
+
   .brain-stage {
-    height: 500px;
+    width: min(280px, 82%);
   }
 
-  .brain-svg {
-    width: 240px;
+  .brain-row {
+    padding: 12px 12px;
+    gap: 10px;
   }
 
-  .brain-btn {
-    width: 100px;
-    height: 100px;
-  }
-
-  /* Recalculate for 240px brain centered in stage:
-     design is at +10px, dev at +120px from brain left edge */
-  .brain-btn--design {
-    left: calc(50% - 110px);
-  }
-  .brain-btn--dev {
-    left: 50%;
-  }
-
-  /* Scale down skill orbit so nodes fit within viewport */
-  .brain-orbit {
-    left: 50%;
-    transform: translateY(-50%) scale(0.68);
+  .brain-row__name {
+    font-size: 12px;
+    letter-spacing: 1px;
   }
 }
 
-/* Mobile large (≤480px) */
 @media (max-width: 480px) {
   .brain-section {
     padding: 60px 0 80px;
   }
 
   .brain-stage {
-    height: 420px;
-  }
-
-  .brain-svg {
-    width: 200px;
-  }
-
-  .brain-btn {
-    width: 80px;
-    height: 80px;
-  }
-
-  /* Recalculate for 200px brain: design +10px, dev +100px from brain left */
-  .brain-btn--design {
-    left: calc(50% - 90px);
-  }
-  .brain-btn--dev {
-    left: 50%;
-  }
-
-  .brain-orbit {
-    transform: translateY(-50%) scale(0.55);
-  }
-}
-
-/* Mobile small (≤375px) */
-@media (max-width: 375px) {
-  .brain-orbit {
-    transform: translateY(-50%) scale(0.48);
-  }
-
-  .brain-hint {
-    margin-bottom: 40px;
+    width: min(240px, 84%);
   }
 }

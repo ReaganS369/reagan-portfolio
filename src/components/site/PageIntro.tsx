@@ -2,9 +2,7 @@
 
 'use client';
 
-import Link from 'next/link';
 import { motion } from 'motion/react';
-import { ArrowLeft } from 'lucide-react';
 import './page-intro.css';
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -40,12 +38,7 @@ export function PageIntro({ eyebrow, title, description, ghost }: PageIntroProps
         {(ghost ?? title).split(' ')[0]}
       </motion.span>
 
-      <motion.div custom={0} variants={reveal} initial="hidden" animate="show">
-        <Link href="/" className="page-intro__back">
-          <ArrowLeft size={16} />
-          <span>Back home</span>
-        </Link>
-      </motion.div>
+      {/* The pinned nav's RS monogram is the way home now. */}
 
       <motion.div
         className="page-intro__eyebrow-row"

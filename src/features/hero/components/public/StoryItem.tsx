@@ -10,9 +10,16 @@ interface StoryItemProps {
   label: string;
   shortLabel: string;
   href: string;
+  /** Slot position 0-3, which staggers this label's turn in the dock swap. */
+  itemIndex: number;
 }
 
-export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
+export function StoryItem({
+  label,
+  shortLabel,
+  href,
+  itemIndex,
+}: StoryItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMagnetActive, setIsMagnetActive] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,7 +43,12 @@ export function StoryItem({ label, shortLabel, href }: StoryItemProps) {
       className="story-item"
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      style={{ '--glow-delay': `${magnetDelay}ms` } as React.CSSProperties}
+      style={
+        {
+          '--glow-delay': `${magnetDelay}ms`,
+          '--item-index': itemIndex,
+        } as React.CSSProperties
+      }
     >
       <span className="story-item__long">{label}</span>
       <span className="story-item__short">

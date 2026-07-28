@@ -2,11 +2,11 @@
 
 'use client';
 
-import { RefObject, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion, type MotionStyle } from 'motion/react';
 
 import { cvRibbonMessages } from '../../constants';
-import { useRibbonRotate } from '../../hooks/useRibbonRotate';
+import { useRibbonDock } from '../../hooks/useRibbonDock';
 import { MarqueeTrack } from './MarqueeTrack';
 import '../../styles/cv-ribbon.css';
 
@@ -15,17 +15,19 @@ const CV_CHARS = 'CV'.split('');
 const CV_MAGNET_DELAY = 220 + (CV_CHARS.length - 1) * 30 + 250;
 
 interface HeroCVRibbonProps {
-  heroRef?: RefObject<HTMLElement | null>;
+  /** Home page only: unfurl from the hero's diagonal. Elsewhere, a plain nav. */
+  animated?: boolean;
 }
 
-export function HeroCVRibbon({ heroRef }: HeroCVRibbonProps) {
+export function HeroCVRibbon({ animated = false }: HeroCVRibbonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMagnetActive, setIsMagnetActive] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   // Matches `top: 18px` in cv-ribbon.css. Shedding the full offset lands this
   // ribbon exactly on top of the story ribbon, so the two read as one bar
   // until the docked width animation splits it open.
-  const { rotate, y, docked } = useRibbonRotate(heroRef, 7, 18);
+  const { rotate, y, docked, settled } = useRibbonDock(animated, 7, 18, trackRef);
 
   function handleEnter() {
     setIsHovered(true);
@@ -38,7 +40,14 @@ export function HeroCVRibbon({ heroRef }: HeroCVRibbonProps) {
 
   return (
     <motion.div
-      className={`cv-ribbon${docked ? ' cv-ribbon--docked' : ''}`}
+      className={[
+        'cv-ribbon',
+        !animated && 'cv-ribbon--static',
+        docked && 'cv-ribbon--docked',
+        settled && 'cv-ribbon--settled',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       style={
@@ -52,6 +61,7 @@ export function HeroCVRibbon({ heroRef }: HeroCVRibbonProps) {
       <MarqueeTrack
         messages={cvRibbonMessages}
         className="cv-ribbon__track marquee-track"
+        trackRef={trackRef}
       />
       <div className="cv-ribbon__label" aria-hidden="true">
         <span className="cv-ribbon__label--desktop">

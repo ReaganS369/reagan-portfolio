@@ -5,8 +5,6 @@
 import { RefObject, useEffect } from 'react';
 import { useHeroData } from '../../hooks/useHeroData';
 import { useReportHomeReady } from '@/src/components/ui/loading/GlobalLoadingProvider';
-import { HeroNavigationRibbon } from './HeroNavigationRibbon';
-import { HeroCVRibbon } from './HeroCVRibbon';
 import { HeroContent } from './HeroContent';
 import { HeroVideoStage } from './HeroVideoStage';
 import '../../styles/base.css';
@@ -35,8 +33,9 @@ export default function HomeHero({
 
       <HeroVideoStage onActiveChange={onVideoActiveChange} />
 
-      <HeroNavigationRibbon heroRef={sectionRef} />
-      <HeroCVRibbon heroRef={sectionRef} />
+      {/* The two nav ribbons that unfurl over this hero are mounted by
+          SiteNav in the root layout — they are pinned on every route and find
+          this section by class to know how far they have to travel. */}
 
       <div className="hero-grid">
         <HeroContent roles={roles} socialLinks={socialLinks} />
