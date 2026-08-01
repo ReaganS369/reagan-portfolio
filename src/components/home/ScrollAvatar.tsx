@@ -177,7 +177,7 @@ export function ScrollAvatar({
   // the image top) rather than mid-image, and the pivot drifts slightly
   // upward as the wipe progresses — combined with the leftward sweep the
   // perceived pivot moves toward the upper-left.
-  const SPLIT_REST_TILT = 11; // diagonal amount (%) already visible at rest
+  const SPLIT_REST_TILT = 0; // diagonal amount (%) already visible at rest
   const SPLIT_TILT = 22; // total horizontal drift (%) once fully wiping away
   const SPLIT_PIVOT_FROM = 14; // pivot height (% from top) — neck / lower chin
   const SPLIT_PIVOT_TO = 8; // pivot eases upward as the scroll progresses

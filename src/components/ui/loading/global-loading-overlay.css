@@ -50,8 +50,73 @@
 }
 
 .global-intro-layer__video {
+  /* Tweak these values to perfectly match the ScrollAvatar's character size and vertical position */
+  --video-scale: 1.31; /* Adjust this to zoom in/out (e.g. 1.4) */
+  --video-y-offset: -70px; /* Adjust this to shift the character up/down in pixels */
+  --video-x-offset: -16px; /* Adjust this to shift the character left/right in pixels */
+
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center var(--video-y-offset);
+  
+  /* Keep hardware acceleration constant */
   transform: translateZ(0);
+
+  /* Starting state: centered, no zoom */
+  translate: 0 0;
+  scale: 1;
+  transform-origin: center top;
+  
+  /* Zoom starts immediately (at 1.5s) and takes 3.5s (ends at 5s). Location starts 1s later (at 2.5s) and takes 3s (ends at 5.5s). */
+  transition: scale 3.5s ease-in, translate 3s ease-in 1s;
+
+  /* Fade out the left edge of the video to blend with the dark background */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
+  mask-image: linear-gradient(to right, transparent 0%, black 30%);
+}
+
+/* Target state when zooming or leaving */
+.global-intro-layer--zooming .global-intro-layer__video,
+.global-intro-layer--leaving .global-intro-layer__video {
+  /* Translate perfectly to the avatar's location, plus manual X offset */
+  translate: calc(
+    50vw - (
+      (100vw - min(1600px, 92vw)) / 2 - min(1600px, 92vw) * 0.0168 + clamp(320px, 45vw, 855px) / 2
+    ) + var(--video-x-offset)
+  ) 0;
+  scale: var(--video-scale);
+}
+
+/* ===== Temp Grid Lines =====
+   For alignment over splash and hero. Adjust the variables below to move lines.
+   Disable or remove this when done.
+   testing trails */
+.temp-grid-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  pointer-events: none;
+  
+  /* Adjust these values (px, %, or vw/vh) to move the lines */
+  --v-line-1: 59.1vw;
+  --v-line-2: 75.28vw;
+  --v-line-3: 89.3vw;
+  
+  --h-line-1: 30.6vh;
+  --h-line-2: 46.6vh;
+  --h-line-3: 65.2vh;
+  
+  --line-color: #00ff00; /* lime green */
+  --line-thickness: 1px;
+
+  background-image: 
+    /* Vertical lines */
+    linear-gradient(to right, transparent calc(var(--v-line-1) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-1) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-1) + var(--line-thickness)/2), transparent calc(var(--v-line-1) + var(--line-thickness)/2)),
+    linear-gradient(to right, transparent calc(var(--v-line-2) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-2) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-2) + var(--line-thickness)/2), transparent calc(var(--v-line-2) + var(--line-thickness)/2)),
+    linear-gradient(to right, transparent calc(var(--v-line-3) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-3) - var(--line-thickness)/2), var(--line-color) calc(var(--v-line-3) + var(--line-thickness)/2), transparent calc(var(--v-line-3) + var(--line-thickness)/2)),
+    /* Horizontal lines */
+    linear-gradient(to bottom, transparent calc(var(--h-line-1) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-1) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-1) + var(--line-thickness)/2), transparent calc(var(--h-line-1) + var(--line-thickness)/2)),
+    linear-gradient(to bottom, transparent calc(var(--h-line-2) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-2) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-2) + var(--line-thickness)/2), transparent calc(var(--h-line-2) + var(--line-thickness)/2)),
+    linear-gradient(to bottom, transparent calc(var(--h-line-3) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-3) - var(--line-thickness)/2), var(--line-color) calc(var(--h-line-3) + var(--line-thickness)/2), transparent calc(var(--h-line-3) + var(--line-thickness)/2));
 }

@@ -47,8 +47,8 @@
 }
 
 .btn-3d__base--primary {
-  background: var(--primary);
-  border: 0.5px solid var(--primary);
+  background: var(--light);
+  border: 0.5px solid var(--light);
 }
 
 .btn-3d__base--secondary {
@@ -120,7 +120,7 @@
 }
 
 .primary-btn {
-  border: 0.5px solid var(--primary);
+  border: 0.5px solid var(--light);
   background: var(--primarydark);
   color: var(--text);
 }

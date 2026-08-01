@@ -26,13 +26,16 @@ const FADE_OUT_MS = 350;
    stall-free playback (canplaythrough on the fully-local source); the clip
    plays exactly once above the already-rendered Hero, then dissolves into
    it and is removed from the DOM. */
-const INTRO_VIDEO_URL = getStorageUrl('videos/intro.mp4');
+const INTRO_VIDEO_URL = getStorageUrl('videos/introA.mp4');
 const INTRO_WATCHED_KEY = 'reagan-intro-watched';
 /** Give up preloading after this long and load the page normally. */
 const INTRO_PRELOAD_TIMEOUT_MS = 15000;
 const INTRO_FADE_OUT_MS = 800;
 
-type IntroPhase = 'inactive' | 'preloading' | 'ready' | 'playing' | 'fading';
+/* Set to true to freeze the splash video on its final frame for layout alignment. */
+const DEBUG_FREEZE_SPLASH = false;
+
+type IntroPhase = 'inactive' | 'preloading' | 'ready' | 'playing' | 'zooming' | 'fading';
 
 function markIntroWatched() {
   try {
@@ -102,13 +105,38 @@ export function GlobalLoadingProvider({
       // Reveal the intro beneath the lifting overlay. The clip opens on the
       // same dark backdrop the overlay uses, so the crossfade is seamless.
       setIntro('playing');
-      introVideoRef.current?.play().catch(() => {
-        // Autoplay rejection — dissolve straight into the Hero.
-        setIntro('fading');
-        introFadeTimeoutRef.current = window.setTimeout(() => {
-          setIntro('inactive');
-        }, INTRO_FADE_OUT_MS);
-      });
+      const video = introVideoRef.current;
+      if (video) {
+        if (DEBUG_FREEZE_SPLASH) {
+          video.currentTime = 999999; // Seek to end
+        } else {
+          video.play().then(() => {
+            // At 2.2s, trigger the zoom animation (video keeps playing)
+            window.setTimeout(() => {
+              if (introPhaseRef.current === 'playing') {
+                setIntro('zooming');
+                
+                // After 4s (longest animation is 1s delay + 3s translate), dissolve into the Hero
+                introFadeTimeoutRef.current = window.setTimeout(() => {
+                  if (introPhaseRef.current === 'zooming') {
+                    markIntroWatched();
+                    setIntro('fading');
+                    introFadeTimeoutRef.current = window.setTimeout(() => {
+                      setIntro('inactive');
+                    }, INTRO_FADE_OUT_MS);
+                  }
+                }, 4000);
+              }
+            }, 1500);
+          }).catch(() => {
+            // Autoplay rejection — dissolve straight into the Hero.
+            setIntro('fading');
+            introFadeTimeoutRef.current = window.setTimeout(() => {
+              setIntro('inactive');
+            }, INTRO_FADE_OUT_MS);
+          });
+        }
+      }
     }
 
     setFading(true);
@@ -143,12 +171,13 @@ export function GlobalLoadingProvider({
       '(prefers-reduced-motion: reduce)',
     ).matches;
     let watched = false;
-    try {
-      watched = sessionStorage.getItem(INTRO_WATCHED_KEY) === '1';
-    } catch {
-      /* ignore */
-    }
-    if (!desktop || reduced || watched) return;
+    // try {
+    //   watched = sessionStorage.getItem(INTRO_WATCHED_KEY) === '1';
+    // } catch {
+    //   /* ignore */
+    // }
+    // if (!desktop || reduced || watched) return;
+    if (!desktop || reduced) return;
 
     setIntro('preloading');
 
@@ -189,14 +218,7 @@ export function GlobalLoadingProvider({
     }
   }, [hide, setIntro]);
 
-  // Played exactly once: dissolve into the live Hero, then leave the DOM.
-  const handleIntroEnded = useCallback(() => {
-    markIntroWatched();
-    setIntro('fading');
-    introFadeTimeoutRef.current = window.setTimeout(() => {
-      setIntro('inactive');
-    }, INTRO_FADE_OUT_MS);
-  }, [setIntro]);
+
 
   // Release the blob once the intro has left the DOM.
   useEffect(() => {
@@ -292,9 +314,11 @@ export function GlobalLoadingProvider({
   const introLayerClass =
     introPhase === 'playing'
       ? 'global-intro-layer global-intro-layer--active'
-      : introPhase === 'fading'
-        ? 'global-intro-layer global-intro-layer--leaving'
-        : 'global-intro-layer';
+      : introPhase === 'zooming'
+        ? 'global-intro-layer global-intro-layer--active global-intro-layer--zooming'
+        : introPhase === 'fading'
+          ? 'global-intro-layer global-intro-layer--leaving'
+          : 'global-intro-layer';
 
   return (
     <LoadingContext.Provider value={{ reportHomeReady }}>
@@ -308,7 +332,6 @@ export function GlobalLoadingProvider({
             playsInline
             preload="auto"
             onCanPlayThrough={handleIntroCanPlay}
-            onEnded={handleIntroEnded}
           />
         </div>
       )}
@@ -321,6 +344,8 @@ export function GlobalLoadingProvider({
         </div>
       )}
       {children}
+      {/* Temp grid lines for alignment. Remove when done. */}
+      <div className="temp-grid-lines" aria-hidden="true" />
     </LoadingContext.Provider>
   );
 }
