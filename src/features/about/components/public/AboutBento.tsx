@@ -22,7 +22,7 @@ export function AboutBento() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: EASE }}
         >
-          <SectionNumber number="02" title="What I Do" />
+          <SectionNumber number="02" title="Core Disciplines" />
         </motion.div>
 
         <div className="about-bento__grid">

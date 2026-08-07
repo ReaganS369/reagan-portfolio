@@ -2,10 +2,27 @@
 
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
-import { motion, useInView } from 'motion/react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { motion, useInView, AnimatePresence } from 'motion/react';
 import { SectionNumber } from '@/src/components/home/SectionNumber';
 import { usePointerLight } from '@/src/components/effects/usePointerLight';
+import { 
+  Gamepad2, 
+  Smartphone, 
+  Sparkles, 
+  Palette, 
+  LayoutGrid, 
+  Image as ImageIcon, 
+  Clapperboard,
+  User,
+  Trees,
+  WandSparkles,
+  Play,
+  Workflow,
+  Link,
+  Code2,
+  PenTool
+} from 'lucide-react';
 import '../../styles/featured-work.css';
 
 import { SEO_CONFIG, PERSON_SCHEMA } from '@/src/config/seo';
@@ -14,10 +31,18 @@ const CARDS = [
   {
     key: 'game',
     category: 'GAME DEVELOPMENT',
-    title: 'Where Stories Live',
+    title: 'Every World Begins Here',
     description:
-      'Immersive game worlds built with Unity and Unreal Engine — from narrative design to advanced technical art and polished mechanics.',
-    cta: 'View Projects →',
+      'Building immersive games from concept to launch—combining gameplay systems, AI, multiplayer, environments, technical art, and cinematic storytelling.',
+    hoverHeading: 'Core Skills',
+    hoverItems: [
+      { label: 'Unreal Engine 5', icon: Gamepad2 },
+      { label: 'Unity', icon: Gamepad2 },
+      { label: 'C++', icon: Code2 },
+      { label: 'C#', icon: Code2 },
+      { label: 'Narrative Design', icon: PenTool },
+    ],
+    carouselItems: ['Arithmetic Destination', 'King Summon'],
     className: 'bento-card bento-card--game',
     schemaType: 'VideoGame',
     dateCreated: '2025',
@@ -27,10 +52,18 @@ const CARDS = [
   {
     key: '3d',
     category: 'TECHNICAL 3D ART',
-    title: 'Giving Shape to Ideas',
+    title: 'Engineering Imagination',
     description:
-      'Procedural generation, shader programming, character rigs, and cinematic animations that bridge mathematical concepts and reality.',
-    cta: 'View Gallery →',
+      'Producing production-ready 3D assets, procedural systems, shaders, rigging, cinematic animation, and optimized pipelines for games and interactive experiences.',
+    hoverHeading: 'Specializations',
+    hoverItems: [
+      { label: 'Character Creation', icon: User },
+      { label: 'Environment Art', icon: Trees },
+      { label: 'Materials & Shaders', icon: WandSparkles },
+      { label: 'Rigging', icon: Link },
+      { label: 'Animation', icon: Play },
+      { label: 'Procedural Systems', icon: Workflow },
+    ],
     className: 'bento-card bento-card--3d',
     schemaType: 'VisualArtwork',
     dateCreated: '2026',
@@ -39,10 +72,18 @@ const CARDS = [
   {
     key: 'xr',
     category: 'XR & APP DEVELOPMENT',
-    title: 'Interfaces That Think',
+    title: 'Beyond Traditional Interfaces',
     description:
-      'Purposeful spatial computing and UI design paired with Next.js, WebGL, and React Native — built fast, built right.',
-    cta: 'Explore Work →',
+      'Designing intelligent web, mobile, AI, and immersive applications with a focus on performance, usability, and beautiful user experiences.',
+    hoverHeading: 'Core Skills',
+    hoverItems: [
+      { label: 'React Native', icon: Smartphone },
+      { label: 'Next.js 15', icon: LayoutGrid },
+      { label: 'WebGL', icon: Sparkles },
+      { label: 'TypeScript', icon: Code2 },
+      { label: 'GLSL', icon: WandSparkles },
+    ],
+    carouselItems: ['SanaEase', 'AeiMate', 'Richingness', 'NngTest', 'WithEye', '20:20:20 Reminder'],
     className: 'bento-card bento-card--ui',
     schemaType: 'SoftwareApplication',
     dateCreated: '2025',
@@ -52,10 +93,18 @@ const CARDS = [
   {
     key: 'design',
     category: 'GRAPHIC DESIGN',
-    title: 'Visual Language',
+    title: 'Design With Purpose',
     description:
-      'Brand identity, procedural layouts, and motion graphics crafted with intent and precision.',
-    cta: 'See Designs →',
+      'Creating memorable visual identities, user interfaces, marketing graphics, icons, illustrations, and digital experiences with clarity and precision.',
+    hoverHeading: 'Core Skills',
+    hoverItems: [
+      { label: 'Branding', icon: Palette },
+      { label: 'UI / UX', icon: LayoutGrid },
+      { label: 'Motion Graphics', icon: Clapperboard },
+      { label: 'Photoshop', icon: ImageIcon },
+      { label: 'Sketchbook Pro', icon: PenTool },
+    ],
+    carouselItems: ['Icons', 'Game Assets'],
     className: 'bento-card bento-card--design',
     schemaType: 'VisualArtwork',
     dateCreated: '2024',
@@ -68,6 +117,47 @@ const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
 };
+
+const chipContainer = {
+  hidden: {},
+  hover: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } }, // 0.3s delay waits for the description to start expanding
+};
+
+const chipAnim = {
+  hidden: { opacity: 0, y: 8 },
+  hover: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
+};
+
+function ProjectCarousel({ items }: { items: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (!items || items.length <= 1) return;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % items.length);
+    }, 10000); // 10 seconds
+    return () => clearInterval(interval);
+  }, [items]);
+
+  if (!items || items.length === 0) return null;
+
+  return (
+    <div className="project-carousel">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="project-carousel__text"
+        >
+          {items[index]}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 // Cards emerge from darkness: unlit and low, then rise as the light comes up
 const cardAnim = {
@@ -187,8 +277,9 @@ export function FeaturedWork() {
           animate={isInView ? 'show' : 'hidden'}
         >
           {/* Game — large top-left card */}
-          <motion.div className={CARDS[0].className} variants={cardAnim}>
+          <motion.div className={CARDS[0].className} variants={cardAnim} whileHover="hover">
             <div className="bento-visual bento-visual--game">
+              <ProjectCarousel items={CARDS[0].carouselItems || []} />
               <div className="bento-carousel">
                 <div className="bento-carousel__slot slot-a" />
                 <div className="bento-carousel__slot slot-b" />
@@ -200,9 +291,24 @@ export function FeaturedWork() {
               <span className="bento-category">{CARDS[0].category}</span>
               <h3 className="bento-title">{CARDS[0].title}</h3>
               <p className="bento-desc">{CARDS[0].description}</p>
-            </div>
-            <div className="bento-cta-overlay">
-              <span className="bento-cta">{CARDS[0].cta}</span>
+              
+              <div className="bento-hover-content">
+                <span className="bento-hover-heading">{CARDS[0].hoverHeading}</span>
+                <motion.div 
+                  className="bento-chip-list"
+                  variants={chipContainer}
+                >
+                  {CARDS[0].hoverItems?.map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div key={i} className="bento-chip" variants={chipAnim}>
+                        <Icon size={14} className="bento-chip-icon" />
+                        <span>{item.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
@@ -214,6 +320,7 @@ export function FeaturedWork() {
             ref={cardRef}
             className={CARDS[1].className}
             variants={cardAnim}
+            whileHover="hover"
           >
             <div className="bento-visual bento-visual--3d">
               <div className="bento-noise" />
@@ -222,39 +329,86 @@ export function FeaturedWork() {
               <span className="bento-category">{CARDS[1].category}</span>
               <h3 className="bento-title">{CARDS[1].title}</h3>
               <p className="bento-desc">{CARDS[1].description}</p>
-            </div>
-            <div className="bento-cta-overlay">
-              <span className="bento-cta">{CARDS[1].cta}</span>
+              
+              <div className="bento-hover-content">
+                <span className="bento-hover-heading">{CARDS[1].hoverHeading}</span>
+                <motion.div 
+                  className="bento-chip-list"
+                  variants={chipContainer}
+                >
+                  {CARDS[1].hoverItems?.map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div key={i} className="bento-chip" variants={chipAnim}>
+                        <Icon size={14} className="bento-chip-icon" />
+                        <span>{item.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
           {/* UI / App */}
-          <motion.div className={CARDS[2].className} variants={cardAnim}>
+          <motion.div className={CARDS[2].className} variants={cardAnim} whileHover="hover">
             <div className="bento-visual bento-visual--ui">
+              <ProjectCarousel items={CARDS[2].carouselItems || []} />
               <div className="bento-noise" />
             </div>
             <div className="bento-body">
               <span className="bento-category">{CARDS[2].category}</span>
               <h3 className="bento-title">{CARDS[2].title}</h3>
               <p className="bento-desc">{CARDS[2].description}</p>
-            </div>
-            <div className="bento-cta-overlay">
-              <span className="bento-cta">{CARDS[2].cta}</span>
+              
+              <div className="bento-hover-content">
+                <span className="bento-hover-heading">{CARDS[2].hoverHeading}</span>
+                <motion.div 
+                  className="bento-chip-list"
+                  variants={chipContainer}
+                >
+                  {CARDS[2].hoverItems?.map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div key={i} className="bento-chip" variants={chipAnim}>
+                        <Icon size={14} className="bento-chip-icon" />
+                        <span>{item.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
           {/* Graphic Design */}
-          <motion.div className={CARDS[3].className} variants={cardAnim}>
+          <motion.div className={CARDS[3].className} variants={cardAnim} whileHover="hover">
             <div className="bento-visual bento-visual--design">
+              <ProjectCarousel items={CARDS[3].carouselItems || []} />
               <div className="bento-noise" />
             </div>
             <div className="bento-body">
               <span className="bento-category">{CARDS[3].category}</span>
               <h3 className="bento-title">{CARDS[3].title}</h3>
               <p className="bento-desc">{CARDS[3].description}</p>
-            </div>
-            <div className="bento-cta-overlay">
-              <span className="bento-cta">{CARDS[3].cta}</span>
+              
+              <div className="bento-hover-content">
+                <span className="bento-hover-heading">{CARDS[3].hoverHeading}</span>
+                <motion.div 
+                  className="bento-chip-list"
+                  variants={chipContainer}
+                >
+                  {CARDS[3].hoverItems?.map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div key={i} className="bento-chip" variants={chipAnim}>
+                        <Icon size={14} className="bento-chip-icon" />
+                        <span>{item.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

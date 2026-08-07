@@ -30,7 +30,7 @@ const INTRO_VIDEO_URL = getStorageUrl('videos/introA.mp4');
 const INTRO_WATCHED_KEY = 'reagan-intro-watched';
 /** Give up preloading after this long and load the page normally. */
 const INTRO_PRELOAD_TIMEOUT_MS = 15000;
-const INTRO_FADE_OUT_MS = 800;
+const INTRO_FADE_OUT_MS = 1250;
 
 /* Set to true to freeze the splash video on its final frame for layout alignment. */
 const DEBUG_FREEZE_SPLASH = false;
@@ -116,7 +116,7 @@ export function GlobalLoadingProvider({
               if (introPhaseRef.current === 'playing') {
                 setIntro('zooming');
                 
-                // After 4s (longest animation is 1s delay + 3s translate), dissolve into the Hero
+                // After 3.5s (longest animation is zoom which takes 3.5s), dissolve into the Hero
                 introFadeTimeoutRef.current = window.setTimeout(() => {
                   if (introPhaseRef.current === 'zooming') {
                     markIntroWatched();
@@ -125,7 +125,7 @@ export function GlobalLoadingProvider({
                       setIntro('inactive');
                     }, INTRO_FADE_OUT_MS);
                   }
-                }, 4000);
+                }, 3500);
               }
             }, 1500);
           }).catch(() => {
@@ -317,7 +317,7 @@ export function GlobalLoadingProvider({
       : introPhase === 'zooming'
         ? 'global-intro-layer global-intro-layer--active global-intro-layer--zooming'
         : introPhase === 'fading'
-          ? 'global-intro-layer global-intro-layer--leaving'
+          ? 'global-intro-layer global-intro-layer--active global-intro-layer--leaving'
           : 'global-intro-layer';
 
   return (

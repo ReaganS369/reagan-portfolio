@@ -26,10 +26,10 @@ export function HomeFooter() {
       <div className="footer-hero-text">
         <motion.div
           className="footer-name-line"
-          initial={{ opacity: 0, y: 70, clipPath: 'inset(0 100% 0 0)' }}
+          initial={{ y: 70 }}
           animate={
             isInView
-              ? { opacity: 1, y: 0, clipPath: 'inset(0 0% 0 0)' }
+              ? { y: 0 }
               : {}
           }
           transition={{ duration: 1.1, ease: EASE, delay: 0 }}

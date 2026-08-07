@@ -245,6 +245,38 @@
   );
 }
 
+/* ===================================================
+   Project Carousel Background Text
+=================================================== */
+
+.project-carousel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Above gradient, below noise */
+  pointer-events: none;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.project-carousel__text {
+  position: absolute;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+  letter-spacing: -1px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 90%;
+}
+
 /* Rotating thumbnail carousel for game card */
 .bento-carousel {
   position: absolute;
@@ -340,22 +372,7 @@
   color: var(--text-muted);
   line-height: 1.6;
   max-width: 40ch;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(6px);
-  overflow: hidden;
-  transition:
-    max-height 320ms ease,
-    opacity 280ms ease,
-    transform 280ms ease,
-    margin-top 320ms ease;
-}
-
-.bento-card:hover .bento-desc {
-  max-height: 8em;
-  opacity: 1;
-  transform: translateY(0);
-  margin-top: 10px;
+  display: none; /* Removed completely to save DOM layout logic */
 }
 
 /* ===================================================
@@ -383,6 +400,82 @@
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--secondary);
+}
+
+/* ===================================================
+   Hover Content (Chips)
+=================================================== */
+
+.bento-hover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transition: max-height 400ms ease, opacity 300ms ease, margin-top 300ms ease;
+  /* Delay opening slightly so the description has time to start */
+  transition-delay: 0s;
+}
+
+.bento-card:hover .bento-hover-content {
+  max-height: 250px;
+  opacity: 1;
+  margin-top: 16px;
+  transition-delay: 80ms; /* slight delay on hover */
+}
+
+.bento-hover-heading {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bento-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bento-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease, color 200ms ease;
+  cursor: pointer;
+  /* Prevent text selection */
+  user-select: none;
+}
+
+.bento-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.bento-chip-icon {
+  opacity: 0.6;
+  transition: opacity 200ms ease;
+}
+
+.bento-chip:hover .bento-chip-icon {
+  opacity: 1;
 }
 
 /* ===================================================

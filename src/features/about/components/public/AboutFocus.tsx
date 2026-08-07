@@ -25,7 +25,7 @@ export function AboutFocus() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: EASE }}
         >
-          <SectionNumber number="04" title="Current Focus" />
+          <SectionNumber number="04" title="Active Initiatives" />
         </motion.div>
 
         <div className="about-focus__row">

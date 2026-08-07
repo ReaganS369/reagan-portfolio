@@ -1,6 +1,6 @@
 /** @format */
 
-export const PORTRAIT_STORAGE_PATH = 'profile/reagan_sagolsem.jpg';
+export const PORTRAIT_STORAGE_PATH = 'profile/reagan_profile.png';
 export const RESUME_STORAGE_PATH = 'resume/reagan_sagolsem_cv.pdf';
 
 export interface OriginJourneyEntry {
@@ -9,12 +9,12 @@ export interface OriginJourneyEntry {
 }
 
 export const ORIGIN_JOURNEY: OriginJourneyEntry[] = [
-  { year: '2020', description: 'Started learning programming and software development.' },
-  { year: '2021', description: 'Discovered Blender and entered the world of 3D.' },
-  { year: '2022', description: 'Built games using Unity while expanding into UI/UX.' },
-  { year: '2023', description: 'Focused on technical art, web experiences, and creative technology.' },
-  { year: '2024', description: 'Graduated in Computer Science.' },
-  { year: 'Today', description: 'Building products while preparing the future of NNGTW Studio.' },
+  { year: '2020', description: 'Wrote my first lines of code, laying the foundation in software engineering.' },
+  { year: '2021', description: 'Mastered the fundamentals of 3D modeling and spatial design.' },
+  { year: '2022', description: 'Engineered early game prototypes in Unity, refining UI/UX principles.' },
+  { year: '2023', description: 'Pivoted into technical art and scalable web experiences.' },
+  { year: '2024', description: 'Earned my degree in Computer Science, solidifying core systems architecture.' },
+  { year: 'Today', description: 'Architecting NNGTW Studio and pushing the boundaries of interactive design.' },
 ];
 
 export interface BentoItem {
@@ -27,54 +27,54 @@ export const WHAT_I_DO: BentoItem[] = [
   {
     icon: '🎮',
     title: 'Game Development',
-    description: 'Designing gameplay systems, mechanics, multiplayer experiences, and interactive worlds.',
+    description: 'Architecting gameplay systems, multiplayer architectures, and immersive interactive worlds.',
   },
   {
     icon: '🧩',
     title: 'Technical Art',
-    description: 'Creating optimized pipelines, procedural workflows, shaders, tools, and bridging art with engineering.',
+    description: 'Engineering rendering pipelines, procedural workflows, and tools that bridge art with logic.',
   },
   {
     icon: '🎨',
     title: 'Design',
-    description: 'Crafting intuitive interfaces, visual identities, motion graphics, and user experiences.',
+    description: 'Crafting premium visual identities, motion graphics, and fluid user interfaces.',
   },
   {
     icon: '🚀',
     title: 'Creative Technology',
-    description: 'Exploring AI, automation, web experiences, and emerging technologies to build smarter creative workflows.',
+    description: 'Pioneering AI workflows, automation, and advanced web technologies for next-generation products.',
   },
 ];
 
 export const BEYOND_WORK: BentoItem[] = [
   {
     icon: '🎮',
-    title: 'Games',
-    description: 'Strategy, survival, simulation, and open-world experiences inspire many of my ideas.',
+    title: 'Gaming',
+    description: 'Studying mechanics in strategy, survival, and open-world ecosystems.',
   },
   {
     icon: '🎬',
     title: 'Storytelling',
-    description: 'Interested in cinematic animation and immersive visual storytelling.',
+    description: 'Deconstructing cinematic composition and visual narratives.',
   },
   {
     icon: '📚',
-    title: 'Learning',
-    description: 'Always exploring new tools, workflows, and technologies.',
+    title: 'Progression',
+    description: 'Constantly adopting new frameworks, engines, and methodologies.',
   },
   {
     icon: '💡',
-    title: 'Curiosity',
-    description: 'I enjoy understanding how things work before using them.',
+    title: 'Systems',
+    description: 'Reverse-engineering complex mechanisms to understand their core logic.',
   },
 ];
 
 export const CURRENT_FOCUS = [
   'Building NNGTW Studio',
-  'Advanced Web Experiences',
-  'AI Workflows',
-  'Technical Art',
-  'Interactive Storytelling',
+  'Next-Gen Web Experiences',
+  'AI-Driven Workflows',
+  'Real-Time Technical Art',
+  'Immersive Storytelling',
 ] as const;
 
 /**

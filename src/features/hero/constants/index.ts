@@ -3,10 +3,10 @@
 import type { MarqueeMessage } from '../types';
 
 export const storyMessages: MarqueeMessage[] = [
-  { label: 'What I Build', shortLabel: 'BUILDS', href: '/builds' },
-  { label: 'Where It All Began', shortLabel: 'ORIGIN', href: '/origin' },
-  { label: "What I'm Made Of", shortLabel: 'STATS', href: '/stats' },
-  { label: 'Where Connections Begin', shortLabel: 'COMMS', href: '/comms' },
+  { label: 'Selected Works', shortLabel: 'WORKS', href: '/builds' },
+  { label: 'Origin Story', shortLabel: 'ORIGIN', href: '/origin' },
+  { label: 'Capabilities', shortLabel: 'STATS', href: '/stats' },
+  { label: 'Initiate Contact', shortLabel: 'COMMS', href: '/comms' },
 ];
 
 const CV_RIBBON_MESSAGE =

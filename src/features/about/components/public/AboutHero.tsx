@@ -60,7 +60,7 @@ export function AboutHero() {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.9, delay: 0.28, ease: EASE }}
           >
-            Building Interactive Experiences Through Technology &amp; Creativity
+            Architecting Immersive Experiences Through Technology and Art
           </motion.h1>
 
           <motion.p
@@ -69,11 +69,9 @@ export function AboutHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.45, ease: EASE }}
           >
-            I&apos;m Reagan Sagolsem, a Game Developer, Technical Artist, and Creative
-            Technologist passionate about creating immersive digital experiences. I
-            enjoy combining programming, design, 3D art, animation, and emerging
-            technologies to transform ideas into meaningful products that people
-            enjoy using.
+            I am Reagan Sagolsem—a Game Developer, Technical Artist, and Creative
+            Technologist. I bridge the gap between engineering and aesthetics, leveraging
+            real-time technologies, 3D art, and design to build interactive worlds that feel alive.
           </motion.p>
 
           <motion.div

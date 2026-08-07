@@ -10,9 +10,9 @@ import '../../styles/about-story.css';
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const PARAGRAPHS = [
-  'My journey began with curiosity rather than specialization. Instead of choosing a single creative field, I wanted to understand how digital experiences were built from start to finish. That curiosity led me into programming, UI design, 3D modeling, animation, technical art, and eventually game development.',
-  'Today, I enjoy working across multiple disciplines because I believe the best products are created when technology and creativity complement one another. Every project is an opportunity to learn, improve, and create something meaningful.',
-  "I'm currently focused on building interactive products, exploring AI-assisted creative workflows, and laying the foundation for NNGTW Studio.",
+  'My background is rooted in curiosity rather than specialization. Instead of confining myself to one discipline, I sought to understand the entire architecture of digital experiences—from the first line of code to the final visual polish.',
+  'Today, I operate at the intersection of game development, technical art, web engineering, and design. I believe the most compelling experiences emerge when raw technical capability meets intentional creative direction.',
+  'Currently, I am architecting next-generation interactive web experiences, pioneering AI-driven workflows, and laying the groundwork for NNGTW Studio.',
 ];
 
 export function AboutStory() {

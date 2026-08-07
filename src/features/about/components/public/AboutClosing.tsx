@@ -8,7 +8,7 @@ import '../../styles/about-closing.css';
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
-const LINES = ["I don't just build software.", 'I build experiences people remember.'];
+const LINES = ['I don’t just write code.', 'I engineer digital worlds that feel alive.'];
 
 export function AboutClosing() {
   const ref = useRef<HTMLElement>(null);

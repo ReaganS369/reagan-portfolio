@@ -42,11 +42,19 @@
   pointer-events: all;
 }
 
-/* Play-once finished: dissolve out to reveal the Hero (GPU-composited). */
+/* Play-once finished: circle swoop out to reveal the Hero. */
 .global-intro-layer--leaving {
-  opacity: 0;
-  transition: opacity 800ms ease;
+  animation: out-circle-swoop 1.25s cubic-bezier(.30, 1, .25, 1) forwards;
   pointer-events: none;
+}
+
+@keyframes out-circle-swoop {
+  from {
+    clip-path: circle(150% at bottom right);
+  }
+  to {
+    clip-path: circle(0% at top right);
+  }
 }
 
 .global-intro-layer__video {
@@ -68,8 +76,8 @@
   scale: 1;
   transform-origin: center top;
   
-  /* Zoom starts immediately (at 1.5s) and takes 3.5s (ends at 5s). Location starts 1s later (at 2.5s) and takes 3s (ends at 5.5s). */
-  transition: scale 3.5s ease-in, translate 3s ease-in 1s;
+  /* Zoom starts immediately (at 1.5s) and takes 3.5s (ends at 5s). Location starts 1s later (at 2.5s) and takes 2.5s (ends at 5s). */
+  transition: scale 3.5s cubic-bezier(0.895, 0.03, 0.685, 0.22), translate 2.5s cubic-bezier(0.895, 0.03, 0.685, 0.22) 1s;
 
   /* Fade out the left edge of the video to blend with the dark background */
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
@@ -93,6 +101,7 @@
    Disable or remove this when done.
    testing trails */
 .temp-grid-lines {
+  display: none;
   position: fixed;
   inset: 0;
   z-index: 9999999;

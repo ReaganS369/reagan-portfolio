@@ -9,9 +9,9 @@ import '../../styles/about-quote.css';
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const LINES = [
-  'Great digital experiences happen',
-  'when creativity and technology',
-  'work together—not separately.',
+  'The most memorable experiences',
+  'emerge when code and design',
+  'operate as a single force.',
 ];
 
 export function AboutQuote() {
